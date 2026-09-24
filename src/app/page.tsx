@@ -63,130 +63,170 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12 pb-16">
-      {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-4 sm:pt-8 lg:pt-12 pb-12 sm:pb-16 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Hero Copy Left */}
-          <div className="lg:col-span-6 space-y-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-serif text-[#18181B] tracking-tight leading-[1.12]">
+      {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic (Decreased Gap & Elevated Styling) */}
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-4 sm:pt-7 lg:pt-9 pb-10 sm:pb-14 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
+          {/* Hero Copy Left - Tighter layout and refined typography */}
+          <div className="lg:col-span-7 space-y-5 lg:pr-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#211B26]/5 border border-[#211B26]/10 text-xs font-medium text-[#211B26]">
+              <Sparkles className="w-3.5 h-3.5 text-[#9333EA]" />
+              <span>Royal Saree &amp; Fashion • Handloom Atelier</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-serif text-[#211B26] tracking-tight leading-[1.12]">
               Discover <br />
               <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
-              Shop with <br />
-              confidence.
+              Royal Handloom <br />
+              Heritage.
             </h1>
 
-            <p className="text-sm sm:text-base text-stone-600 max-w-md leading-relaxed">
-              Explore sarees chosen for the moments you&apos;ll remember. Order online, pay securely, and get every piece delivered with care.
+            <p className="text-sm sm:text-base text-stone-600 max-w-lg leading-relaxed">
+              Authentic Varanasi Kadwa brocades, masterwoven Kanjivaram bridal silks, and heirloom drapes. Handcrafted by generational master artisans for your most sacred celebrations.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link href="/shop">
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#18181B] hover:bg-black text-white px-7 py-3.5 text-sm font-medium transition-all shadow-sm group">
-                  <span>Shop the collection</span>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#211B26] hover:bg-[#151118] text-white px-7 py-3 text-sm font-medium transition-all shadow-sm hover:shadow-md group">
+                  <span>Shop Bridal Collection</span>
                   <span className="text-base group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
               </Link>
               <Link href="/shop">
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#EFECE6] hover:bg-[#E5E1D9] text-stone-800 px-7 py-3.5 text-sm font-medium transition-all">
-                  <span>Explore new arrivals</span>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#EFECE6] hover:bg-[#E5E1D9] text-[#211B26] px-7 py-3 text-sm font-medium transition-all">
+                  <span>Explore New Arrivals</span>
                 </button>
               </Link>
             </div>
 
             {/* Trust Metrics */}
-            <div className="pt-8 border-t border-stone-200/80 flex items-center gap-12">
+            <div className="pt-6 border-t border-stone-200/80 flex items-center gap-8 sm:gap-12">
               <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">4.9/5</p>
-                <p className="text-xs text-stone-500 mt-1.5 font-medium">2,400+ happy drapes</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">4.9/5</p>
+                <p className="text-xs text-stone-500 mt-1 font-medium">2,400+ brides &amp; connoisseurs</p>
               </div>
+              <div className="h-8 w-px bg-stone-200" />
               <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">48 hrs</p>
-                <p className="text-xs text-stone-500 mt-1.5 font-medium">dispatch promise</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">48 hrs</p>
+                <p className="text-xs text-stone-500 mt-1 font-medium">express dispatch promise</p>
+              </div>
+              <div className="h-8 w-px bg-stone-200 hidden sm:block" />
+              <div className="hidden sm:block">
+                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">100%</p>
+                <p className="text-xs text-stone-500 mt-1 font-medium">Pure Silk Mark verified</p>
               </div>
             </div>
           </div>
 
-          {/* Hero Visual Right */}
-          <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[500px]">
+          {/* Hero Visual Right - Positioned closely with decreased gap */}
+          <div className="lg:col-span-5 relative flex justify-center lg:justify-start">
+            <div className="relative w-full max-w-[430px] sm:max-w-[460px]">
+              {/* Soft Royal Glow behind card */}
+              <div className="absolute -inset-1.5 bg-gradient-to-tr from-[#9333EA]/15 via-[#211B26]/10 to-amber-500/15 rounded-[38px] blur-xl opacity-80" />
+
               {/* Main Rounded Portrait Card */}
-              <div className="relative aspect-[4/4.8] w-full rounded-[36px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
+              <div className="relative aspect-[4/4.7] w-full rounded-[32px] overflow-hidden shadow-2xl bg-stone-900 border border-[#E8E2D8]">
                 <Image
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=85&w=1200"
-                  alt="Noor Silk Edit"
+                  src="https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  alt="Royal Saree & Fashion Bridal Edit"
                   fill
                   priority
-                  className="object-cover object-top"
+                  className="object-cover object-top transition-transform duration-700 hover:scale-105"
                 />
 
-                {/* Internal Frosted Badge - Featured Edit */}
-                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/95 backdrop-blur-md px-5 py-3.5 shadow-lg border border-white/80">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
-                    FEATURED EDIT
-                  </span>
-                  <h3 className="font-serif text-base font-semibold text-[#18181B] mt-0.5">
-                    Noor Silk Edit
-                  </h3>
-                  <p className="text-[11px] text-stone-500">
-                    Soft light, Rich detail
-                  </p>
+                {/* Top Subtle Luxury Tag */}
+                <div className="absolute top-4 right-4 z-10 rounded-full bg-[#211B26]/85 backdrop-blur-md px-3.5 py-1 text-[11px] font-medium text-amber-200 border border-amber-300/30 shadow-sm">
+                  ✨ Handcrafted Heritage
                 </div>
-              </div>
 
-              {/* Floating Bottom Edge Badge: Quality Checked */}
-              <div className="absolute -bottom-3 right-6 sm:right-10 z-20 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg border border-stone-200/80">
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
-                </span>
-                <span className="text-xs font-semibold text-stone-800">Quality checked</span>
+                {/* Internal Frosted Badge - Featured Edit */}
+                <div className="absolute bottom-5 left-5 right-5 z-10 rounded-2xl bg-white/95 backdrop-blur-md p-4 shadow-lg border border-white/80">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
+                        ROYAL FEATURED EDIT
+                      </span>
+                      <h3 className="font-serif text-base font-bold text-[#211B26] mt-0.5">
+                        Varanasi Bridal Kadwa
+                      </h3>
+                      <p className="text-[11px] text-stone-500">
+                        Pure Mulberry Katan • Tested Gold Zari
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 border border-emerald-200 shrink-0">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                      <span>Certified</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. FEATURED CATEGORIES */}
+      {/* 3. FEATURED CATEGORIES - Royal Handloom Collections */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-base sm:text-lg font-serif font-bold text-brand-950">
-              Curated Handloom Weaves
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#211B26]">
+              Curated Royal Handlooms
             </h2>
-            <p className="text-xs text-brand-500">
-              Hand-picked from regional weaving heritage clusters across India
+            <p className="text-xs text-stone-500">
+              Masterwoven treasures from Varanasi, Kanchipuram, and royal artisan hubs
             </p>
           </div>
-          <Link href="/shop" className="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+          <Link href="/shop" className="text-xs font-semibold text-[#9333EA] hover:text-purple-800 flex items-center gap-1">
             <span>View All</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/categories/${cat.slug}`}
-              className="group relative flex flex-col overflow-hidden rounded-lg border border-brand-200 bg-white shadow-2xs hover:border-brand-300 hover:shadow-card transition-all"
-            >
-              <div className="relative aspect-square w-full overflow-hidden bg-brand-100">
-                <Image
-                  src={cat.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400'}
-                  alt={cat.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-2.5 text-center">
-                <h3 className="text-xs font-semibold text-brand-900 group-hover:text-primary-700 truncate">
-                  {cat.name}
-                </h3>
-                <p className="text-[10px] text-brand-400 mt-0.5">
-                  {cat._count?.products || 'Curated'} styles
-                </p>
-              </div>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          {categories.map((cat, idx) => {
+            const royalImages: Record<string, string> = {
+              'kanjivaram-silk': '/images/products/saree-crimson-royal.jpg',
+              'banarasi-brocade': '/images/products/saree-navy-kadwa.jpg',
+              'organza-floral': '/images/products/saree-organza-lotus.jpg',
+              'chanderi-linen': '/images/products/saree-rose-tanchoi.jpg',
+              'bandhani-leheriya': '/images/products/saree-bandhani-gharchola.jpg',
+              'party-cocktail-wear': '/images/products/saree-emerald-peacock.jpg',
+            };
+            const fallbackImages = [
+              '/images/products/saree-crimson-royal.jpg',
+              '/images/products/saree-navy-kadwa.jpg',
+              '/images/products/saree-organza-lotus.jpg',
+              '/images/products/saree-rose-tanchoi.jpg',
+              '/images/products/saree-bandhani-gharchola.jpg',
+              '/images/products/saree-emerald-peacock.jpg',
+            ];
+            const imgSrc = royalImages[cat.slug] || fallbackImages[idx % fallbackImages.length];
+
+            return (
+              <Link
+                key={cat.id}
+                href={`/categories/${cat.slug}`}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#E8E2D8] bg-white shadow-xs hover:border-[#9333EA]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-stone-100">
+                  <Image
+                    src={imgSrc}
+                    alt={cat.name}
+                    fill
+                    className="object-cover object-top group-hover:scale-108 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#211B26]/60 via-transparent to-transparent opacity-50 group-hover:opacity-30 transition-opacity" />
+                </div>
+                <div className="p-3 text-center">
+                  <h3 className="text-xs sm:text-sm font-serif font-bold text-[#211B26] group-hover:text-[#9333EA] transition-colors truncate">
+                    {cat.name}
+                  </h3>
+                  <p className="text-[10px] text-stone-500 mt-0.5">
+                    {cat._count?.products || 'Curated'} Weaves
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -194,14 +234,14 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-royal-700 bg-royal-100/60 px-2 py-0.5 rounded mb-1">
+            <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#9333EA] bg-purple-50 px-2 py-0.5 rounded-full mb-1">
               <Award className="w-3 h-3" /> Masterpiece Selection
             </div>
-            <h2 className="text-base sm:text-lg font-serif font-bold text-brand-950">
-              Featured Bridal & Celebration Sarees
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#211B26]">
+              Featured Bridal &amp; Celebration Sarees
             </h2>
           </div>
-          <Link href="/shop?featured=true" className="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+          <Link href="/shop?featured=true" className="text-xs font-semibold text-[#9333EA] hover:text-purple-800 flex items-center gap-1">
             <span>See more</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -218,14 +258,14 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 bg-primary-100/60 px-2 py-0.5 rounded mb-1">
+            <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full mb-1">
               <Sparkles className="w-3 h-3" /> Most Loved
             </div>
-            <h2 className="text-base sm:text-lg font-serif font-bold text-brand-950">
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#211B26]">
               Customer Bestsellers
             </h2>
           </div>
-          <Link href="/shop?bestseller=true" className="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+          <Link href="/shop?bestseller=true" className="text-xs font-semibold text-[#9333EA] hover:text-purple-800 flex items-center gap-1">
             <span>Explore all</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -242,8 +282,8 @@ export default function HomePage() {
       <section className="bg-[#F5F1EB] border-y border-[#E8E2D8] py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-8">
-            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#18181B]">
-              The Royal Saree & TechWave Assurance
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#211B26]">
+              The Royal Saree &amp; TechWave Assurance
             </h2>
             <p className="text-xs text-stone-500 mt-1">
               Experience the trust of authentic generational craftsmanship combined with modern tech-enabled ordering.
@@ -255,17 +295,17 @@ export default function HomePage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-[#9333EA] mb-3">
                 <Award className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-stone-900 mb-1">100% Tested Pure Zari</h3>
+              <h3 className="text-xs font-bold text-[#211B26] mb-1">100% Tested Pure Zari</h3>
               <p className="text-[11px] text-stone-500 leading-relaxed">
                 Certified pure silver & gold electroplated zari threads with zero synthetic substitutes.
               </p>
             </div>
 
             <div className="rounded-xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-100 text-stone-800 mb-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-100 text-[#211B26] mb-3">
                 <Truck className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-stone-900 mb-1">Insured Express Courier</h3>
+              <h3 className="text-xs font-bold text-[#211B26] mb-1">Insured Express Courier</h3>
               <p className="text-[11px] text-stone-500 leading-relaxed">
                 Free shipping above ₹1,999 with tamper-proof seal packaging & live SMS status updates.
               </p>
@@ -275,7 +315,7 @@ export default function HomePage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 mb-3">
                 <RotateCcw className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-stone-900 mb-1">7-Day Doorstep Returns</h3>
+              <h3 className="text-xs font-bold text-[#211B26] mb-1">7-Day Doorstep Returns</h3>
               <p className="text-[11px] text-stone-500 leading-relaxed">
                 No questions asked reverse pickup with immediate refund credit upon inspection.
               </p>
@@ -285,7 +325,7 @@ export default function HomePage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-[#9333EA] mb-3">
                 <Scissors className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-stone-900 mb-1">Custom Designer Blouse</h3>
+              <h3 className="text-xs font-bold text-[#211B26] mb-1">Custom Designer Blouse</h3>
               <p className="text-[11px] text-stone-500 leading-relaxed">
                 Order unstitched or have master artisans stitch custom necklines and maggam work.
               </p>
@@ -296,40 +336,40 @@ export default function HomePage() {
 
       {/* 9. AI SHOPPING ASSISTANT INTRO SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="rounded-2xl border border-stone-800 bg-[#18181B] text-white p-6 sm:p-10 shadow-xl">
+        <div className="rounded-3xl border border-[#3A2F42] bg-[#211B26] text-white p-6 sm:p-10 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             <div className="lg:col-span-7 space-y-3">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-royal-500/20 border border-royal-500/40 px-2.5 py-0.5 text-[10px] font-semibold text-royal-300">
-                <Sparkles className="w-3 h-3 text-royal-400" />
-                <span>Next-Gen Commerce Technology</span>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#9333EA]/30 border border-[#9333EA]/40 px-3 py-1 text-[11px] font-semibold text-purple-200">
+                <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+                <span>Next-Gen Heritage Technology</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-serif font-bold text-white">
-                Meet Your AI Saree & Fashion Stylist
+                Meet Your Royal AI Saree &amp; Fashion Stylist
               </h2>
-              <p className="text-xs text-brand-300 leading-relaxed max-w-lg">
-                Searching for a specific saree? Need real-time order tracking? Our AI Assistant connects directly to our warehouse inventory. Ask natural questions like <em>"Do you have red bridal sarees under ₹15,000?"</em> or <em>"Where is my order TW-ORD-10021?"</em>
+              <p className="text-xs text-stone-300 leading-relaxed max-w-lg">
+                Searching for a specific weave? Need real-time order tracking? Our AI Stylist connects directly to our Varanasi inventory. Ask natural questions like <em>&quot;Show me Kanjivaram bridal sarees in red&quot;</em> or <em>&quot;Where is my order?&quot;</em>
               </p>
               <div className="pt-2 flex flex-wrap gap-2">
-                <span className="text-[11px] font-mono bg-brand-900/80 border border-brand-700 px-2.5 py-1 rounded text-royal-300">
+                <span className="text-[11px] font-mono bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-purple-200">
                   Try asking: &quot;Show me Organza sarees under ₹5,000&quot;
                 </span>
-                <span className="text-[11px] font-mono bg-brand-900/80 border border-brand-700 px-2.5 py-1 rounded text-brand-300">
+                <span className="text-[11px] font-mono bg-white/10 border border-white/10 px-2.5 py-1 rounded-full text-stone-300">
                   Try asking: &quot;Where is my order?&quot;
                 </span>
               </div>
             </div>
 
-            <div className="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 p-4 space-y-3">
+            <div className="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 p-4 space-y-3">
               <div className="flex items-center gap-2 border-b border-white/10 pb-2">
                 <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-xs font-semibold text-white">AI Assistant Live Demo</span>
               </div>
               <div className="space-y-2 text-xs">
-                <div className="bg-primary-600/90 text-white rounded-lg rounded-br-none p-2.5 ml-6">
-                  Do you have Kanjivaram silk sarees in red with temple borders?
+                <div className="bg-[#9333EA] text-white rounded-xl rounded-br-none p-2.5 ml-6 shadow-sm">
+                  Do you have Kanjivaram silk sarees in crimson red with pure gold temple borders?
                 </div>
-                <div className="bg-white/95 text-brand-950 rounded-lg rounded-bl-none p-2.5 mr-4 shadow-sm">
-                  Yes! We have the <strong>Royal Crimson Kanjivaram</strong> with pure gold zari temple borders for ₹14,999. In stock with complimentary blouse piece!
+                <div className="bg-white/95 text-[#211B26] rounded-xl rounded-bl-none p-2.5 mr-4 shadow-sm">
+                  Yes! We have the <strong>Royal Crimson Kanjivaram</strong> with pure gold zari temple borders for ₹14,999. In stock with complimentary silk blouse piece!
                 </div>
               </div>
             </div>
@@ -340,55 +380,55 @@ export default function HomePage() {
       {/* 10. TESTIMONIALS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-md mx-auto mb-6">
-          <h2 className="text-base sm:text-lg font-serif font-bold text-brand-950">
-            Loved by Brides & Saree Connoisseurs
+          <h2 className="text-lg sm:text-xl font-serif font-bold text-[#211B26]">
+            Loved by Brides &amp; Saree Connoisseurs
           </h2>
-          <p className="text-xs text-brand-500">Real feedback from verified patrons across India</p>
+          <p className="text-xs text-stone-500">Real feedback from verified patrons across India</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-            <div className="flex text-royal-500 mb-2">
+          <div className="rounded-2xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+            <div className="flex text-amber-400 mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-royal-500 text-royal-500" />
+                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <p className="text-xs text-brand-700 italic leading-relaxed mb-3">
+            <p className="text-xs text-stone-700 italic leading-relaxed mb-3">
               &quot;Ordered the Royal Crimson Kanjivaram for my wedding reception. The zari weight and drape are sublime. Arrived in 3 days in Kolkata!&quot;
             </p>
-            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-brand-100">
-              <span className="font-semibold text-brand-900">Ananya Sengupta</span>
-              <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded text-[10px] font-medium">Verified Buyer</span>
+            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-[#F0EBE3]">
+              <span className="font-semibold text-[#211B26]">Ananya Sengupta</span>
+              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] font-medium">Verified Bride</span>
             </div>
           </div>
 
-          <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-            <div className="flex text-royal-500 mb-2">
+          <div className="rounded-2xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+            <div className="flex text-amber-400 mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-royal-500 text-royal-500" />
+                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <p className="text-xs text-brand-700 italic leading-relaxed mb-3">
+            <p className="text-xs text-stone-700 italic leading-relaxed mb-3">
               &quot;The Kadwa Banarasi weaving is genuine—no itchy floating threads on the reverse. Royal Navy color got non-stop compliments at our dinner!&quot;
             </p>
-            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-brand-100">
-              <span className="font-semibold text-brand-900">Meenakshi Iyer</span>
-              <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded text-[10px] font-medium">Verified Buyer</span>
+            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-[#F0EBE3]">
+              <span className="font-semibold text-[#211B26]">Meenakshi Iyer</span>
+              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] font-medium">Verified Buyer</span>
             </div>
           </div>
 
-          <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-            <div className="flex text-royal-500 mb-2">
+          <div className="rounded-2xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+            <div className="flex text-amber-400 mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-royal-500 text-royal-500" />
+                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <p className="text-xs text-brand-700 italic leading-relaxed mb-3">
+            <p className="text-xs text-stone-700 italic leading-relaxed mb-3">
               &quot;The powder blue organza didn’t puff up awkwardly at all. So lightweight and photograph-ready for day celebrations.&quot;
             </p>
-            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-brand-100">
-              <span className="font-semibold text-brand-900">Rohini Deshmukh</span>
-              <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded text-[10px] font-medium">Verified Buyer</span>
+            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-[#F0EBE3]">
+              <span className="font-semibold text-[#211B26]">Rohini Deshmukh</span>
+              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] font-medium">Verified Buyer</span>
             </div>
           </div>
         </div>
@@ -397,7 +437,7 @@ export default function HomePage() {
       {/* 11. CALL TO ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="rounded-3xl border border-[#E8E2D8] bg-[#F5F1EB] p-8 sm:p-12 text-center max-w-3xl mx-auto shadow-xs">
-          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#18181B] mb-2">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#211B26] mb-2">
             Experience the Royal Saree Difference Today
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 max-w-lg mx-auto mb-6 leading-relaxed">
@@ -405,12 +445,12 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/shop">
-              <button className="rounded-full bg-[#18181B] hover:bg-black text-white px-7 py-3 text-sm font-medium transition-all shadow-sm">
+              <button className="rounded-full bg-[#211B26] hover:bg-[#151118] text-white px-7 py-3 text-sm font-medium transition-all shadow-sm">
                 Browse Full Catalog
               </button>
             </Link>
             <Link href="/track-order">
-              <button className="rounded-full bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 px-7 py-3 text-sm font-medium transition-all">
+              <button className="rounded-full bg-white hover:bg-stone-100 border border-stone-300 text-[#211B26] px-7 py-3 text-sm font-medium transition-all">
                 Track Existing Order
               </button>
             </Link>

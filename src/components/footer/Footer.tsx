@@ -5,20 +5,20 @@ import { APP_CONFIG, DEMO_CREDENTIALS } from '@/lib/constants';
 
 export function Footer() {
   return (
-    <footer className="border-t border-stone-800 bg-[#18181B] text-stone-300 text-xs">
+    <footer className="border-t border-[#3A2F42] bg-[#211B26] text-stone-300 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand & Tagline */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded bg-royal-500 text-brand-950 font-serif font-bold text-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#9333EA] text-white font-serif font-bold text-xs">
                 R
               </div>
               <span className="text-sm font-serif font-bold text-white tracking-wide">
-                Royal Saree & Fashion
+                Royal Saree &amp; Fashion
               </span>
             </div>
-            <p className="text-[11px] text-brand-400 leading-relaxed">
+            <p className="text-[11px] text-stone-400 leading-relaxed">
               Curated masterweaver authentic handlooms, pure Kanjivaram zari, and heirloom Banarasi silks.
             </p>
             <div className="pt-2">
@@ -120,24 +120,24 @@ export function Footer() {
             </div>
 
             {/* Quick Demo Credentials Box */}
-            <div className="rounded border border-brand-700 bg-brand-800/60 p-2.5 mt-2">
-              <p className="text-[10px] font-semibold text-royal-300 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" /> Quick Demo Accounts:
+            <div className="rounded-xl border border-[#3A2F42] bg-white/5 p-3 mt-2">
+              <p className="text-[10px] font-semibold text-purple-300 flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5" /> Quick Demo Accounts:
               </p>
-              <p className="text-[9px] text-brand-300 mt-1 font-mono">
+              <p className="text-[10px] text-stone-300 mt-1 font-mono">
                 Admin: {DEMO_CREDENTIALS.admin.email} (pw: admin123)
               </p>
-              <p className="text-[9px] text-brand-300 font-mono">
+              <p className="text-[10px] text-stone-300 font-mono">
                 Customer: {DEMO_CREDENTIALS.customer.email} (pw: customer123)
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-4 border-t border-brand-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-brand-400 gap-2">
+        <div className="mt-8 pt-4 border-t border-[#3A2F42] flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-400 gap-2">
           <p>© {new Date().getFullYear()} {APP_CONFIG.demoStore} • Built by {APP_CONFIG.company}</p>
           <p className="flex items-center gap-1">
-            Engineered with pride for Indian Retail & D2C Commerce
+            Engineered with pride for Indian Retail &amp; D2C Commerce
           </p>
         </div>
       </div>

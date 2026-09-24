@@ -108,11 +108,11 @@ export function Navbar() {
               </button>
 
               <Link href="/" className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#18181B] text-white font-serif font-bold text-base shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#211B26] text-white font-serif font-bold text-base shadow-sm">
                   R
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold tracking-tight text-stone-900 font-serif leading-tight">
+                  <span className="text-sm font-bold tracking-tight text-[#211B26] font-serif leading-tight">
                     Royal Saree & Fashion
                   </span>
                   <span className="text-[9px] font-medium tracking-widest text-[#9333EA] uppercase">
