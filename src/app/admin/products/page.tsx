@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import {
   Package,
@@ -16,6 +16,7 @@ import {
   X,
   Star,
   Flame,
+  Loader2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { ProductData, CategoryData } from '@/types';
@@ -25,14 +26,21 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { LoadingSpinner } from '@/components/ui/LoadingState';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // API Search, Filter & Pagination State
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,29 +68,124 @@ export default function AdminProductsPage() {
     tags: '',
   });
 
+  // Debounced Search Ref
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch Products from API with search, category, status, and pagination
+  const fetchProducts = useCallback(
+    async (params: {
+      searchQuery?: string;
+      category?: string;
+      status?: string;
+      page?: number;
+      limit?: number;
+    }) => {
+      setLoading(true);
+      try {
+        const queryParams: Record<string, any> = {
+          page: params.page ?? currentPage,
+          limit: params.limit ?? pageSize,
+          admin: 'true',
+        };
+
+        const activeSearch = params.searchQuery !== undefined ? params.searchQuery : search;
+        if (activeSearch.trim()) {
+          queryParams.search = activeSearch.trim();
+        }
+
+        const activeCat = params.category !== undefined ? params.category : categoryFilter;
+        if (activeCat) {
+          queryParams.category = activeCat;
+        }
+
+        const activeStatus = params.status !== undefined ? params.status : statusFilter;
+        if (activeStatus && activeStatus !== 'ALL') {
+          queryParams.status = activeStatus;
+        }
+
+        const res = await api.getProducts(queryParams);
+
+        if (res.success && res.data) {
+          const prods = res.data.products || (Array.isArray(res.data) ? res.data : []);
+          setProducts(prods);
+
+          if (res.data.pagination) {
+            setTotalProducts(res.data.pagination.total);
+            setTotalPages(res.data.pagination.totalPages || 1);
+            setCurrentPage(res.data.pagination.page);
+          } else {
+            setTotalProducts(prods.length);
+            setTotalPages(Math.ceil(prods.length / pageSize) || 1);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching admin products:', err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentPage, pageSize, search, categoryFilter, statusFilter]
+  );
+
+  // Initial Load & Categories
   useEffect(() => {
-    loadData();
+    async function init() {
+      try {
+        const catRes = await api.getCategories();
+        if (catRes.success && catRes.data) {
+          setCategories(catRes.data);
+        }
+      } catch (e) {
+        console.error('Failed to load categories', e);
+      }
+      fetchProducts({ page: 1 });
+    }
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [prodRes, catRes] = await Promise.all([
-        api.getProducts({ limit: 100 }),
-        api.getCategories(),
-      ]);
+  // Handle Search Input with 350ms debounce calling backend API
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearch(val);
+    setCurrentPage(1);
 
-      if (prodRes.success && prodRes.data) {
-        setProducts(prodRes.data.products || prodRes.data);
-      }
-      if (catRes.success && catRes.data) {
-        setCategories(catRes.data);
-      }
-    } catch (err) {
-      console.error('Error fetching admin products:', err);
-    } finally {
-      setLoading(false);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
     }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchProducts({ searchQuery: val, page: 1 });
+    }, 350);
+  };
+
+  // Handle Category Filter Change calling backend API
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const cat = e.target.value;
+    setCategoryFilter(cat);
+    setCurrentPage(1);
+    fetchProducts({ category: cat, page: 1 });
+  };
+
+  // Handle Status Filter Change calling backend API
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const st = e.target.value;
+    setStatusFilter(st);
+    setCurrentPage(1);
+    fetchProducts({ status: st, page: 1 });
+  };
+
+  // Handle Page Change calling backend API
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    fetchProducts({ page: newPage });
+  };
+
+  // Handle Limit Change calling backend API
+  const handleLimitChange = (newLimit: number) => {
+    setPageSize(newLimit);
+    setCurrentPage(1);
+    fetchProducts({ page: 1, limit: newLimit });
   };
 
   const handleOpenCreate = () => {
@@ -102,7 +205,7 @@ export default function AdminProductsPage() {
       status: 'ACTIVE',
       isFeatured: false,
       isBestseller: false,
-      imageUrl: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
+      imageUrl: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=800',
       tags: 'silk, wedding, pure zari',
     });
     setFormError(null);
@@ -166,7 +269,7 @@ export default function AdminProductsPage() {
 
       if (res && res.success) {
         setIsModalOpen(false);
-        await loadData();
+        await fetchProducts({});
       } else {
         setFormError(res?.message || 'Failed to save product. Please check form values.');
       }
@@ -185,7 +288,7 @@ export default function AdminProductsPage() {
     try {
       const res = await api.deleteProduct(id);
       if (res.success) {
-        setProducts(products.filter((p) => p.id !== id));
+        await fetchProducts({});
       } else {
         alert(res.message || 'Failed to delete product');
       }
@@ -194,127 +297,144 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Filter products
-  const filteredProducts = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = !categoryFilter || p.categoryId === categoryFilter;
-    const matchesStatus = !statusFilter || p.status === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header & New Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-brand-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200/80 shadow-xs">
         <div>
-          <h1 className="text-base font-bold text-brand-950 flex items-center gap-2">
-            <Package className="w-4 h-4 text-primary-600" />
-            <span>Product Catalog & Saree Weaves</span>
+          <h1 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-700">
+              <Package className="w-5 h-5" />
+            </div>
+            <span>Product Catalog &amp; Handloom Inventory</span>
           </h1>
-          <p className="text-xs text-brand-500">
-            Manage live inventory items, pricing tiers, descriptions, and visual galleries.
+          <p className="text-xs text-stone-500 mt-1">
+            Real-time catalog synchronized with PostgreSQL database, prices, inventory levels, and visual gallery.
           </p>
         </div>
-        <Button size="sm" onClick={handleOpenCreate} leftIcon={<Plus className="w-3.5 h-3.5" />}>
-          Add New Saree
-        </Button>
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 rounded-xl bg-[#18181B] hover:bg-black text-white px-5 py-2.5 text-xs font-semibold shadow-xs hover:shadow-md transition-all self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4 text-purple-300" />
+          <span>Add New Saree</span>
+        </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-3 rounded-lg border border-brand-200 shadow-xs flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-[200px]">
-          <Input
-            placeholder="Search by title, weave, or SKU..."
+      {/* Filter and Search Bar (API-Driven) */}
+      <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs flex flex-wrap items-center gap-3">
+        {/* Live API Search Input */}
+        <div className="flex-1 min-w-[220px] relative">
+          <input
+            type="text"
+            placeholder="Search by saree title, SKU, or tags..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            leftIcon={<Search className="w-3.5 h-3.5 text-brand-400" />}
+            onChange={handleSearchChange}
+            className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 transition-all font-medium"
           />
+          <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
+          {loading && (
+            <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin absolute right-3 top-3" />
+          )}
         </div>
-        <div className="w-44">
-          <Select
+
+        {/* API Category Filter */}
+        <div className="w-48">
+          <select
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            options={[
-              { label: 'All Categories', value: '' },
-              ...categories.map((c) => ({ label: c.name, value: c.id })),
-            ]}
-          />
+            onChange={handleCategoryChange}
+            aria-label="Filter by category"
+            className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+          >
+            <option value="">All Handloom Categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="w-36">
-          <Select
+
+        {/* API Status Filter */}
+        <div className="w-40">
+          <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={[
-              { label: 'All Statuses', value: '' },
-              { label: 'Active', value: 'ACTIVE' },
-              { label: 'Draft', value: 'DRAFT' },
-              { label: 'Archived', value: 'ARCHIVED' },
-            ]}
-          />
+            onChange={handleStatusChange}
+            aria-label="Filter by status"
+            className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="ACTIVE">Active Sarees</option>
+            <option value="DRAFT">Draft Mode</option>
+            <option value="ARCHIVED">Archived</option>
+          </select>
         </div>
-        <span className="text-xs font-mono text-brand-500 ml-auto">
-          Showing {filteredProducts.length} of {products.length} sarees
-        </span>
+
+        <div className="text-xs font-mono text-stone-500 ml-auto hidden md:block">
+          <span className="font-semibold text-stone-900">{totalProducts}</span> sarees indexed
+        </div>
       </div>
 
       {/* Products Table */}
-      {loading ? (
-        <div className="flex h-64 items-center justify-center bg-white rounded-lg border border-brand-200">
-          <LoadingSpinner message="Loading catalog..." />
+      {loading && products.length === 0 ? (
+        <div className="flex h-64 items-center justify-center bg-white rounded-2xl border border-stone-200/80">
+          <LoadingSpinner message="Querying PostgreSQL catalog..." />
         </div>
-      ) : filteredProducts.length === 0 ? (
-        <div className="bg-white p-8 rounded-lg border border-brand-200 text-center text-xs text-brand-500">
-          No products matched your search or filters.
+      ) : products.length === 0 ? (
+        <div className="bg-white p-12 rounded-2xl border border-stone-200/80 text-center">
+          <Package className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+          <p className="text-sm font-semibold text-stone-700">No matching sarees found</p>
+          <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+            Try adjusting your search keyword or clearing category and status filters.
+          </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-brand-200 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
+              <thead className="bg-[#FAF9F6] border-b border-stone-200/80 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-2.5 px-3">Item / Image</th>
-                  <th className="py-2.5 px-3">SKU</th>
-                  <th className="py-2.5 px-3">Category</th>
-                  <th className="py-2.5 px-3">Price</th>
-                  <th className="py-2.5 px-3">Stock Level</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3">Badges</th>
-                  <th className="py-2.5 px-3 text-right">Actions</th>
+                  <th className="py-3 px-4">Saree &amp; Visual</th>
+                  <th className="py-3 px-4">SKU Code</th>
+                  <th className="py-3 px-4">Craft / Category</th>
+                  <th className="py-3 px-4">Pricing</th>
+                  <th className="py-3 px-4">Live Stock</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Badges</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brand-100">
-                {filteredProducts.map((p) => {
+              <tbody className="divide-y divide-stone-100">
+                {products.map((p) => {
                   const currentStock = p.inventory?.currentStock ?? p.stock ?? 0;
                   const isLow = currentStock <= (p.lowStockThreshold || 5);
                   const isOut = currentStock === 0;
 
                   return (
-                    <tr key={p.id} className="hover:bg-brand-50/50 transition-colors">
+                    <tr key={p.id} className="hover:bg-purple-50/20 transition-colors">
                       {/* Image & Title */}
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="relative h-10 w-8 rounded overflow-hidden bg-brand-100 shrink-0 border border-brand-200">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="relative h-12 w-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200 shadow-xs">
                             {p.images?.[0]?.url ? (
                               <Image
                                 src={p.images[0].url}
                                 alt={p.name}
                                 fill
                                 className="object-cover"
-                                sizes="32px"
+                                sizes="40px"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-brand-400">
-                                <Package className="w-3.5 h-3.5" />
+                              <div className="w-full h-full flex items-center justify-center text-stone-400">
+                                <Package className="w-4 h-4" />
                               </div>
                             )}
                           </div>
                           <div className="min-w-0">
-                            <span className="font-semibold text-brand-950 block truncate max-w-[200px]">
+                            <span className="font-semibold text-stone-900 block truncate max-w-[200px]">
                               {p.name}
                             </span>
-                            <span className="text-[10px] text-brand-400 truncate block max-w-[200px]">
+                            <span className="text-[11px] text-stone-400 truncate block max-w-[200px]">
                               {p.shortDescription || p.slug}
                             </span>
                           </div>
@@ -322,55 +442,58 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* SKU */}
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-brand-700">
+                      <td className="py-3 px-4 font-mono text-[11px] text-stone-600 font-medium">
                         {p.sku}
                       </td>
 
                       {/* Category */}
-                      <td className="py-2.5 px-3 text-brand-600 font-medium">
-                        {p.category?.name || 'Unassigned'}
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200/60">
+                          {p.category?.name || 'Unassigned'}
+                        </span>
                       </td>
 
                       {/* Price */}
-                      <td className="py-2.5 px-3">
-                        <div className="font-bold text-brand-900 font-mono">
+                      <td className="py-3 px-4">
+                        <div className="font-bold text-stone-900 font-mono text-xs">
                           <PriceDisplay amount={p.price} />
                         </div>
                         {p.discountPrice && (
-                          <div className="text-[10px] text-emerald-600 font-mono">
+                          <div className="text-[10px] text-purple-700 font-semibold font-mono">
                             Offer: ₹{p.discountPrice}
                           </div>
                         )}
                       </td>
 
                       {/* Stock Level */}
-                      <td className="py-2.5 px-3">
+                      <td className="py-3 px-4">
                         <span
-                          className={`inline-flex items-center gap-1 font-mono font-bold px-1.5 py-0.5 rounded text-[11px] ${
+                          className={`inline-flex items-center gap-1 font-mono font-bold px-2 py-0.5 rounded-md text-[11px] ${
                             isOut
-                              ? 'bg-rose-100 text-rose-800'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-200'
                               : isLow
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-emerald-50 text-emerald-800'
+                              ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                              : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                           }`}
                         >
-                          {currentStock} units
+                          {currentStock} in stock
                           {isLow && !isOut && (
-                            <span className="text-[9px] uppercase font-sans font-bold">Low</span>
-                          )}
-                          {isOut && (
-                            <span className="text-[9px] uppercase font-sans font-bold">Out</span>
+                            <span className="text-[9px] uppercase font-sans font-bold text-amber-900">
+                              Low
+                            </span>
                           )}
                         </span>
                       </td>
 
                       {/* Status */}
-                      <td className="py-2.5 px-3">
+                      <td className="py-3 px-4">
                         <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
                             p.status === 'ACTIVE'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-brand-200 text-brand-700'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : p.status === 'DRAFT'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-stone-100 text-stone-600 border border-stone-200'
                           }`}
                         >
                           {p.status}
@@ -378,35 +501,53 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Badges */}
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-1">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1.5">
                           {p.isFeatured && (
-                            <span title="Featured" className="text-amber-500">
-                              <Star className="w-3.5 h-3.5 fill-current" />
+                            <span
+                              title="Featured Product"
+                              className="p-1 rounded bg-amber-100 text-amber-800"
+                            >
+                              <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                             </span>
                           )}
                           {p.isBestseller && (
-                            <span title="Bestseller" className="text-rose-500">
-                              <Flame className="w-3.5 h-3.5 fill-current" />
+                            <span
+                              title="Bestseller"
+                              className="p-1 rounded bg-rose-100 text-rose-800"
+                            >
+                              <Flame className="w-3 h-3 fill-rose-500 text-rose-500" />
                             </span>
+                          )}
+                          {!p.isFeatured && !p.isBestseller && (
+                            <span className="text-stone-300 font-mono text-xs">—</span>
                           )}
                         </div>
                       </td>
 
                       {/* Actions */}
-                      <td className="py-2.5 px-3 text-right">
+                      <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleOpenEdit(p)}
-                            title="Edit Product"
-                            className="p-1 text-brand-500 hover:text-primary-600 rounded transition-colors"
+                            title="Edit Details"
+                            className="p-1.5 rounded-lg text-stone-500 hover:text-purple-700 hover:bg-purple-50 transition-colors"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
+                          <a
+                            href={`/product/${p.slug || p.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="View on Storefront"
+                            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
                           <button
                             onClick={() => handleDeleteProduct(p.id, p.name)}
-                            title="Delete Product"
-                            className="p-1 text-brand-400 hover:text-rose-600 rounded transition-colors"
+                            title="Delete Saree"
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -418,192 +559,206 @@ export default function AdminProductsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Connected API Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalProducts}
+            limit={pageSize}
+            onPageChange={handlePageChange}
+            onLimitChange={handleLimitChange}
+            itemLabel="sarees"
+          />
         </div>
       )}
 
-      {/* Add / Edit Product Modal */}
+      {/* Product Create/Edit Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={modalMode === 'create' ? 'Add New Royal Saree' : `Edit Product: ${selectedProduct?.name}`}
-        size="lg"
+        title={modalMode === 'create' ? 'Create New Handloom Saree' : `Edit: ${selectedProduct?.name}`}
+        size="xl"
       >
-        <form onSubmit={handleSaveProduct} className="space-y-3">
+        <form onSubmit={handleSaveProduct} className="space-y-4">
           {formError && (
-            <div className="p-2.5 rounded bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs text-rose-800">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{formError}</span>
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Input
-                label="Product Name *"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Royal Banarasi Katan Silk Saree"
-              />
-            </div>
-            <div>
-              <Input
-                label="SKU Identifier *"
-                required
-                value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                placeholder="RSF-1001"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Saree Name / Title"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              placeholder="e.g. Royal Crimson Kanjivaram Silk"
+            />
+            <Input
+              label="URL Slug (Optional)"
+              value={formData.slug}
+              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+              placeholder="auto-generated-from-name"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <Select
-                label="Category *"
-                required
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Category
+              </label>
+              <select
                 value={formData.categoryId}
                 onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                options={categories.map((c) => ({ label: c.name, value: c.id }))}
-              />
-            </div>
-            <div>
-              <Input
-                label="Price (₹) *"
-                type="number"
                 required
-                min="1"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="14500"
-              />
+                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+              >
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div>
-              <Input
-                label="Discount Price (₹, optional)"
-                type="number"
-                min="0"
-                value={formData.discountPrice}
-                onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })}
-                placeholder="12999"
-              />
-            </div>
+            <Input
+              label="Price (₹ INR)"
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              required
+              placeholder="12500"
+            />
+            <Input
+              label="Discount Price (₹)"
+              type="number"
+              value={formData.discountPrice}
+              onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })}
+              placeholder="9800"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <Input
-                label="Initial Stock *"
-                type="number"
-                required
-                min="0"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                placeholder="15"
-              />
-            </div>
-            <div>
-              <Input
-                label="Low Stock Threshold"
-                type="number"
-                required
-                min="1"
-                value={formData.lowStockThreshold}
-                onChange={(e) => setFormData({ ...formData, lowStockThreshold: e.target.value })}
-                placeholder="5"
-              />
-            </div>
-            <div>
-              <Select
-                label="Status"
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                options={[
-                  { label: 'Active (Visible on Storefront)', value: 'ACTIVE' },
-                  { label: 'Draft (Hidden)', value: 'DRAFT' },
-                  { label: 'Archived', value: 'ARCHIVED' },
-                ]}
-              />
-            </div>
+            <Input
+              label="SKU Code"
+              value={formData.sku}
+              onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+              required
+              placeholder="RSF-2026"
+            />
+            <Input
+              label="Initial Stock"
+              type="number"
+              value={formData.stock}
+              onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+              required
+              placeholder="15"
+            />
+            <Input
+              label="Low Stock Threshold"
+              type="number"
+              value={formData.lowStockThreshold}
+              onChange={(e) => setFormData({ ...formData, lowStockThreshold: e.target.value })}
+              placeholder="5"
+            />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-brand-700 mb-1">
-              Short Description (Highlighted Features)
+            <label className="block text-xs font-semibold text-stone-700 mb-1">
+              Short Summary Description
             </label>
             <input
               type="text"
-              className="w-full rounded border border-brand-300 px-3 py-1.5 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
               value={formData.shortDescription}
               onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-              placeholder="Pure Mulberry silk handwoven with authentic gold zari kadwa motifs."
+              placeholder="Handwoven pure mulberry silk with gold zari border"
+              className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-brand-700 mb-1">
-              Full Product Description *
+            <label className="block text-xs font-semibold text-stone-700 mb-1">
+              Full Saree Story &amp; Weaving Details
             </label>
             <textarea
-              required
               rows={3}
-              className="w-full rounded border border-brand-300 px-3 py-1.5 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500 font-sans"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Provide complete weave details, fabric origin, zari composition, wash care instructions..."
+              required
+              placeholder="Detailed description of silk density, artisan heritage, zari count..."
+              className="w-full p-3 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
             />
           </div>
 
-          <div>
-            <Input
-              label="Primary Image URL"
-              value={formData.imageUrl}
-              onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-              placeholder="https://images.unsplash.com/..."
-            />
-          </div>
+          <Input
+            label="Primary High-Res Saree Photo URL"
+            value={formData.imageUrl}
+            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+            placeholder="https://images.pexels.com/..."
+            helperText="Pexels or Unsplash high-resolution photography URL"
+          />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-1.5 text-xs text-brand-800 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isFeatured}
-                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                  className="rounded text-primary-600 focus:ring-primary-500"
-                />
-                <span>Featured Collection</span>
-              </label>
+          <Input
+            label="Search Tags (Comma separated)"
+            value={formData.tags}
+            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+            placeholder="kanjivaram, bridal, pure zari, wedding collection"
+          />
 
-              <label className="flex items-center gap-1.5 text-xs text-brand-800 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isBestseller}
-                  onChange={(e) => setFormData({ ...formData, isBestseller: e.target.checked })}
-                  className="rounded text-primary-600 focus:ring-primary-500"
-                />
-                <span>Bestseller Ribbon</span>
-              </label>
-            </div>
-
+          <div className="flex flex-wrap items-center gap-6 pt-2 border-t border-stone-100">
             <div>
-              <input
-                type="text"
-                className="w-full rounded border border-brand-300 px-3 py-1.5 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="Comma tags: wedding, silk, handloom"
-              />
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Catalog Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="px-3 py-1.5 bg-white border border-stone-200 rounded-lg text-xs text-stone-900 font-medium"
+              >
+                <option value="ACTIVE">ACTIVE (Visible)</option>
+                <option value="DRAFT">DRAFT (Hidden)</option>
+                <option value="ARCHIVED">ARCHIVED</option>
+              </select>
             </div>
+
+            <label className="flex items-center gap-2 text-xs font-semibold text-stone-800 cursor-pointer pt-4">
+              <input
+                type="checkbox"
+                checked={formData.isFeatured}
+                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                className="rounded border-stone-300 text-purple-600 focus:ring-purple-500 w-4 h-4"
+              />
+              <span>Mark as Featured Edit</span>
+            </label>
+
+            <label className="flex items-center gap-2 text-xs font-semibold text-stone-800 cursor-pointer pt-4">
+              <input
+                type="checkbox"
+                checked={formData.isBestseller}
+                onChange={(e) => setFormData({ ...formData, isBestseller: e.target.checked })}
+                className="rounded border-stone-300 text-purple-600 focus:ring-purple-500 w-4 h-4"
+              />
+              <span>Mark as Bestseller</span>
+            </label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-brand-200">
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsModalOpen(false)}>
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-stone-600 hover:bg-stone-100 transition-colors"
+            >
               Cancel
-            </Button>
-            <Button type="submit" size="sm" isLoading={submitting} leftIcon={<Save className="w-3.5 h-3.5" />}>
-              {modalMode === 'create' ? 'Create Product' : 'Save Changes'}
-            </Button>
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#18181B] hover:bg-black text-white text-xs font-semibold shadow-xs hover:shadow-md transition-all disabled:opacity-50"
+            >
+              <Save className="w-3.5 h-3.5 text-purple-300" />
+              <span>{submitting ? 'Saving to Database...' : 'Save Product'}</span>
+            </button>
           </div>
         </form>
       </Modal>
