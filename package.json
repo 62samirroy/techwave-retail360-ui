@@ -1,8 +1,8 @@
 {
-  "name": "techwave-retail360-web",
+  "name": "techwave-retail360-ui",
   "version": "1.0.0",
   "private": true,
-  "description": "TechWave Retail360 - Modern Responsive Web Application Frontend",
+  "description": "TechWave Retail360 - Modern Responsive Web Application UI",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",

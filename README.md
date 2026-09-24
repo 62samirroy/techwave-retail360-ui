@@ -1,4 +1,4 @@
-# TechWave Retail360 — Storefront & SaaS Management Web Application
+# TechWave Retail360 — Storefront & SaaS Management UI Application
 
 > **Demo Client Business:** Royal Saree & Fashion  
 > **Parent Enterprise Platform:** TechWave Solutions  
@@ -9,7 +9,7 @@
 
 ## 🌟 Overview
 
-**TechWave Retail360 (Web)** is a high-performance, modern, compact, SaaS-grade commerce application engineered with **Next.js 14 (App Router)**, **React 18**, **TypeScript**, and **Tailwind CSS**. It is architecturally decoupled from the backend REST API and operates as a standalone repository and deployment target.
+**TechWave Retail360 (UI)** is a high-performance, modern, compact, SaaS-grade commerce application engineered with **Next.js 14 (App Router)**, **React 18**, **TypeScript**, and **Tailwind CSS**. It is architecturally decoupled from the backend REST API and operates as a standalone repository and deployment target.
 
 ### Key Capabilities
 
