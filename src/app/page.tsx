@@ -64,16 +64,21 @@ export default function HomePage() {
   return (
     <div className="space-y-12 pb-16">
       {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic (Exact Match to Design Screenshot) */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-6 sm:pt-10 lg:pt-14 pb-14 sm:pb-20 px-6 sm:px-10 lg:px-16">
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-8 sm:pt-12 lg:pt-16 pb-14 sm:pb-20 px-8 sm:px-12 lg:px-20">
+        <div className="max-w-[1400px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Hero Copy Left */}
-          <div className="lg:col-span-6 space-y-6 sm:space-y-8">
-            <h1 className="text-5xl sm:text-6xl lg:text-[70px] font-serif text-[#18181B] tracking-tight leading-[1.08]">
-              Discover <br />
-              <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
-              Shop with <br />
-              confidence.
-            </h1>
+          <div className="lg:col-span-5 space-y-6 sm:space-y-8">
+            <div>
+              <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-[#9333EA] mb-4 sm:mb-5">
+                The New Season Edit
+              </span>
+              <h1 className="text-5xl sm:text-6xl lg:text-[70px] font-serif text-[#18181B] tracking-tight leading-[1.08]">
+                Discover <br />
+                <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
+                Shop with <br />
+                confidence.
+              </h1>
+            </div>
 
             <p className="text-sm sm:text-base text-stone-600 max-w-md leading-relaxed font-normal">
               Explore sarees chosen for the moments you&apos;ll remember. Order online, pay securely, and get every piece delivered with care.
@@ -107,8 +112,8 @@ export default function HomePage() {
           </div>
 
           {/* Hero Visual Right */}
-          <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[500px]">
+          <div className="lg:col-span-7 relative flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[650px]">
               {/* Main Rounded Portrait Card */}
               <div className="relative aspect-[4/4.8] w-full rounded-[38px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
                 <Image
