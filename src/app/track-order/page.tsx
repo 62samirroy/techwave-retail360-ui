@@ -22,7 +22,7 @@ import { OrderData } from '@/types';
 import { formatPrice, formatDate, buildWhatsAppLink } from '@/lib/utils';
 import { ORDER_STATUS_LABELS } from '@/lib/constants';
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
   const searchParams = useSearchParams();
   const initialOrderId = searchParams.get('orderId') || '';
 
@@ -272,3 +272,12 @@ export default function TrackOrderPage() {
     </div>
   );
 }
+
+export default function TrackOrderPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 text-center text-xs text-brand-500">Loading tracking portal...</div>}>
+      <TrackOrderContent />
+    </React.Suspense>
+  );
+}
+

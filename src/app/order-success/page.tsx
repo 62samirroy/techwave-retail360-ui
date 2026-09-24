@@ -21,7 +21,7 @@ import { OrderData } from '@/types';
 import { formatPrice, formatDate, buildWhatsAppLink } from '@/lib/utils';
 import { APP_CONFIG } from '@/lib/constants';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
 
@@ -256,3 +256,12 @@ export default function OrderSuccessPage() {
     </div>
   );
 }
+
+export default function OrderSuccessPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 text-center text-xs text-brand-500">Loading order receipt...</div>}>
+      <OrderSuccessContent />
+    </React.Suspense>
+  );
+}
+

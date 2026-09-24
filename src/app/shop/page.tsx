@@ -10,7 +10,7 @@ import { ProductGridSkeleton, EmptyState } from '@/components/ui/LoadingState';
 import { api } from '@/lib/api';
 import { ProductData, CategoryData } from '@/types';
 
-export default function ShopPage() {
+function ShopContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -344,3 +344,12 @@ export default function ShopPage() {
     </div>
   );
 }
+
+export default function ShopPage() {
+  return (
+    <React.Suspense fallback={<ProductGridSkeleton count={8} />}>
+      <ShopContent />
+    </React.Suspense>
+  );
+}
+
