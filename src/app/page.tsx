@@ -64,14 +64,15 @@ export default function HomePage() {
   return (
     <div className="space-y-12 pb-16">
       {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic (Exact Match to Design Screenshot) */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-8 sm:pt-12 lg:pt-16 pb-14 sm:pb-20 px-8 sm:px-12 lg:px-20">
-        <div className="max-w-[1400px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-8 sm:pt-12 lg:pt-16 pb-14 sm:pb-20">
+        <div className="w-full max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Hero Copy Left */}
-          <div className="lg:col-span-5 space-y-6 sm:space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <div>
-              <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-[#9333EA] mb-4 sm:mb-5">
-                The New Season Edit
-              </span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18181B]/5 border border-[#18181B]/10 text-xs font-medium text-[#18181B] mb-5 sm:mb-6">
+                <Sparkles className="w-3.5 h-3.5 text-[#9333EA]" />
+                <span>The New Season Edit</span>
+              </div>
               <h1 className="text-5xl sm:text-6xl lg:text-[70px] font-serif text-[#18181B] tracking-tight leading-[1.08]">
                 Discover <br />
                 <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
@@ -112,33 +113,31 @@ export default function HomePage() {
           </div>
 
           {/* Hero Visual Right */}
-          <div className="lg:col-span-7 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[650px]">
-              {/* Main Rounded Portrait Card */}
-              <div className="relative aspect-[4/4.8] w-full rounded-[38px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
-                <Image
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=85&w=1200"
-                  alt="Noor Silk Edit"
-                  fill
-                  priority
-                  className="object-cover object-top"
-                />
+          <div className="relative flex justify-center w-full">
+            <div className="relative w-full aspect-[4/4.8] lg:aspect-[4/5] rounded-[38px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
+              <Image
+                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=85&w=1200"
+                alt="Noor Silk Edit"
+                fill
+                priority
+                className="object-cover object-top"
+              />
 
-                {/* Internal Frosted Badge - Featured Edit */}
-                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/95 backdrop-blur-md px-5 py-4 shadow-xl border border-white/80">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
-                    FEATURED EDIT
-                  </span>
-                  <h3 className="font-serif text-lg font-semibold text-[#18181B] mt-0.5">
-                    Noor Silk Edit
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Soft light. Rich detail
-                  </p>
-                </div>
+              {/* Internal Frosted Badge - Featured Edit */}
+              <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/95 backdrop-blur-md px-5 py-4 shadow-xl border border-white/80">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
+                  FEATURED EDIT
+                </span>
+                <h3 className="font-serif text-lg font-semibold text-[#18181B] mt-0.5">
+                  Noor Silk Edit
+                </h3>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Soft light. Rich detail
+                </p>
               </div>
+            </div>
 
-              {/* Floating Bottom Edge Badge: Quality Checked */}
+            {/* Floating Bottom Edge Badge: Quality Checked */}
               <div className="absolute -bottom-3.5 right-6 sm:right-10 z-20 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 shadow-xl border border-stone-200/80">
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                   <Check className="w-3 h-3 stroke-[3]" />
@@ -146,7 +145,6 @@ export default function HomePage() {
                 <span className="text-xs font-semibold text-stone-800">Quality checked</span>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
