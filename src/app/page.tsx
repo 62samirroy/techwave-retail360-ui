@@ -63,101 +63,82 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12 pb-16">
-      {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic (Decreased Gap & Elevated Styling) */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-4 sm:pt-7 lg:pt-9 pb-10 sm:pb-14 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
-          {/* Hero Copy Left - Tighter layout and refined typography */}
-          <div className="lg:col-span-7 space-y-5 lg:pr-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#211B26]/5 border border-[#211B26]/10 text-xs font-medium text-[#211B26]">
-              <Sparkles className="w-3.5 h-3.5 text-[#9333EA]" />
-              <span>Royal Saree &amp; Fashion • Handloom Atelier</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-serif text-[#211B26] tracking-tight leading-[1.12]">
+      {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic (Exact Match to Design Screenshot) */}
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-6 sm:pt-10 lg:pt-14 pb-14 sm:pb-20 px-6 sm:px-10 lg:px-16">
+        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          {/* Hero Copy Left */}
+          <div className="lg:col-span-6 space-y-6 sm:space-y-8">
+            <h1 className="text-5xl sm:text-6xl lg:text-[70px] font-serif text-[#18181B] tracking-tight leading-[1.08]">
               Discover <br />
               <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
-              Royal Handloom <br />
-              Heritage.
+              Shop with <br />
+              confidence.
             </h1>
 
-            <p className="text-sm sm:text-base text-stone-600 max-w-lg leading-relaxed">
-              Authentic Varanasi Kadwa brocades, masterwoven Kanjivaram bridal silks, and heirloom drapes. Handcrafted by generational master artisans for your most sacred celebrations.
+            <p className="text-sm sm:text-base text-stone-600 max-w-md leading-relaxed font-normal">
+              Explore sarees chosen for the moments you&apos;ll remember. Order online, pay securely, and get every piece delivered with care.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <Link href="/shop">
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#211B26] hover:bg-[#151118] text-white px-7 py-3 text-sm font-medium transition-all shadow-sm hover:shadow-md group">
-                  <span>Shop Bridal Collection</span>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#18181B] hover:bg-black text-white px-7 py-3.5 text-sm font-medium transition-all shadow-sm hover:shadow-md group">
+                  <span>Shop the collection</span>
                   <span className="text-base group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
               </Link>
               <Link href="/shop">
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#EFECE6] hover:bg-[#E5E1D9] text-[#211B26] px-7 py-3 text-sm font-medium transition-all">
-                  <span>Explore New Arrivals</span>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#EFECE6] hover:bg-[#E5E1D9] text-[#18181B] px-7 py-3.5 text-sm font-medium transition-all">
+                  <span>Explore new arrivals</span>
                 </button>
               </Link>
             </div>
 
             {/* Trust Metrics */}
-            <div className="pt-6 border-t border-stone-200/80 flex items-center gap-8 sm:gap-12">
+            <div className="pt-8 border-t border-stone-200/80 flex items-center gap-12 sm:gap-16">
               <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">4.9/5</p>
-                <p className="text-xs text-stone-500 mt-1 font-medium">2,400+ brides &amp; connoisseurs</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">4.9/5</p>
+                <p className="text-xs text-stone-500 mt-1.5 font-medium">2,400+ happy drapes</p>
               </div>
-              <div className="h-8 w-px bg-stone-200" />
               <div>
-                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">48 hrs</p>
-                <p className="text-xs text-stone-500 mt-1 font-medium">express dispatch promise</p>
-              </div>
-              <div className="h-8 w-px bg-stone-200 hidden sm:block" />
-              <div className="hidden sm:block">
-                <p className="text-xl sm:text-2xl font-bold text-[#211B26] leading-none">100%</p>
-                <p className="text-xs text-stone-500 mt-1 font-medium">Pure Silk Mark verified</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">48 hrs</p>
+                <p className="text-xs text-stone-500 mt-1.5 font-medium">dispatch promise</p>
               </div>
             </div>
           </div>
 
-          {/* Hero Visual Right - Positioned closely with decreased gap */}
-          <div className="lg:col-span-5 relative flex justify-center lg:justify-start">
-            <div className="relative w-full max-w-[430px] sm:max-w-[460px]">
-              {/* Soft Royal Glow behind card */}
-              <div className="absolute -inset-1.5 bg-gradient-to-tr from-[#9333EA]/15 via-[#211B26]/10 to-amber-500/15 rounded-[38px] blur-xl opacity-80" />
-
+          {/* Hero Visual Right */}
+          <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[500px]">
               {/* Main Rounded Portrait Card */}
-              <div className="relative aspect-[4/4.7] w-full rounded-[32px] overflow-hidden shadow-2xl bg-stone-900 border border-[#E8E2D8]">
+              <div className="relative aspect-[4/4.8] w-full rounded-[38px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
                 <Image
-                  src="https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  alt="Royal Saree & Fashion Bridal Edit"
+                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=85&w=1200"
+                  alt="Noor Silk Edit"
                   fill
                   priority
-                  className="object-cover object-top transition-transform duration-700 hover:scale-105"
+                  className="object-cover object-top"
                 />
 
-                {/* Top Subtle Luxury Tag */}
-                <div className="absolute top-4 right-4 z-10 rounded-full bg-[#211B26]/85 backdrop-blur-md px-3.5 py-1 text-[11px] font-medium text-amber-200 border border-amber-300/30 shadow-sm">
-                  ✨ Handcrafted Heritage
-                </div>
-
                 {/* Internal Frosted Badge - Featured Edit */}
-                <div className="absolute bottom-5 left-5 right-5 z-10 rounded-2xl bg-white/95 backdrop-blur-md p-4 shadow-lg border border-white/80">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
-                        ROYAL FEATURED EDIT
-                      </span>
-                      <h3 className="font-serif text-base font-bold text-[#211B26] mt-0.5">
-                        Varanasi Bridal Kadwa
-                      </h3>
-                      <p className="text-[11px] text-stone-500">
-                        Pure Mulberry Katan • Tested Gold Zari
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 border border-emerald-200 shrink-0">
-                      <Check className="w-3 h-3 stroke-[3]" />
-                      <span>Certified</span>
-                    </div>
-                  </div>
+                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/95 backdrop-blur-md px-5 py-4 shadow-xl border border-white/80">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
+                    FEATURED EDIT
+                  </span>
+                  <h3 className="font-serif text-lg font-semibold text-[#18181B] mt-0.5">
+                    Noor Silk Edit
+                  </h3>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    Soft light. Rich detail
+                  </p>
                 </div>
+              </div>
+
+              {/* Floating Bottom Edge Badge: Quality Checked */}
+              <div className="absolute -bottom-3.5 right-6 sm:right-10 z-20 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 shadow-xl border border-stone-200/80">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </span>
+                <span className="text-xs font-semibold text-stone-800">Quality checked</span>
               </div>
             </div>
           </div>
