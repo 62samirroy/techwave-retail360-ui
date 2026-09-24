@@ -11,6 +11,7 @@ import {
   RotateCcw,
   Scissors,
   CheckCircle2,
+  Check,
   Star,
   MessageCircle,
   Package,
@@ -62,95 +63,82 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12 pb-16">
-      {/* 1 & 2. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-950 via-brand-900 to-primary-950 text-white py-12 md:py-16 px-4 sm:px-6">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:16px_16px]" />
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Hero Copy */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-royal-500/40 bg-royal-500/10 px-3 py-1 text-[11px] font-semibold text-royal-300">
-              <Sparkles className="w-3.5 h-3.5 text-royal-400" />
-              <span>Authentic Handloom Heritage • Tested Pure Zari</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-white leading-tight">
-              Timeless Weaves for Sacred Moments & Royal Celebrations.
+      {/* 1 & 2. HERO SECTION - Editorial Luxury Aesthetic */}
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-4 sm:pt-8 lg:pt-12 pb-12 sm:pb-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          {/* Hero Copy Left */}
+          <div className="lg:col-span-6 space-y-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-serif text-[#18181B] tracking-tight leading-[1.12]">
+              Discover <br />
+              <span className="italic font-serif text-[#9333EA]">elegance.</span> <br />
+              Shop with <br />
+              confidence.
             </h1>
 
-            <p className="text-xs sm:text-sm text-brand-300 max-w-xl leading-relaxed">
-              Explore masterwoven Kanjivaram silks, Kadwa Banarasi brocades, and feather-light organza sarees. Curated directly from artisan clusters with live AI shopping assistance and guaranteed pan-India express delivery.
+            <p className="text-sm sm:text-base text-stone-600 max-w-md leading-relaxed">
+              Explore sarees chosen for the moments you&apos;ll remember. Order online, pay securely, and get every piece delivered with care.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link href="/shop">
-                <Button variant="gold" size="md" className="gap-2">
-                  <span>Explore Catalog</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#18181B] hover:bg-black text-white px-7 py-3.5 text-sm font-medium transition-all shadow-sm group">
+                  <span>Shop the collection</span>
+                  <span className="text-base group-hover:translate-x-0.5 transition-transform">→</span>
+                </button>
               </Link>
-              <a href={whatsappInquiryUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="md" className="bg-transparent text-white border-brand-700 hover:bg-brand-800 gap-2">
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
-                  <span>Artisan WhatsApp Video Call</span>
-                </Button>
-              </a>
+              <Link href="/shop">
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#EFECE6] hover:bg-[#E5E1D9] text-stone-800 px-7 py-3.5 text-sm font-medium transition-all">
+                  <span>Explore new arrivals</span>
+                </button>
+              </Link>
             </div>
 
-            {/* Micro Highlights */}
-            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-brand-800/80 text-[11px] text-brand-300">
+            {/* Trust Metrics */}
+            <div className="pt-8 border-t border-stone-200/80 flex items-center gap-12">
               <div>
-                <p className="font-bold text-white text-sm">100%</p>
-                <p className="text-brand-400">Pure Silk Tested</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">4.9/5</p>
+                <p className="text-xs text-stone-500 mt-1.5 font-medium">2,400+ happy drapes</p>
               </div>
               <div>
-                <p className="font-bold text-white text-sm">7-Day</p>
-                <p className="text-brand-400">Doorstep Exchange</p>
-              </div>
-              <div>
-                <p className="font-bold text-white text-sm">Free Express</p>
-                <p className="text-brand-400">Over ₹1,999</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#18181B] leading-none">48 hrs</p>
+                <p className="text-xs text-stone-500 mt-1.5 font-medium">dispatch promise</p>
               </div>
             </div>
           </div>
 
-          {/* Hero Visual Collage */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-3">
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-brand-700/80 shadow-xl group">
-              <Image
-                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=700"
-                alt="Bridal Kanjivaram Silk"
-                fill
-                priority
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent flex items-end p-3">
-                <span className="text-xs font-semibold text-white">Pure Kanjivaram Weave</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="relative aspect-square rounded-lg overflow-hidden border border-brand-700/80 shadow-md group">
+          {/* Hero Visual Right */}
+          <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[500px]">
+              {/* Main Rounded Portrait Card */}
+              <div className="relative aspect-[4/4.8] w-full rounded-[36px] overflow-hidden shadow-2xl bg-stone-900 border border-stone-800/10">
                 <Image
-                  src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=600"
-                  alt="Banarasi Brocade Silk"
+                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=85&w=1200"
+                  alt="Noor Silk Edit"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  priority
+                  className="object-cover object-top"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent flex items-end p-2.5">
-                  <span className="text-[11px] font-semibold text-white">Banarasi Kadwa</span>
+
+                {/* Internal Frosted Badge - Featured Edit */}
+                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/95 backdrop-blur-md px-5 py-3.5 shadow-lg border border-white/80">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#9333EA] block">
+                    FEATURED EDIT
+                  </span>
+                  <h3 className="font-serif text-base font-semibold text-[#18181B] mt-0.5">
+                    Noor Silk Edit
+                  </h3>
+                  <p className="text-[11px] text-stone-500">
+                    Soft light, Rich detail
+                  </p>
                 </div>
               </div>
 
-              <div className="relative aspect-square rounded-lg overflow-hidden border border-brand-700/80 shadow-md group">
-                <Image
-                  src="https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&q=80&w=600"
-                  alt="Floral Organza Saree"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent flex items-end p-2.5">
-                  <span className="text-[11px] font-semibold text-white">Scalloped Organza</span>
-                </div>
+              {/* Floating Bottom Edge Badge: Quality Checked */}
+              <div className="absolute -bottom-3 right-6 sm:right-10 z-20 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg border border-stone-200/80">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                </span>
+                <span className="text-xs font-semibold text-stone-800">Quality checked</span>
               </div>
             </div>
           </div>
@@ -251,54 +239,54 @@ export default function HomePage() {
       </section>
 
       {/* 7 & 8. WHY CHOOSE US & CUSTOMER BENEFITS */}
-      <section className="bg-brand-50/70 border-y border-brand-200/80 py-10 px-4 sm:px-6">
+      <section className="bg-[#F5F1EB] border-y border-[#E8E2D8] py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-8">
-            <h2 className="text-base sm:text-lg font-serif font-bold text-brand-950">
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-[#18181B]">
               The Royal Saree & TechWave Assurance
             </h2>
-            <p className="text-xs text-brand-500 mt-1">
+            <p className="text-xs text-stone-500 mt-1">
               Experience the trust of authentic generational craftsmanship combined with modern tech-enabled ordering.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-royal-100 text-royal-700 mb-3">
+            <div className="rounded-xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-[#9333EA] mb-3">
                 <Award className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-brand-900 mb-1">100% Tested Pure Zari</h3>
-              <p className="text-[11px] text-brand-500 leading-relaxed">
+              <h3 className="text-xs font-bold text-stone-900 mb-1">100% Tested Pure Zari</h3>
+              <p className="text-[11px] text-stone-500 leading-relaxed">
                 Certified pure silver & gold electroplated zari threads with zero synthetic substitutes.
               </p>
             </div>
 
-            <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-100 text-primary-700 mb-3">
+            <div className="rounded-xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-100 text-stone-800 mb-3">
                 <Truck className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-brand-900 mb-1">Insured Express Courier</h3>
-              <p className="text-[11px] text-brand-500 leading-relaxed">
+              <h3 className="text-xs font-bold text-stone-900 mb-1">Insured Express Courier</h3>
+              <p className="text-[11px] text-stone-500 leading-relaxed">
                 Free shipping above ₹1,999 with tamper-proof seal packaging & live SMS status updates.
               </p>
             </div>
 
-            <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 mb-3">
+            <div className="rounded-xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 mb-3">
                 <RotateCcw className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-brand-900 mb-1">7-Day Doorstep Returns</h3>
-              <p className="text-[11px] text-brand-500 leading-relaxed">
+              <h3 className="text-xs font-bold text-stone-900 mb-1">7-Day Doorstep Returns</h3>
+              <p className="text-[11px] text-stone-500 leading-relaxed">
                 No questions asked reverse pickup with immediate refund credit upon inspection.
               </p>
             </div>
 
-            <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple-100 text-purple-700 mb-3">
+            <div className="rounded-xl border border-[#E8E2D8] bg-white p-5 shadow-xs">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-[#9333EA] mb-3">
                 <Scissors className="w-4 h-4" />
               </div>
-              <h3 className="text-xs font-bold text-brand-900 mb-1">Custom Designer Blouse</h3>
-              <p className="text-[11px] text-brand-500 leading-relaxed">
+              <h3 className="text-xs font-bold text-stone-900 mb-1">Custom Designer Blouse</h3>
+              <p className="text-[11px] text-stone-500 leading-relaxed">
                 Order unstitched or have master artisans stitch custom necklines and maggam work.
               </p>
             </div>
@@ -308,7 +296,7 @@ export default function HomePage() {
 
       {/* 9. AI SHOPPING ASSISTANT INTRO SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="rounded-xl border border-brand-800 bg-gradient-to-r from-brand-950 via-brand-900 to-primary-950 text-white p-6 sm:p-8 shadow-xl">
+        <div className="rounded-2xl border border-stone-800 bg-[#18181B] text-white p-6 sm:p-10 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             <div className="lg:col-span-7 space-y-3">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-royal-500/20 border border-royal-500/40 px-2.5 py-0.5 text-[10px] font-semibold text-royal-300">
@@ -408,23 +396,23 @@ export default function HomePage() {
 
       {/* 11. CALL TO ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="rounded-lg border border-brand-200 bg-brand-100/50 p-6 sm:p-8 text-center max-w-3xl mx-auto">
-          <h2 className="text-lg sm:text-xl font-serif font-bold text-brand-950 mb-2">
+        <div className="rounded-3xl border border-[#E8E2D8] bg-[#F5F1EB] p-8 sm:p-12 text-center max-w-3xl mx-auto shadow-xs">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#18181B] mb-2">
             Experience the Royal Saree Difference Today
           </h2>
-          <p className="text-xs text-brand-600 max-w-lg mx-auto mb-4 leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-600 max-w-lg mx-auto mb-6 leading-relaxed">
             Join thousands of satisfied connoisseurs enjoying heirloom weaves, transparent artisan pricing, and Razorpay-secured payments.
           </p>
-          <div className="flex justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link href="/shop">
-              <Button variant="primary" size="md">
+              <button className="rounded-full bg-[#18181B] hover:bg-black text-white px-7 py-3 text-sm font-medium transition-all shadow-sm">
                 Browse Full Catalog
-              </Button>
+              </button>
             </Link>
             <Link href="/track-order">
-              <Button variant="outline" size="md">
+              <button className="rounded-full bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 px-7 py-3 text-sm font-medium transition-all">
                 Track Existing Order
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

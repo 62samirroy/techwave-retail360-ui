@@ -113,20 +113,14 @@ export function CustomerAIChatModal() {
 
   return (
     <>
-      <div className="fixed bottom-5 right-5 z-40">
+      <div className="fixed bottom-6 right-6 z-40">
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-900 to-primary-800 text-white px-3.5 py-2.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 border border-brand-700/80 group"
+            className="flex items-center gap-2 rounded-full bg-[#9333EA] hover:bg-[#8017d4] text-white px-5 py-2.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 group"
           >
-            <div className="relative">
-              <Sparkles className="w-4 h-4 text-royal-400 group-hover:rotate-12 transition-transform" />
-              <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-royal-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-royal-500"></span>
-              </span>
-            </div>
-            <span className="text-xs font-semibold tracking-wide">AI Saree Assistant</span>
+            <Sparkles className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+            <span className="text-sm font-medium">Ask our assistant</span>
           </button>
         )}
       </div>

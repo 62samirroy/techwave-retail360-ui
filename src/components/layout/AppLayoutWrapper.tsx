@@ -16,7 +16,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-[#FAF8F5]">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

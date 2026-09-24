@@ -93,72 +93,44 @@ export function Navbar() {
 
   return (
     <>
-      {/* Top Announcement Bar */}
-      <div className="bg-brand-950 text-brand-300 text-[11px] py-1 px-4 border-b border-brand-800/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <p className="flex items-center gap-1.5 font-medium text-white truncate">
-            <Sparkles className="w-3 h-3 text-royal-400 shrink-0" />
-            <span>Grand Festive Handloom Showcase • Free Shipping on orders over ₹1,999</span>
-          </p>
-          <div className="hidden md:flex items-center gap-4 text-[11px] text-brand-400">
-            <span>Call: {APP_CONFIG.phone}</span>
-            <span className="text-brand-700">|</span>
-            <Link href="/track-order" className="hover:text-white transition-colors">
-              Track Order
-            </Link>
-            {user?.role === 'ADMIN' && (
-              <>
-                <span className="text-brand-700">|</span>
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1 text-royal-400 font-semibold hover:text-royal-300"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" /> Admin Dashboard
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Main Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-200/80 shadow-subtle">
+      <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EAE6DF] shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden rounded p-1.5 text-brand-700 hover:bg-brand-100"
+                className="lg:hidden rounded-full p-2 text-stone-700 hover:bg-stone-200/60"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
 
-              <Link href="/" className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-brand-900 via-primary-900 to-brand-950 text-white font-serif font-bold text-sm shadow-sm border border-brand-700">
+              <Link href="/" className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#18181B] text-white font-serif font-bold text-base shadow-sm">
                   R
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold tracking-tight text-brand-950 font-serif leading-none">
+                  <span className="text-sm font-bold tracking-tight text-stone-900 font-serif leading-tight">
                     Royal Saree & Fashion
                   </span>
-                  <span className="text-[9px] font-medium tracking-widest text-primary-700 uppercase">
-                    TechWave Retail360
+                  <span className="text-[9px] font-medium tracking-widest text-[#9333EA] uppercase">
+                    Handloom & Bridal Couture
                   </span>
                 </div>
               </Link>
             </div>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-7">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'text-xs font-medium transition-colors hover:text-primary-700',
-                    pathname === link.href ? 'text-primary-700 font-semibold' : 'text-brand-700'
+                    'text-xs font-medium transition-colors hover:text-[#9333EA]',
+                    pathname === link.href ? 'text-[#9333EA] font-semibold' : 'text-stone-700'
                   )}
                 >
                   {link.label}

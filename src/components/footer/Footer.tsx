@@ -5,7 +5,7 @@ import { APP_CONFIG, DEMO_CREDENTIALS } from '@/lib/constants';
 
 export function Footer() {
   return (
-    <footer className="border-t border-brand-200 bg-brand-900 text-brand-300 text-xs">
+    <footer className="border-t border-stone-800 bg-[#18181B] text-stone-300 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand & Tagline */}
