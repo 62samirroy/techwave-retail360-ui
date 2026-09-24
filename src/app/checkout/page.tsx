@@ -9,14 +9,9 @@ import {
   CreditCard,
   Lock,
   ArrowRight,
-  CheckCircle2,
   AlertCircle,
   Loader2,
-  HelpCircle,
   Truck,
-  Sparkles,
-  Smartphone,
-  Building,
   Key,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -24,8 +19,6 @@ import { Input } from '@/components/ui/Input';
 import { api } from '@/lib/api';
 import { CartData } from '@/types';
 import { formatPrice } from '@/lib/utils';
-import { APP_CONFIG } from '@/lib/constants';
-import { RazorpayModal } from '@/components/checkout/RazorpayModal';
 
 declare global {
   interface Window {
@@ -41,19 +34,8 @@ export default function CheckoutPage() {
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Interactive Razorpay In-App Modal State
-  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState(false);
-  const [activePaymentOrder, setActivePaymentOrder] = useState<{
-    orderId: string;
-    orderNumber: string;
-    razorpayOrderId: string;
-    amount: number;
-  } | null>(null);
-
   // Payment Method Selection
-  const [paymentMethod, setPaymentMethod] = useState<'RAZORPAY' | 'RAZORPAY_SIMULATION' | 'COD'>('RAZORPAY');
-  const [customKeyId, setCustomKeyId] = useState('');
-  const [showKeyConfig, setShowKeyConfig] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'RAZORPAY' | 'COD'>('RAZORPAY');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -103,7 +85,7 @@ export default function CheckoutPage() {
     initCheckout();
   }, [router]);
 
-  // Ensure Razorpay SDK script is loaded
+  // Dynamically load Razorpay standard checkout.js SDK
   const loadRazorpaySDK = (): Promise<boolean> => {
     return new Promise((resolve) => {
       if (typeof window === 'undefined') return resolve(false);
@@ -160,7 +142,7 @@ export default function CheckoutPage() {
     setProcessing(true);
 
     try {
-      // 1. Create Razorpay Order on Backend
+      // 1. Create Razorpay order on the backend
       const orderPayload = {
         ...formData,
         items: cart.items.map((it) => ({
@@ -177,129 +159,73 @@ export default function CheckoutPage() {
       }
 
       const { orderId, orderNumber, razorpayOrderId, amount, currency, keyId } = orderRes.data;
-      const effectiveKeyId = customKeyId.trim() || keyId;
 
-      // 2. Process Chosen Payment Flow
       if (paymentMethod === 'RAZORPAY') {
-        const isRealKey =
-          effectiveKeyId &&
-          (effectiveKeyId.startsWith('rzp_test_') || effectiveKeyId.startsWith('rzp_live_')) &&
-          effectiveKeyId !== 'rzp_test_demo123456' &&
-          !effectiveKeyId.includes('demo') &&
-          !effectiveKeyId.includes('placeholder');
-
-        if (!isRealKey) {
-          // Open Interactive In-App Razorpay Modal (prevents remote 400 Bad Request error from fake keys)
-          setActivePaymentOrder({
-            orderId,
-            orderNumber,
-            razorpayOrderId,
-            amount: Math.round(amount / 100),
-          });
-          setIsRazorpayModalOpen(true);
-          setProcessing(false);
-          return;
-        }
-
         const isLoaded = await loadRazorpaySDK();
+
         if (!isLoaded || typeof window.Razorpay === 'undefined') {
-          setActivePaymentOrder({
-            orderId,
-            orderNumber,
-            razorpayOrderId,
-            amount: Math.round(amount / 100),
-          });
-          setIsRazorpayModalOpen(true);
-          setProcessing(false);
-          return;
+          throw new Error('Unable to load Razorpay SDK. Please check your internet connection.');
         }
 
-        let paymentResult: { razorpay_payment_id: string; razorpay_signature: string };
-
-        try {
-          paymentResult = await new Promise<{ razorpay_payment_id: string; razorpay_signature: string }>((resolve, reject) => {
-            const options = {
-              key: effectiveKeyId,
-              amount: amount,
-              currency: currency || 'INR',
-              name: 'Royal Saree & Fashion',
-              description: `Atelier Order #${orderNumber}`,
-              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=120',
-              order_id: razorpayOrderId.startsWith('order_test_') ? undefined : razorpayOrderId,
-              prefill: {
-                name: formData.customerName,
-                email: formData.customerEmail,
-                contact: formData.customerPhone,
-              },
-              notes: {
+        // 2. Launch Official Razorpay Modal
+        const options = {
+          key: keyId,
+          amount: amount, // amount in paise
+          currency: currency || 'INR',
+          name: 'Royal Saree & Fashion',
+          description: `Order #${orderNumber}`,
+          image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=120',
+          order_id: razorpayOrderId,
+          prefill: {
+            name: formData.customerName,
+            email: formData.customerEmail,
+            contact: formData.customerPhone,
+          },
+          notes: {
+            orderNumber,
+            customerEmail: formData.customerEmail,
+          },
+          theme: {
+            color: '#9333EA',
+          },
+          handler: async function (response: any) {
+            try {
+              setProcessing(true);
+              // 3. Verify Payment Signature with Backend
+              const verifyRes = await api.verifyPayment({
+                orderId,
                 orderNumber,
-                customerEmail: formData.customerEmail,
-              },
-              theme: {
-                color: '#9333EA',
-              },
-              handler: function (response: any) {
-                resolve({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature || 'sig_verified_mock_checksum',
-                });
-              },
-              modal: {
-                ondismiss: function () {
-                  reject(new Error('Razorpay window closed.'));
-                },
-              },
-            };
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              });
 
-            const rzp = new window.Razorpay(options);
-            rzp.on('payment.failed', function () {
-              reject(new Error('Razorpay payment failed or cancelled.'));
-            });
-            rzp.open();
-          });
-        } catch (openErr) {
-          // Fallback to interactive in-app modal if external SDK fails
-          setActivePaymentOrder({
-            orderId,
-            orderNumber,
-            razorpayOrderId,
-            amount: Math.round(amount / 100),
-          });
-          setIsRazorpayModalOpen(true);
+              if (!verifyRes.success) {
+                throw new Error(verifyRes.message || 'Payment signature verification failed.');
+              }
+
+              await api.clearCart();
+              window.dispatchEvent(new Event('cart-updated'));
+              router.push(`/order-success?orderId=${orderNumber}`);
+            } catch (err: any) {
+              console.error('Signature verification error:', err);
+              setErrorMessage(err.message || 'Signature verification failed.');
+              setProcessing(false);
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              setProcessing(false);
+            },
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+          setErrorMessage(response.error?.description || 'Razorpay payment was declined.');
           setProcessing(false);
-          return;
-        }
-
-        // 3. Verify Payment Signature with backend API
-        const verifyRes = await api.verifyPayment({
-          orderId,
-          orderNumber,
-          razorpay_order_id: razorpayOrderId,
-          razorpay_payment_id: paymentResult.razorpay_payment_id,
-          razorpay_signature: paymentResult.razorpay_signature,
         });
-
-        if (!verifyRes.success) {
-          throw new Error(verifyRes.message || 'Payment signature verification failed.');
-        }
-      } else if (paymentMethod === 'RAZORPAY_SIMULATION') {
-        // Fast Test Simulation Mode (bypasses popups for automated/demo test runs)
-        await new Promise((r) => setTimeout(r, 600));
-
-        const mockPaymentId = `pay_sim_${Date.now()}`;
-        const mockSignature = `sim_test_sig_${Date.now()}`;
-
-        const verifyRes = await api.verifyPayment({
-          orderId,
-          orderNumber,
-          razorpay_order_id: razorpayOrderId,
-          razorpay_payment_id: mockPaymentId,
-          razorpay_signature: mockSignature,
-        });
-
-        if (!verifyRes.success) {
-          throw new Error(verifyRes.message || 'Signature verification failed.');
-        }
+        rzp.open();
       } else {
         // Cash on Delivery Mode
         const verifyRes = await api.verifyPayment({
@@ -313,46 +239,14 @@ export default function CheckoutPage() {
         if (!verifyRes.success) {
           throw new Error(verifyRes.message || 'Failed to confirm COD order.');
         }
-      }
 
-      // 4. Clear Cart & Redirect to Order Confirmation
-      await api.clearCart();
-      window.dispatchEvent(new Event('cart-updated'));
-      router.push(`/order-success?orderId=${orderNumber}`);
+        await api.clearCart();
+        window.dispatchEvent(new Event('cart-updated'));
+        router.push(`/order-success?orderId=${orderNumber}`);
+      }
     } catch (err: any) {
       console.error('Checkout error:', err);
       setErrorMessage(err.message || 'An unexpected error occurred during payment processing.');
-      setProcessing(false);
-    }
-  };
-
-  const handleModalPaymentSuccess = async (paymentDetails: {
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-  }) => {
-    if (!activePaymentOrder) return;
-    setProcessing(true);
-    setIsRazorpayModalOpen(false);
-
-    try {
-      const verifyRes = await api.verifyPayment({
-        orderId: activePaymentOrder.orderId,
-        orderNumber: activePaymentOrder.orderNumber,
-        razorpay_order_id: activePaymentOrder.razorpayOrderId,
-        razorpay_payment_id: paymentDetails.razorpay_payment_id,
-        razorpay_signature: paymentDetails.razorpay_signature,
-      });
-
-      if (!verifyRes.success) {
-        throw new Error(verifyRes.message || 'Payment signature verification failed.');
-      }
-
-      await api.clearCart();
-      window.dispatchEvent(new Event('cart-updated'));
-      router.push(`/order-success?orderId=${activePaymentOrder.orderNumber}`);
-    } catch (err: any) {
-      console.error('Modal payment verification error:', err);
-      setErrorMessage(err.message || 'Payment verification failed.');
       setProcessing(false);
     }
   };
@@ -377,7 +271,7 @@ export default function CheckoutPage() {
             Review &amp; Place Your Order
           </h1>
           <p className="text-xs text-stone-500 mt-0.5">
-            Encrypted transactions powered by Razorpay 256-bit SSL gateway.
+            Real encrypted transactions powered by Razorpay 256-bit SSL gateway.
           </p>
         </div>
         <button
@@ -499,38 +393,12 @@ export default function CheckoutPage() {
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px]">
                   3
                 </span>
-                <span>Select Payment Gateway</span>
+                <span>Payment Method</span>
               </h2>
-              <button
-                type="button"
-                onClick={() => setShowKeyConfig(!showKeyConfig)}
-                className="text-[11px] text-purple-700 hover:text-purple-900 font-medium flex items-center gap-1"
-              >
-                <Key className="w-3 h-3" />
-                <span>{showKeyConfig ? 'Hide Gateway Key' : 'Custom Razorpay Key'}</span>
-              </button>
             </div>
 
-            {showKeyConfig && (
-              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-1.5">
-                <label className="font-semibold text-stone-700 block">
-                  Custom Razorpay Key ID (Optional Test/Live Key)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. rzp_test_..."
-                  value={customKeyId}
-                  onChange={(e) => setCustomKeyId(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-lg text-xs font-mono text-stone-900 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                />
-                <p className="text-[10px] text-stone-400">
-                  Leave empty to use the system default configured in .env.
-                </p>
-              </div>
-            )}
-
             <div className="space-y-3">
-              {/* Option 1: Official Razorpay Gateway Modal */}
+              {/* Option 1: Official Razorpay Payment */}
               <label
                 onClick={() => setPaymentMethod('RAZORPAY')}
                 className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
@@ -549,50 +417,21 @@ export default function CheckoutPage() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold text-stone-900 text-xs flex items-center gap-2">
-                      <span>Razorpay Online Payment</span>
+                      <CreditCard className="w-4 h-4 text-purple-600" />
+                      <span>Razorpay Payment Gateway</span>
                       <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-700">
-                        RECOMMENDED
+                        OFFICIAL
                       </span>
                     </p>
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                   </div>
                   <p className="text-[11px] text-stone-500 mt-1">
-                    UPI (Google Pay, PhonePe, Paytm, BHIM), Credit &amp; Debit Cards, NetBanking, and Wallets.
+                    Direct integration with Razorpay checkout: UPI (Google Pay, PhonePe, Paytm, BHIM), Credit/Debit Cards, NetBanking, and Wallets.
                   </p>
                 </div>
               </label>
 
-              {/* Option 2: Razorpay Express Demo Simulator */}
-              <label
-                onClick={() => setPaymentMethod('RAZORPAY_SIMULATION')}
-                className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                  paymentMethod === 'RAZORPAY_SIMULATION'
-                    ? 'border-purple-600 bg-purple-50/30 ring-1 ring-purple-600/30'
-                    : 'border-stone-200 bg-white hover:bg-stone-50'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  checked={paymentMethod === 'RAZORPAY_SIMULATION'}
-                  onChange={() => setPaymentMethod('RAZORPAY_SIMULATION')}
-                  className="mt-0.5 text-purple-600 focus:ring-purple-500"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-stone-900 text-xs flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Instant Test Simulator (No Popup Needed)</span>
-                    </p>
-                    <span className="text-[10px] font-mono text-stone-400">Sandbox</span>
-                  </div>
-                  <p className="text-[11px] text-stone-500 mt-1">
-                    Simulates a verified 200 OK payment with signature hashing immediately for lightning-fast testing.
-                  </p>
-                </div>
-              </label>
-
-              {/* Option 3: Cash on Delivery */}
+              {/* Option 2: Cash on Delivery */}
               <label
                 onClick={() => setPaymentMethod('COD')}
                 className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
@@ -703,7 +542,7 @@ export default function CheckoutPage() {
               className="w-full gap-2 mt-3 bg-[#18181B] hover:bg-black text-white rounded-xl shadow-md hover:shadow-lg transition-all"
             >
               {processing ? (
-                'Processing Order with Razorpay...'
+                'Opening Razorpay...'
               ) : (
                 <>
                   <Lock className="w-4 h-4 text-purple-300" />
@@ -717,28 +556,11 @@ export default function CheckoutPage() {
 
             <div className="pt-2 flex items-center justify-center gap-2 text-[10px] text-stone-400">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Razorpay Verified • Instant SMS &amp; WhatsApp Receipt</span>
+              <span>Official Razorpay Payment Gateway • 256-Bit SSL</span>
             </div>
           </div>
         </div>
       </form>
-
-      {/* Interactive Razorpay In-App Modal */}
-      {activePaymentOrder && (
-        <RazorpayModal
-          isOpen={isRazorpayModalOpen}
-          onClose={() => {
-            setIsRazorpayModalOpen(false);
-            setProcessing(false);
-          }}
-          orderNumber={activePaymentOrder.orderNumber}
-          amount={activePaymentOrder.amount}
-          customerName={formData.customerName}
-          customerEmail={formData.customerEmail}
-          customerPhone={formData.customerPhone}
-          onSuccess={handleModalPaymentSuccess}
-        />
-      )}
     </div>
   );
 }
