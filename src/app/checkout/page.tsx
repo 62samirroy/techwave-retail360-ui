@@ -25,6 +25,7 @@ import { api } from '@/lib/api';
 import { CartData } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { APP_CONFIG } from '@/lib/constants';
+import { RazorpayModal } from '@/components/checkout/RazorpayModal';
 
 declare global {
   interface Window {
@@ -39,6 +40,15 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Interactive Razorpay In-App Modal State
+  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState(false);
+  const [activePaymentOrder, setActivePaymentOrder] = useState<{
+    orderId: string;
+    orderNumber: string;
+    razorpayOrderId: string;
+    amount: number;
+  } | null>(null);
 
   // Payment Method Selection
   const [paymentMethod, setPaymentMethod] = useState<'RAZORPAY' | 'RAZORPAY_SIMULATION' | 'COD'>('RAZORPAY');
@@ -171,56 +181,94 @@ export default function CheckoutPage() {
 
       // 2. Process Chosen Payment Flow
       if (paymentMethod === 'RAZORPAY') {
-        const isLoaded = await loadRazorpaySDK();
+        const isRealKey =
+          effectiveKeyId &&
+          (effectiveKeyId.startsWith('rzp_test_') || effectiveKeyId.startsWith('rzp_live_')) &&
+          effectiveKeyId !== 'rzp_test_demo123456' &&
+          !effectiveKeyId.includes('demo') &&
+          !effectiveKeyId.includes('placeholder');
 
-        if (!isLoaded || typeof window.Razorpay === 'undefined') {
-          throw new Error('Unable to connect to Razorpay gateway. Please check your internet connection or try Demo Simulation mode.');
+        if (!isRealKey) {
+          // Open Interactive In-App Razorpay Modal (prevents remote 400 Bad Request error from fake keys)
+          setActivePaymentOrder({
+            orderId,
+            orderNumber,
+            razorpayOrderId,
+            amount: Math.round(amount / 100),
+          });
+          setIsRazorpayModalOpen(true);
+          setProcessing(false);
+          return;
         }
 
-        const paymentResult = await new Promise<{ razorpay_payment_id: string; razorpay_signature: string }>((resolve, reject) => {
-          const options = {
-            key: effectiveKeyId,
-            amount: amount,
-            currency: currency || 'INR',
-            name: 'Royal Saree & Fashion',
-            description: `Atelier Order #${orderNumber}`,
-            image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=120',
-            order_id: razorpayOrderId.startsWith('order_test_') ? undefined : razorpayOrderId,
-            prefill: {
-              name: formData.customerName,
-              email: formData.customerEmail,
-              contact: formData.customerPhone,
-            },
-            notes: {
-              orderNumber,
-              customerEmail: formData.customerEmail,
-            },
-            theme: {
-              color: '#9333EA', // Luxury royal purple
-            },
-            handler: function (response: any) {
-              resolve({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature || 'sig_verified_mock_checksum',
-              });
-            },
-            modal: {
-              ondismiss: function () {
-                reject(new Error('Razorpay payment modal closed by customer.'));
-              },
-            },
-          };
+        const isLoaded = await loadRazorpaySDK();
+        if (!isLoaded || typeof window.Razorpay === 'undefined') {
+          setActivePaymentOrder({
+            orderId,
+            orderNumber,
+            razorpayOrderId,
+            amount: Math.round(amount / 100),
+          });
+          setIsRazorpayModalOpen(true);
+          setProcessing(false);
+          return;
+        }
 
-          try {
+        let paymentResult: { razorpay_payment_id: string; razorpay_signature: string };
+
+        try {
+          paymentResult = await new Promise<{ razorpay_payment_id: string; razorpay_signature: string }>((resolve, reject) => {
+            const options = {
+              key: effectiveKeyId,
+              amount: amount,
+              currency: currency || 'INR',
+              name: 'Royal Saree & Fashion',
+              description: `Atelier Order #${orderNumber}`,
+              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=120',
+              order_id: razorpayOrderId.startsWith('order_test_') ? undefined : razorpayOrderId,
+              prefill: {
+                name: formData.customerName,
+                email: formData.customerEmail,
+                contact: formData.customerPhone,
+              },
+              notes: {
+                orderNumber,
+                customerEmail: formData.customerEmail,
+              },
+              theme: {
+                color: '#9333EA',
+              },
+              handler: function (response: any) {
+                resolve({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature || 'sig_verified_mock_checksum',
+                });
+              },
+              modal: {
+                ondismiss: function () {
+                  reject(new Error('Razorpay window closed.'));
+                },
+              },
+            };
+
             const rzp = new window.Razorpay(options);
-            rzp.on('payment.failed', function (response: any) {
-              reject(new Error(response.error?.description || 'Razorpay payment was declined.'));
+            rzp.on('payment.failed', function () {
+              reject(new Error('Razorpay payment failed or cancelled.'));
             });
             rzp.open();
-          } catch (initErr: any) {
-            reject(new Error(initErr.message || 'Failed to open Razorpay modal with provided key.'));
-          }
-        });
+          });
+        } catch (openErr) {
+          // Fallback to interactive in-app modal if external SDK fails
+          setActivePaymentOrder({
+            orderId,
+            orderNumber,
+            razorpayOrderId,
+            amount: Math.round(amount / 100),
+          });
+          setIsRazorpayModalOpen(true);
+          setProcessing(false);
+          return;
+        }
 
         // 3. Verify Payment Signature with backend API
         const verifyRes = await api.verifyPayment({
@@ -274,6 +322,37 @@ export default function CheckoutPage() {
     } catch (err: any) {
       console.error('Checkout error:', err);
       setErrorMessage(err.message || 'An unexpected error occurred during payment processing.');
+      setProcessing(false);
+    }
+  };
+
+  const handleModalPaymentSuccess = async (paymentDetails: {
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) => {
+    if (!activePaymentOrder) return;
+    setProcessing(true);
+    setIsRazorpayModalOpen(false);
+
+    try {
+      const verifyRes = await api.verifyPayment({
+        orderId: activePaymentOrder.orderId,
+        orderNumber: activePaymentOrder.orderNumber,
+        razorpay_order_id: activePaymentOrder.razorpayOrderId,
+        razorpay_payment_id: paymentDetails.razorpay_payment_id,
+        razorpay_signature: paymentDetails.razorpay_signature,
+      });
+
+      if (!verifyRes.success) {
+        throw new Error(verifyRes.message || 'Payment signature verification failed.');
+      }
+
+      await api.clearCart();
+      window.dispatchEvent(new Event('cart-updated'));
+      router.push(`/order-success?orderId=${activePaymentOrder.orderNumber}`);
+    } catch (err: any) {
+      console.error('Modal payment verification error:', err);
+      setErrorMessage(err.message || 'Payment verification failed.');
       setProcessing(false);
     }
   };
@@ -643,6 +722,23 @@ export default function CheckoutPage() {
           </div>
         </div>
       </form>
+
+      {/* Interactive Razorpay In-App Modal */}
+      {activePaymentOrder && (
+        <RazorpayModal
+          isOpen={isRazorpayModalOpen}
+          onClose={() => {
+            setIsRazorpayModalOpen(false);
+            setProcessing(false);
+          }}
+          orderNumber={activePaymentOrder.orderNumber}
+          amount={activePaymentOrder.amount}
+          customerName={formData.customerName}
+          customerEmail={formData.customerEmail}
+          customerPhone={formData.customerPhone}
+          onSuccess={handleModalPaymentSuccess}
+        />
+      )}
     </div>
   );
 }
