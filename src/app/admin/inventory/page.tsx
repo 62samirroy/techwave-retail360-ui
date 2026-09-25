@@ -189,17 +189,19 @@ export default function AdminInventoryPage() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200/80 shadow-xs">
+    <div className="space-y-4">
+      {/* Clean Unboxed Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-700">
-              <Warehouse className="w-5 h-5" />
-            </div>
-            <span>Inventory Health &amp; Stock Ledger</span>
-          </h1>
-          <p className="text-xs text-stone-500 mt-1">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-serif font-bold text-stone-900 tracking-tight">
+              Inventory Health &amp; Stock Ledger
+            </h1>
+            <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+              {totalItems} items
+            </span>
+          </div>
+          <p className="text-xs text-stone-500 mt-0.5">
             Real-time warehouse stock balance, automated low-quantity notifications, and immutable audit logs.
           </p>
         </div>
@@ -234,101 +236,98 @@ export default function AdminInventoryPage() {
         <>
           {/* Summary Metric Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-xs">
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-xs">
               <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
                 Total SKUs
               </span>
-              <span className="text-xl font-bold font-mono text-stone-900 mt-1 block">
+              <span className="text-lg font-bold font-mono text-stone-900 mt-0.5 block">
                 {summary.totalProducts}
               </span>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-xs">
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-xs">
               <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider block">
                 Healthy Stock
               </span>
-              <span className="text-xl font-bold font-mono text-emerald-700 mt-1 block">
+              <span className="text-lg font-bold font-mono text-emerald-700 mt-0.5 block">
                 {summary.healthyStockCount}
               </span>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-xs">
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-xs">
               <span className="text-[10px] text-amber-600 font-bold uppercase tracking-wider block">
                 Low Stock Alert
               </span>
-              <span className="text-xl font-bold font-mono text-amber-700 mt-1 block">
+              <span className="text-lg font-bold font-mono text-amber-700 mt-0.5 block">
                 {summary.lowStockCount}
               </span>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-xs">
+            <div className="bg-white p-3.5 rounded-xl border border-stone-200/90 shadow-xs">
               <span className="text-[10px] text-rose-600 font-bold uppercase tracking-wider block">
                 Out of Stock
               </span>
-              <span className="text-xl font-bold font-mono text-rose-700 mt-1 block">
+              <span className="text-lg font-bold font-mono text-rose-700 mt-0.5 block">
                 {summary.outOfStockCount}
               </span>
             </div>
           </div>
 
-          {/* Filter Bar (API Connected) */}
-          <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs flex flex-wrap items-center gap-3">
-            <div className="flex-1 min-w-[220px] relative">
-              <input
-                type="text"
-                placeholder="Search inventory by saree name, SKU, or craft..."
-                value={search}
-                onChange={handleSearchChange}
-                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 font-medium transition-all"
-              />
-              <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
-              {loading && (
-                <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin absolute right-3 top-3" />
-              )}
+          {/* Unified Table Container with Integrated Toolbar in Same Div */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden flex flex-col">
+            {/* Integrated Filter and Search Toolbar */}
+            <div className="p-3 bg-stone-50/70 border-b border-stone-200 flex flex-wrap items-center gap-2.5">
+              <div className="flex-1 min-w-[220px] relative">
+                <input
+                  type="text"
+                  placeholder="Search inventory by saree name, SKU, or craft..."
+                  value={search}
+                  onChange={handleSearchChange}
+                  className="w-full pl-9 pr-4 py-1.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 font-medium transition-all"
+                />
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-2.5" />
+                {loading && (
+                  <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin absolute right-3 top-2" />
+                )}
+              </div>
+
+              <button
+                onClick={handleToggleAlertOnly}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                  filterAlertOnly
+                    ? 'bg-rose-50 border-rose-300 text-rose-800 shadow-xs'
+                    : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50'
+                }`}
+              >
+                <AlertTriangle
+                  className={`w-3.5 h-3.5 ${filterAlertOnly ? 'text-rose-600' : 'text-amber-500'}`}
+                />
+                <span>Low Stock Filter ({summary.lowStockCount})</span>
+              </button>
             </div>
 
-            <button
-              onClick={handleToggleAlertOnly}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                filterAlertOnly
-                  ? 'bg-rose-50 border-rose-300 text-rose-800 shadow-xs'
-                  : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
-              }`}
-            >
-              <AlertTriangle
-                className={`w-3.5 h-3.5 ${filterAlertOnly ? 'text-rose-600' : 'text-amber-500'}`}
-              />
-              <span>Low Stock Filter ({summary.lowStockCount})</span>
-            </button>
-
-            <span className="text-xs font-mono text-stone-500 ml-auto hidden md:block">
-              <span className="font-semibold text-stone-900">{totalItems}</span> sarees in ledger
-            </span>
-          </div>
-
-          {/* Table */}
-          {loading && items.length === 0 ? (
-            <div className="flex h-64 items-center justify-center bg-white rounded-2xl border border-stone-200/80">
-              <LoadingSpinner message="Calculating stock balance from PostgreSQL..." />
-            </div>
-          ) : items.length === 0 ? (
-            <div className="bg-white p-12 rounded-2xl border border-stone-200/80 text-center">
-              <Warehouse className="w-10 h-10 text-stone-300 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-stone-700">No inventory entries found</p>
-              <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
-                No stock records matched your search query or low stock filter.
-              </p>
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
+            {/* Viewport-Fitted Responsive Table Body */}
+            {loading && items.length === 0 ? (
+              <div className="flex h-72 items-center justify-center">
+                <LoadingSpinner message="Calculating stock balance from PostgreSQL..." />
+              </div>
+            ) : items.length === 0 ? (
+              <div className="p-12 text-center">
+                <Warehouse className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-stone-700">No inventory entries found</p>
+                <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+                  No stock records matched your search query or low stock filter.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FAF9F6] border-b border-stone-200/80 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                  <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
-                      <th className="py-3 px-4">Saree Name</th>
-                      <th className="py-3 px-4">SKU Code</th>
-                      <th className="py-3 px-4">Craft / Category</th>
-                      <th className="py-3 px-4">Available Units</th>
-                      <th className="py-3 px-4">Threshold</th>
-                      <th className="py-3 px-4">Health Status</th>
-                      <th className="py-3 px-4 text-right">Adjustment Action</th>
+                      <th className="py-2.5 px-4">Saree Name</th>
+                      <th className="py-2.5 px-4">SKU Code</th>
+                      <th className="py-2.5 px-4">Craft / Category</th>
+                      <th className="py-2.5 px-4">Available Units</th>
+                      <th className="py-2.5 px-4">Threshold</th>
+                      <th className="py-2.5 px-4">Health Status</th>
+                      <th className="py-2.5 px-4 text-right">Adjustment Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100">
@@ -340,31 +339,31 @@ export default function AdminInventoryPage() {
 
                       return (
                         <tr key={item.productId || item.id} className="hover:bg-purple-50/20 transition-colors">
-                          <td className="py-3 px-4">
+                          <td className="py-2.5 px-4">
                             <span className="font-semibold text-stone-900 block truncate max-w-[260px]">
                               {item.name}
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 font-mono text-[11px] text-stone-600 font-medium">
+                          <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600 font-medium">
                             {item.sku}
                           </td>
 
-                          <td className="py-3 px-4 text-stone-600 font-medium">
+                          <td className="py-2.5 px-4 text-stone-600 font-medium">
                             {item.category || 'Atelier'}
                           </td>
 
-                          <td className="py-3 px-4">
+                          <td className="py-2.5 px-4">
                             <span className="font-mono font-bold text-xs text-stone-900">
                               {currentStock} units
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 font-mono text-[11px] text-stone-500">
+                          <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
                             {threshold} min
                           </td>
 
-                          <td className="py-3 px-4">
+                          <td className="py-2.5 px-4">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                 isOut
@@ -378,7 +377,7 @@ export default function AdminInventoryPage() {
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-2.5 px-4 text-right">
                             <button
                               onClick={() => handleOpenAdjust(item)}
                               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
@@ -393,8 +392,10 @@ export default function AdminInventoryPage() {
                   </tbody>
                 </table>
               </div>
+            )}
 
-              {/* Connected API Pagination */}
+            {/* Connected API Pagination inside the same card */}
+            <div className="border-t border-stone-200 bg-stone-50/40">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -405,16 +406,16 @@ export default function AdminInventoryPage() {
                 itemLabel="inventory items"
               />
             </div>
-          )}
+          </div>
         </>
       ) : (
         /* History / Audit Log Tab */
-        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
-          <div className="p-4 border-b border-stone-200/80 flex items-center justify-between">
+        <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden flex flex-col">
+          <div className="p-3 bg-stone-50/70 border-b border-stone-200 flex items-center justify-between">
             <h3 className="font-serif font-bold text-stone-900 text-sm">
               Immutable Stock Movement Ledger
             </h3>
-            <span className="text-xs text-stone-400 font-mono">
+            <span className="text-xs text-stone-500 font-mono">
               Recorded adjustments &amp; order deductions
             </span>
           </div>
@@ -424,21 +425,21 @@ export default function AdminInventoryPage() {
               No inventory transactions recorded yet.
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#FAF9F6] border-b border-stone-200/80 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                   <tr>
-                    <th className="py-3 px-4">Timestamp</th>
-                    <th className="py-3 px-4">Saree Name / SKU</th>
-                    <th className="py-3 px-4">Change</th>
-                    <th className="py-3 px-4">Balance After</th>
-                    <th className="py-3 px-4">Reason</th>
+                    <th className="py-2.5 px-4">Timestamp</th>
+                    <th className="py-2.5 px-4">Saree Name / SKU</th>
+                    <th className="py-2.5 px-4">Change</th>
+                    <th className="py-2.5 px-4">Balance After</th>
+                    <th className="py-2.5 px-4">Reason</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
                   {historyLogs.map((log: any) => (
                     <tr key={log.id} className="hover:bg-purple-50/20">
-                      <td className="py-3 px-4 font-mono text-[11px] text-stone-500">
+                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
                         {new Date(log.createdAt).toLocaleString('en-IN', {
                           day: 'numeric',
                           month: 'short',
@@ -446,7 +447,7 @@ export default function AdminInventoryPage() {
                           minute: '2-digit',
                         })}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span className="font-semibold text-stone-900 block">
                           {log.product?.name || 'Saree item'}
                         </span>
@@ -454,7 +455,7 @@ export default function AdminInventoryPage() {
                           {log.product?.sku}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span
                           className={`font-mono font-bold text-xs ${
                             log.quantityChange > 0 ? 'text-emerald-600' : 'text-rose-600'
@@ -463,10 +464,10 @@ export default function AdminInventoryPage() {
                           {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange} units
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-mono font-bold text-stone-800 text-xs">
+                      <td className="py-2.5 px-4 font-mono font-bold text-stone-800 text-xs">
                         {log.newQuantity}
                       </td>
-                      <td className="py-3 px-4 text-stone-600">{log.reason}</td>
+                      <td className="py-2.5 px-4 text-stone-600">{log.reason}</td>
                     </tr>
                   ))}
                 </tbody>

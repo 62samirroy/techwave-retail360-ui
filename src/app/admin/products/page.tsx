@@ -298,110 +298,109 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Header & New Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-stone-200/80 shadow-xs">
+    <div className="space-y-4">
+      {/* Clean Unboxed Header & Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-700">
-              <Package className="w-5 h-5" />
-            </div>
-            <span>Product Catalog &amp; Handloom Inventory</span>
-          </h1>
-          <p className="text-xs text-stone-500 mt-1">
-            Real-time catalog synchronized with PostgreSQL database, prices, inventory levels, and visual gallery.
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-serif font-bold text-stone-900 tracking-tight">
+              Product Catalog &amp; Handloom Inventory
+            </h1>
+            <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+              {totalProducts} sarees
+            </span>
+          </div>
+          <p className="text-xs text-stone-500 mt-0.5">
+            Live catalog synchronized with PostgreSQL database, prices, inventory levels, and visual gallery.
           </p>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#18181B] hover:bg-black text-white px-5 py-2.5 text-xs font-semibold shadow-xs hover:shadow-md transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#18181B] hover:bg-black text-white px-4 py-2 text-xs font-semibold shadow-xs hover:shadow-md transition-all self-start sm:self-auto shrink-0"
         >
-          <Plus className="w-4 h-4 text-purple-300" />
+          <Plus className="w-3.5 h-3.5 text-purple-300" />
           <span>Add New Saree</span>
         </button>
       </div>
 
-      {/* Filter and Search Bar (API-Driven) */}
-      <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs flex flex-wrap items-center gap-3">
-        {/* Live API Search Input */}
-        <div className="flex-1 min-w-[220px] relative">
-          <input
-            type="text"
-            placeholder="Search by saree title, SKU, or tags..."
-            value={search}
-            onChange={handleSearchChange}
-            className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 transition-all font-medium"
-          />
-          <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
-          {loading && (
-            <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin absolute right-3 top-3" />
-          )}
+      {/* Unified Table Container with Integrated Toolbar in Same Div */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden flex flex-col">
+        {/* Integrated Filter and Search Toolbar */}
+        <div className="p-3 bg-stone-50/70 border-b border-stone-200 flex flex-wrap items-center gap-2.5">
+          {/* Live API Search Input */}
+          <div className="flex-1 min-w-[220px] relative">
+            <input
+              type="text"
+              placeholder="Search by saree title, SKU, or tags..."
+              value={search}
+              onChange={handleSearchChange}
+              className="w-full pl-9 pr-4 py-1.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 transition-all font-medium"
+            />
+            <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-2.5" />
+            {loading && (
+              <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin absolute right-3 top-2" />
+            )}
+          </div>
+
+          {/* API Category Filter */}
+          <div className="w-48">
+            <select
+              value={categoryFilter}
+              onChange={handleCategoryChange}
+              aria-label="Filter by category"
+              className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+            >
+              <option value="">All Handloom Categories</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* API Status Filter */}
+          <div className="w-36">
+            <select
+              value={statusFilter}
+              onChange={handleStatusChange}
+              aria-label="Filter by status"
+              className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="ACTIVE">Active Sarees</option>
+              <option value="DRAFT">Draft Mode</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+          </div>
         </div>
 
-        {/* API Category Filter */}
-        <div className="w-48">
-          <select
-            value={categoryFilter}
-            onChange={handleCategoryChange}
-            aria-label="Filter by category"
-            className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
-          >
-            <option value="">All Handloom Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* API Status Filter */}
-        <div className="w-40">
-          <select
-            value={statusFilter}
-            onChange={handleStatusChange}
-            aria-label="Filter by status"
-            className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">Active Sarees</option>
-            <option value="DRAFT">Draft Mode</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-        </div>
-
-        <div className="text-xs font-mono text-stone-500 ml-auto hidden md:block">
-          <span className="font-semibold text-stone-900">{totalProducts}</span> sarees indexed
-        </div>
-      </div>
-
-      {/* Products Table */}
-      {loading && products.length === 0 ? (
-        <div className="flex h-64 items-center justify-center bg-white rounded-2xl border border-stone-200/80">
-          <LoadingSpinner message="Querying PostgreSQL catalog..." />
-        </div>
-      ) : products.length === 0 ? (
-        <div className="bg-white p-12 rounded-2xl border border-stone-200/80 text-center">
-          <Package className="w-10 h-10 text-stone-300 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-stone-700">No matching sarees found</p>
-          <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
-            Try adjusting your search keyword or clearing category and status filters.
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
+        {/* Viewport-Fitted Responsive Table Body */}
+        {loading && products.length === 0 ? (
+          <div className="flex h-72 items-center justify-center">
+            <LoadingSpinner message="Querying PostgreSQL catalog..." />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="p-12 text-center">
+            <Package className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-stone-700">No matching sarees found</p>
+            <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+              Try adjusting your search keyword or clearing category and status filters.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF9F6] border-b border-stone-200/80 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+              <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-3 px-4">Saree &amp; Visual</th>
-                  <th className="py-3 px-4">SKU Code</th>
-                  <th className="py-3 px-4">Craft / Category</th>
-                  <th className="py-3 px-4">Pricing</th>
-                  <th className="py-3 px-4">Live Stock</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Badges</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-2.5 px-4">Saree &amp; Visual</th>
+                  <th className="py-2.5 px-4">SKU Code</th>
+                  <th className="py-2.5 px-4">Craft / Category</th>
+                  <th className="py-2.5 px-4">Pricing</th>
+                  <th className="py-2.5 px-4">Live Stock</th>
+                  <th className="py-2.5 px-4">Status</th>
+                  <th className="py-2.5 px-4">Badges</th>
+                  <th className="py-2.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -413,9 +412,9 @@ export default function AdminProductsPage() {
                   return (
                     <tr key={p.id} className="hover:bg-purple-50/20 transition-colors">
                       {/* Image & Title */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative h-12 w-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200 shadow-xs">
+                          <div className="relative h-11 w-9 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200 shadow-xs">
                             {p.images?.[0]?.url ? (
                               <Image
                                 src={p.images[0].url}
@@ -442,19 +441,19 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* SKU */}
-                      <td className="py-3 px-4 font-mono text-[11px] text-stone-600 font-medium">
+                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600 font-medium">
                         {p.sku}
                       </td>
 
                       {/* Category */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200/60">
                           {p.category?.name || 'Unassigned'}
                         </span>
                       </td>
 
                       {/* Price */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="font-bold text-stone-900 font-mono text-xs">
                           <PriceDisplay amount={p.price} />
                         </div>
@@ -466,7 +465,7 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Stock Level */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span
                           className={`inline-flex items-center gap-1 font-mono font-bold px-2 py-0.5 rounded-md text-[11px] ${
                             isOut
@@ -486,7 +485,7 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Status */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
                             p.status === 'ACTIVE'
@@ -501,7 +500,7 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Badges */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="flex items-center gap-1.5">
                           {p.isFeatured && (
                             <span
@@ -526,7 +525,7 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-2.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleOpenEdit(p)}
@@ -559,8 +558,10 @@ export default function AdminProductsPage() {
               </tbody>
             </table>
           </div>
+        )}
 
-          {/* Connected API Pagination */}
+        {/* Connected API Pagination inside the same card */}
+        <div className="border-t border-stone-200 bg-stone-50/40">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -571,7 +572,7 @@ export default function AdminProductsPage() {
             itemLabel="sarees"
           />
         </div>
-      )}
+      </div>
 
       {/* Product Create/Edit Modal */}
       <Modal

@@ -55,6 +55,12 @@ code {
     }
 }
 
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 @layer base {
   :root {
         --background: 40 33% 98%;

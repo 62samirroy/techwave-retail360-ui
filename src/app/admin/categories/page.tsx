@@ -148,36 +148,44 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-brand-200 shadow-xs">
+      {/* Clean Unboxed Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-base font-bold text-brand-950 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-primary-600" />
-            <span>Saree Weave Categories & Classifications</span>
-          </h1>
-          <p className="text-xs text-brand-500">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-serif font-bold text-stone-900 tracking-tight">
+              Saree Weave Categories &amp; Classifications
+            </h1>
+            <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+              {categories.length} categories
+            </span>
+          </div>
+          <p className="text-xs text-stone-500 mt-0.5">
             Structure your storefront catalog by regional handlooms, silks, and bridal collections.
           </p>
         </div>
-        <Button size="sm" onClick={handleOpenCreate} leftIcon={<Plus className="w-3.5 h-3.5" />}>
-          Add Category
-        </Button>
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 rounded-xl bg-[#18181B] hover:bg-black text-white px-4 py-2 text-xs font-semibold shadow-xs hover:shadow-md transition-all self-start sm:self-auto shrink-0"
+        >
+          <Plus className="w-3.5 h-3.5 text-purple-300" />
+          <span>Add Category</span>
+        </button>
       </div>
 
       {/* Categories Table */}
       {loading ? (
-        <div className="flex h-64 items-center justify-center bg-white rounded-lg border border-brand-200">
+        <div className="flex h-72 items-center justify-center bg-white rounded-2xl border border-stone-200/90">
           <LoadingSpinner message="Loading weave categories..." />
         </div>
       ) : categories.length === 0 ? (
-        <div className="bg-white p-8 rounded-lg border border-brand-200 text-center text-xs text-brand-500">
+        <div className="bg-white p-12 rounded-2xl border border-stone-200/90 text-center text-xs text-stone-500">
           No categories found. Click Add Category to define your first collection.
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-brand-200 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden flex flex-col">
+          <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
             <table className="w-full text-left text-xs">
-              <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
+              <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-2.5 px-3">Category Banner</th>
                   <th className="py-2.5 px-3">Name</th>

@@ -20,13 +20,26 @@ export function LoadingSpinner({
 
 export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="animate-pulse rounded-lg border border-brand-200 bg-white p-3">
-          <div className="aspect-[3/4] w-full rounded bg-brand-100 mb-2.5" />
-          <div className="h-3.5 w-3/4 rounded bg-brand-100 mb-1.5" />
-          <div className="h-3 w-1/2 rounded bg-brand-100 mb-2.5" />
-          <div className="h-4 w-1/3 rounded bg-brand-100" />
+        <div key={i} className="relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-xs animate-pulse">
+          <div className="relative aspect-[3/4.2] w-full bg-stone-200/70 overflow-hidden">
+            <div className="absolute top-2.5 left-2.5 h-4 w-16 rounded-full bg-stone-300/80" />
+            <div className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-stone-300/80" />
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.8s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+          </div>
+          <div className="flex flex-1 flex-col p-3.5 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="h-2.5 w-20 rounded bg-stone-200" />
+              <div className="h-3 w-8 rounded bg-stone-200" />
+            </div>
+            <div className="h-3.5 w-4/5 rounded bg-stone-200" />
+            <div className="h-2.5 w-16 rounded bg-stone-100" />
+            <div className="mt-auto pt-2.5 border-t border-stone-100 flex items-center justify-between">
+              <div className="h-3.5 w-14 rounded bg-stone-200" />
+              <div className="h-6 w-16 rounded-xl bg-stone-200" />
+            </div>
+          </div>
         </div>
       ))}
     </div>

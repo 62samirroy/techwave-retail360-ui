@@ -392,10 +392,39 @@ function CustomerDashboardContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
-          <p className="text-xs text-brand-500 font-medium">Loading customer account &amp; orders...</p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-pulse">
+        {/* Banner Skeleton */}
+        <div className="rounded-3xl bg-stone-900/90 h-32 w-full p-6 flex items-center gap-4">
+          <div className="h-16 w-16 rounded-2xl bg-stone-800" />
+          <div className="space-y-2 flex-1">
+            <div className="h-5 w-48 rounded bg-stone-800" />
+            <div className="h-3 w-64 rounded bg-stone-800" />
+          </div>
+        </div>
+        {/* Tabs Skeleton */}
+        <div className="flex gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-9 w-28 rounded-xl bg-stone-200" />
+          ))}
+        </div>
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-2xl bg-white border border-stone-200 p-4 space-y-2">
+              <div className="h-3 w-20 rounded bg-stone-200" />
+              <div className="h-6 w-12 rounded bg-stone-200" />
+            </div>
+          ))}
+        </div>
+        {/* Orders Skeleton */}
+        <div className="space-y-3">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-44 rounded-2xl bg-white border border-stone-200 p-5 space-y-3">
+              <div className="h-4 w-32 rounded bg-stone-200" />
+              <div className="h-14 rounded-xl bg-stone-100" />
+              <div className="h-3 w-48 rounded bg-stone-200" />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -420,73 +449,88 @@ function CustomerDashboardContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      {/* Top Profile Card Banner */}
-      <div className="rounded-2xl border border-brand-200 bg-white p-5 sm:p-6 shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-900 text-white font-bold text-xl overflow-hidden shrink-0 shadow-xs">
-            {user?.avatarUrl ? (
-              <Image
-                src={user.avatarUrl}
-                alt={user.name}
-                fill
-                unoptimized
-                referrerPolicy="no-referrer"
-                className="object-cover"
-              />
-            ) : (
-              user?.name?.charAt(0)?.toUpperCase() || 'C'
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-xl font-serif font-bold text-brand-950">
-                {user?.name}
-              </h1>
-              <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold px-2.5 py-0.5">
-                Verified Customer
-              </span>
+      {/* Luxury VIP Customer Card Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#18131D] via-[#2A1F35] to-[#18131D] p-6 sm:p-8 text-white shadow-xl border border-purple-900/40">
+        {/* Subtle decorative glow aura */}
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-600/15 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-purple-600 to-indigo-700 text-white font-serif font-bold text-2xl sm:text-3xl overflow-hidden shrink-0 shadow-lg ring-2 ring-amber-400/40">
+              {user?.avatarUrl ? (
+                <Image
+                  src={user.avatarUrl}
+                  alt={user.name}
+                  fill
+                  unoptimized
+                  referrerPolicy="no-referrer"
+                  className="object-cover"
+                />
+              ) : (
+                user?.name?.charAt(0)?.toUpperCase() || 'C'
+              )}
             </div>
-            <p className="text-xs text-brand-500 mt-0.5">{user?.email} {user?.phone && `• ${user.phone}`}</p>
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-tight">
+                  {user?.name}
+                </h1>
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 shadow-xs">
+                  <span>★</span> VIP Patron Club
+                </span>
+                <span className="rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-medium px-2 py-0.5">
+                  Verified Customer
+                </span>
+              </div>
+              <p className="text-xs text-stone-300 font-mono flex flex-wrap items-center gap-2">
+                <span>{user?.email}</span>
+                {user?.phone && (
+                  <>
+                    <span className="text-stone-500">•</span>
+                    <span>{user.phone}</span>
+                  </>
+                )}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          {user?.role === 'ADMIN' && (
-            <Link href="/admin">
-              <Button variant="gold" size="xs" className="gap-1 text-xs">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Admin Portal</span>
-              </Button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {user?.role === 'ADMIN' && (
+              <Link href="/admin">
+                <Button variant="gold" size="sm" className="gap-1.5 text-xs font-semibold shadow-xs">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Admin Portal</span>
+                </Button>
+              </Link>
+            )}
+
+            <Link href="/shop">
+              <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold backdrop-blur-xs transition-all shadow-xs">
+                <ShoppingBag className="w-3.5 h-3.5 text-amber-300" />
+                <span>Browse Sarees</span>
+              </button>
             </Link>
-          )}
 
-          <Link href="/shop">
-            <Button variant="secondary" size="xs" className="gap-1 text-xs">
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Browse Sarees</span>
-            </Button>
-          </Link>
-
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={handleLogout}
-            className="text-stone-500 hover:text-rose-600 gap-1 text-xs"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
-          </Button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-1 border-b border-brand-200 text-xs font-medium">
+      <div className="flex gap-2 overflow-x-auto pb-1 border-b border-stone-200 text-xs font-medium">
         {[
-          { key: 'overview', label: 'Overview', icon: Sparkles },
+          { key: 'overview', label: 'Account Overview', icon: Sparkles },
           { key: 'orders', label: `My Orders (${orders.length})`, icon: Package },
-          { key: 'track', label: 'Track Order', icon: Truck },
+          { key: 'track', label: 'Track Consignment', icon: Truck },
           { key: 'wishlist', label: `Wishlist (${wishlist.length})`, icon: Heart },
-          { key: 'addresses', label: `Saved Addresses (${addresses.length})`, icon: MapPin },
+          { key: 'addresses', label: `Addresses (${addresses.length})`, icon: MapPin },
           { key: 'profile', label: 'Profile', icon: User },
           { key: 'settings', label: `Settings ${unreadNotifsCount > 0 ? `(${unreadNotifsCount})` : ''}`, icon: Bell },
         ].map((tab) => {
@@ -496,13 +540,13 @@ function CustomerDashboardContent() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as TabType)}
-              className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-t-xl transition-all shrink-0 border-b-2 font-medium ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all shrink-0 font-medium ${
                 isActive
-                  ? 'border-brand-900 bg-white text-brand-950 font-bold shadow-2xs'
-                  : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-50'
+                  ? 'bg-purple-900 text-white font-bold shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-primary-600' : 'text-stone-400'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-amber-300' : 'text-stone-400'}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -518,67 +562,75 @@ function CustomerDashboardContent() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             <div
               onClick={() => setActiveTab('orders')}
-              className="cursor-pointer rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs hover:shadow-subtle transition-all"
+              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-purple-300 hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between text-stone-500 text-xs mb-1">
-                <span>Total Orders</span>
-                <Package className="w-4 h-4 text-primary-600" />
+                <span className="font-semibold text-stone-600">Total Orders</span>
+                <div className="p-1.5 rounded-lg bg-purple-50 text-purple-700 group-hover:scale-110 transition-transform">
+                  <Package className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-xl font-serif font-bold text-brand-950">{orders.length}</div>
-              <span className="text-[10px] text-stone-400">View orders history →</span>
+              <div className="text-2xl font-serif font-bold text-stone-900">{orders.length}</div>
+              <span className="text-[11px] text-purple-700 font-medium">Inspect orders history →</span>
             </div>
 
             <div
               onClick={() => setActiveTab('wishlist')}
-              className="cursor-pointer rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs hover:shadow-subtle transition-all"
+              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-rose-300 hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between text-stone-500 text-xs mb-1">
-                <span>Wishlist</span>
-                <Heart className="w-4 h-4 text-rose-500" />
+                <span className="font-semibold text-stone-600">Wishlist</span>
+                <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
+                  <Heart className="w-4 h-4 fill-rose-600" />
+                </div>
               </div>
-              <div className="text-xl font-serif font-bold text-brand-950">{wishlist.length}</div>
-              <span className="text-[10px] text-stone-400">View saved sarees →</span>
+              <div className="text-2xl font-serif font-bold text-stone-900">{wishlist.length}</div>
+              <span className="text-[11px] text-rose-600 font-medium">Saved sarees →</span>
             </div>
 
             <div
               onClick={() => setActiveTab('addresses')}
-              className="cursor-pointer rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs hover:shadow-subtle transition-all"
+              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-amber-300 hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between text-stone-500 text-xs mb-1">
-                <span>Saved Addresses</span>
-                <MapPin className="w-4 h-4 text-amber-600" />
+                <span className="font-semibold text-stone-600">Saved Addresses</span>
+                <div className="p-1.5 rounded-lg bg-amber-50 text-amber-700 group-hover:scale-110 transition-transform">
+                  <MapPin className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-xl font-serif font-bold text-brand-950">{addresses.length}</div>
-              <span className="text-[10px] text-stone-400">Manage delivery addresses →</span>
+              <div className="text-2xl font-serif font-bold text-stone-900">{addresses.length}</div>
+              <span className="text-[11px] text-amber-700 font-medium">Manage destinations →</span>
             </div>
 
             <div
               onClick={() => setActiveTab('settings')}
-              className="cursor-pointer rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs hover:shadow-subtle transition-all"
+              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between text-stone-500 text-xs mb-1">
-                <span>Notifications</span>
-                <Bell className="w-4 h-4 text-emerald-600" />
+                <span className="font-semibold text-stone-600">Notifications</span>
+                <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 group-hover:scale-110 transition-transform">
+                  <Bell className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-xl font-serif font-bold text-brand-950">{unreadNotifsCount}</div>
-              <span className="text-[10px] text-stone-400">Unread updates →</span>
+              <div className="text-2xl font-serif font-bold text-stone-900">{unreadNotifsCount}</div>
+              <span className="text-[11px] text-emerald-700 font-medium">Unread updates →</span>
             </div>
           </div>
 
           {/* Recent Order Spotlight */}
           {orders.length > 0 ? (
-            <div className="rounded-2xl border border-brand-200 bg-white p-5 shadow-subtle space-y-4">
+            <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-stone-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-brand-900">
-                    Latest Order
-                  </h3>
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-900">
+                    Latest Order Placed
+                  </span>
                   <OrderStatusBadge status={orders[0].status} />
                   <PaymentStatusBadge status={orders[0].paymentStatus} />
                 </div>
                 <button
                   onClick={() => setActiveTab('orders')}
-                  className="text-xs font-semibold text-primary-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-purple-700 hover:underline flex items-center gap-1"
                 >
                   <span>View All Orders</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -587,40 +639,36 @@ function CustomerDashboardContent() {
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <div className="text-sm font-bold text-brand-950 font-mono">
+                  <div className="text-base font-bold text-stone-900 font-mono">
                     #{orders[0].orderNumber}
                   </div>
                   <p className="text-xs text-stone-500 mt-0.5">
-                    Placed on {formatDate(orders[0].createdAt)} • Total: <strong className="text-stone-900">{formatPrice(orders[0].total)}</strong>
+                    Placed on {formatDate(orders[0].createdAt)} • Total: <strong className="text-stone-900 font-serif">{formatPrice(orders[0].total)}</strong>
                   </p>
                   <p className="text-xs text-stone-600 mt-1">
-                    Delivering to: {orders[0].customerName}, {orders[0].city}
+                    Delivering to: <span className="font-medium text-stone-800">{orders[0].customerName}, {orders[0].city}</span>
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="secondary"
-                    size="xs"
+                  <button
                     onClick={() => {
                       setTrackOrderNumber(orders[0].orderNumber);
                       setTrackedOrder(orders[0]);
                       setActiveTab('track');
                     }}
-                    className="gap-1 text-xs"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-semibold border border-purple-200 transition-colors shadow-2xs"
                   >
-                    <Truck className="w-3.5 h-3.5" />
+                    <Truck className="w-3.5 h-3.5 text-purple-700" />
                     <span>Track Shipment</span>
-                  </Button>
+                  </button>
 
-                  <Button
-                    variant="primary"
-                    size="xs"
+                  <button
                     onClick={() => setSelectedOrder(orders[0])}
-                    className="gap-1 text-xs"
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-semibold shadow-2xs transition-colors"
                   >
                     <span>View Details</span>
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -642,9 +690,9 @@ function CustomerDashboardContent() {
           )}
 
           {/* Quick Help & WhatsApp Card */}
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shrink-0">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600 text-white shrink-0 shadow-xs">
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div>
@@ -662,7 +710,7 @@ function CustomerDashboardContent() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium transition-colors shadow-2xs">
+              <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition-colors shadow-2xs shrink-0">
                 <MessageCircle className="w-3.5 h-3.5" />
                 <span>Chat on WhatsApp</span>
               </button>
@@ -676,112 +724,218 @@ function CustomerDashboardContent() {
       {/* ================================================================ */}
       {activeTab === 'orders' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-brand-900">
-              Customer Order History
-            </h2>
-            <span className="text-xs text-stone-500">{orders.length} Total Placed</span>
+          <div className="flex items-center justify-between pb-1">
+            <div>
+              <h2 className="text-base font-serif font-bold text-stone-900 tracking-tight">
+                My Saree Orders &amp; Dispatches
+              </h2>
+              <p className="text-xs text-stone-500">
+                Track your authentic handloom orders, live logistics stages, and verified invoices
+              </p>
+            </div>
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+              {orders.length} orders placed
+            </span>
           </div>
 
           {orders.length > 0 ? (
-            <div className="space-y-3">
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 shadow-2xs space-y-3"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-brand-950">
-                        #{order.orderNumber}
-                      </span>
-                      <span className="text-xs text-stone-400">•</span>
-                      <span className="text-xs text-stone-500">{formatDate(order.createdAt)}</span>
+            <div className="space-y-4">
+              {orders.map((order) => {
+                // Compute 4-stage tracking progress
+                const macroStage =
+                  order.status === 'DELIVERED'
+                    ? 3
+                    : order.status === 'SHIPPED' || order.status === 'OUT_FOR_DELIVERY'
+                    ? 2
+                    : order.status === 'PROCESSING' || order.status === 'PACKED'
+                    ? 1
+                    : 0;
+
+                return (
+                  <div
+                    key={order.id}
+                    className="rounded-2xl border border-stone-200/90 bg-white overflow-hidden shadow-xs hover:shadow-md transition-all duration-200"
+                  >
+                    {/* Order Card Header */}
+                    <div className="p-4 sm:p-5 bg-stone-50/70 border-b border-stone-200/90 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="font-mono text-xs font-bold bg-stone-900 text-amber-300 px-2.5 py-1 rounded-lg border border-stone-800 shadow-2xs">
+                          #{order.orderNumber}
+                        </span>
+                        <div className="flex items-center gap-1.5 text-xs text-stone-500">
+                          <Clock className="w-3.5 h-3.5 text-stone-400" />
+                          <span>{formatDate(order.createdAt)}</span>
+                        </div>
+                        {order.city && (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-stone-600 bg-white px-2 py-0.5 rounded-full border border-stone-200">
+                            <MapPin className="w-3 h-3 text-stone-400" />
+                            <span>{order.city}, {order.state || 'India'}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <OrderStatusBadge status={order.status} />
+                        <PaymentStatusBadge status={order.paymentStatus} />
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <OrderStatusBadge status={order.status} />
-                      <PaymentStatusBadge status={order.paymentStatus} />
-                    </div>
-                  </div>
-
-                  {/* Order Items Preview */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1.5">
-                      <p className="text-xs text-stone-700 font-medium">
-                        {order.items?.length || 0} {(order.items?.length || 0) === 1 ? 'Saree' : 'Sarees'}
-                      </p>
-                      <div className="flex gap-2 overflow-x-auto">
+                    {/* Order Items Preview */}
+                    <div className="p-4 sm:p-5 space-y-4">
+                      <div className="space-y-2.5">
                         {order.items?.map((it, idx) => (
-                          <div key={idx} className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1 rounded-lg border border-stone-200 text-xs">
-                            <span className="font-semibold text-stone-800 truncate max-w-[150px]">{it.productName}</span>
-                            <span className="text-stone-400 font-mono">×{it.quantity}</span>
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-stone-50/50 border border-stone-100 hover:bg-stone-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="relative h-14 w-11 rounded-lg overflow-hidden bg-stone-200 shrink-0 border border-stone-200 shadow-2xs">
+                                {it.productImage ? (
+                                  <Image
+                                    src={it.productImage}
+                                    alt={it.productName}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-stone-400">
+                                    <Package className="w-5 h-5" />
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold text-stone-900 line-clamp-1">
+                                  {it.productName}
+                                </h4>
+                                <p className="text-[11px] text-stone-500 font-mono mt-0.5">
+                                  SKU: {it.productSku || 'RSF-SILK'} • Qty: {it.quantity} × {formatPrice(it.unitPrice)}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-xs font-mono font-bold text-stone-900 shrink-0">
+                              {formatPrice(it.total)}
+                            </div>
                           </div>
                         ))}
                       </div>
-                    </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                      <div className="text-right">
-                        <div className="text-xs text-stone-400">Total Paid</div>
-                        <div className="text-sm font-bold text-brand-950">{formatPrice(order.total)}</div>
+                      {/* 4-Stage Live Delivery Progress Tracker */}
+                      <div className="bg-stone-50/80 p-3.5 rounded-xl border border-stone-200/80">
+                        <div className="flex items-center justify-between text-[11px] font-semibold text-stone-700 mb-2">
+                          <span className="flex items-center gap-1.5">
+                            <Truck className="w-3.5 h-3.5 text-purple-700" />
+                            <span>Dispatch Milestone:</span>
+                          </span>
+                          <span className="font-mono text-purple-800 text-[11px]">
+                            {order.carrier || 'Blue Dart Express'} {order.trackingNumber ? `(AWB: ${order.trackingNumber})` : '• In Preparation'}
+                          </span>
+                        </div>
+
+                        {/* Progress Stepper Bar */}
+                        <div className="grid grid-cols-4 gap-2 text-center">
+                          {[
+                            { label: 'Order Confirmed', idx: 0 },
+                            { label: 'Atelier Packed', idx: 1 },
+                            { label: 'In Transit', idx: 2 },
+                            { label: 'Delivered', idx: 3 },
+                          ].map((step) => {
+                            const isDone = macroStage >= step.idx;
+                            const isCurrent = macroStage === step.idx;
+                            return (
+                              <div key={step.idx} className="flex flex-col items-center">
+                                <div
+                                  className={`w-full h-1.5 rounded-full mb-1.5 transition-all ${
+                                    isDone ? 'bg-purple-700' : 'bg-stone-200'
+                                  }`}
+                                />
+                                <span
+                                  className={`text-[10px] leading-tight ${
+                                    isCurrent
+                                      ? 'font-bold text-purple-900'
+                                      : isDone
+                                      ? 'font-semibold text-stone-800'
+                                      : 'text-stone-400'
+                                  }`}
+                                >
+                                  {step.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
-                        <Button
-                          variant="secondary"
-                          size="xs"
-                          onClick={() => {
-                            setTrackOrderNumber(order.orderNumber);
-                            setTrackedOrder(order);
-                            setActiveTab('track');
-                          }}
-                          className="gap-1 text-xs"
-                        >
-                          <Truck className="w-3.5 h-3.5" />
-                          <span>Track</span>
-                        </Button>
+                      {/* Bottom Order Summary & Actions */}
+                      <div className="pt-3 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400 block">
+                            Invoice Total ({order.items?.length || 1} items)
+                          </span>
+                          <span className="text-base font-serif font-bold text-stone-900">
+                            {formatPrice(order.total)}
+                          </span>
+                          <span className="text-[10px] text-emerald-700 font-medium ml-2">
+                            • Certified Handloom Dispatch
+                          </span>
+                        </div>
 
-                        <Button
-                          variant="primary"
-                          size="xs"
-                          onClick={() => setSelectedOrder(order)}
-                          className="text-xs"
-                        >
-                          View Details
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setTrackOrderNumber(order.orderNumber);
+                              setTrackedOrder(order);
+                              setActiveTab('track');
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-semibold border border-purple-200/80 transition-colors shadow-2xs"
+                          >
+                            <Truck className="w-3.5 h-3.5 text-purple-700" />
+                            <span>Track Consignment</span>
+                          </button>
 
-                        <a
-                          href={buildWhatsAppLink(
-                            APP_CONFIG.supportPhone,
-                            `Hi Royal Saree & Fashion, I need help with my Order #${order.orderNumber}.`
-                          )}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition-colors"
-                          title="Need help? Contact on WhatsApp"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                        </a>
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-semibold shadow-2xs transition-colors"
+                          >
+                            <span>View Full Invoice</span>
+                          </button>
+
+                          <a
+                            href={buildWhatsAppLink(
+                              APP_CONFIG.supportPhone,
+                              `Hi Royal Saree & Fashion, I need help with my Order #${order.orderNumber}.`
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 p-1.5 rounded-xl border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition-colors"
+                            title="Direct WhatsApp Helpline"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-stone-200 bg-stone-50/50 p-10 text-center space-y-3">
-              <Package className="w-10 h-10 text-stone-400 mx-auto" />
-              <div>
-                <h3 className="text-sm font-bold text-stone-900">You haven&apos;t placed any orders yet</h3>
-                <p className="text-xs text-stone-500 mt-1">
-                  Once you order sarees, your verified invoices and tracking details will appear here.
+            <div className="rounded-3xl border border-dashed border-stone-200 bg-white p-12 text-center space-y-4 shadow-xs">
+              <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center mx-auto">
+                <Package className="w-8 h-8" />
+              </div>
+              <div className="max-w-md mx-auto">
+                <h3 className="text-base font-serif font-bold text-stone-900">
+                  No saree orders placed yet
+                </h3>
+                <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                  Discover our pure Kanjivaram silks, Organza drapes, and royal bridal couture woven by certified master artisans.
                 </p>
               </div>
               <Link href="/shop">
-                <Button variant="primary" size="sm">
-                  Start Shopping
-                </Button>
+                <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-semibold shadow-xs hover:shadow-md transition-all">
+                  <ShoppingBag className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Explore Saree Collection</span>
+                </button>
               </Link>
             </div>
           )}
