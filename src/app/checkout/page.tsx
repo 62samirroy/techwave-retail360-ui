@@ -249,17 +249,14 @@ export default function CheckoutPage() {
         });
         rzp.open();
       } else {
-        // Cash on Delivery Mode
-        const verifyRes = await api.verifyPayment({
+        // Cash on Delivery Mode: Direct secure confirmation
+        const codRes = await api.confirmCodOrder({
           orderId,
           orderNumber,
-          razorpay_order_id: razorpayOrderId,
-          razorpay_payment_id: `pay_cod_${Date.now()}`,
-          razorpay_signature: `sim_test_sig_cod_${Date.now()}`,
         });
 
-        if (!verifyRes.success) {
-          throw new Error(verifyRes.message || 'Failed to confirm COD order.');
+        if (!codRes.success) {
+          throw new Error(codRes.message || 'Failed to confirm Cash on Delivery order.');
         }
 
         await api.clearCart();

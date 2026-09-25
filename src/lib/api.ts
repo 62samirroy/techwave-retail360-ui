@@ -163,6 +163,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(paymentData),
     }),
+  confirmCodOrder: (data: { orderId: string; orderNumber?: string }) =>
+    fetcher<any>('/payments/cod/confirm', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
   // Orders
   getOrders: (params?: Record<string, any>) => {
