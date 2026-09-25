@@ -166,6 +166,7 @@ export default function CheckoutPage() {
       // 1. Create Razorpay order on the backend
       const orderPayload = {
         ...formData,
+        paymentMethod,
         items: cart.items.map((it) => ({
           productId: it.productId,
           productName: it.product.name,
