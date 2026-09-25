@@ -6,6 +6,7 @@ export const APP_CONFIG = {
   phone: '+91 9641145871',
   email: 'techwavesolutions.dev@gmail.com',
   whatsapp: '+919641145871',
+  supportPhone: '+919641145871',
   currency: 'INR',
   currencySymbol: '₹',
   standardShippingFee: 99,

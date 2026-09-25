@@ -42,8 +42,21 @@ export function getDiscountPercentage(original: number, discounted: number): num
   return Math.round(((original - discounted) / original) * 100);
 }
 
-export function buildWhatsAppLink(message: string, customPhone?: string): string {
-  const phone = (customPhone || APP_CONFIG.whatsapp).replace(/[^0-9]/g, '');
-  const encoded = encodeURIComponent(message);
-  return `https://wa.me/${phone}?text=${encoded}`;
+export function buildWhatsAppLink(messageOrPhone: string, customPhoneOrMessage?: string): string {
+  let message = messageOrPhone;
+  let phone = APP_CONFIG.whatsapp;
+
+  if (customPhoneOrMessage) {
+    if (messageOrPhone.startsWith('+') || /^\d{10,}$/.test(messageOrPhone.replace(/[\s+-]/g, ''))) {
+      phone = messageOrPhone;
+      message = customPhoneOrMessage;
+    } else {
+      message = messageOrPhone;
+      phone = customPhoneOrMessage;
+    }
+  }
+
+  const cleanPhone = (phone || APP_CONFIG.whatsapp).replace(/[^0-9]/g, '');
+  const encoded = encodeURIComponent(message || '');
+  return `https://wa.me/${cleanPhone}?text=${encoded}`;
 }

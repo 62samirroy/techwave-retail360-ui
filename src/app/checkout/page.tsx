@@ -33,6 +33,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('custom');
 
   // Payment Method Selection
   const [paymentMethod, setPaymentMethod] = useState<'RAZORPAY' | 'COD'>('RAZORPAY');
@@ -49,13 +51,14 @@ export default function CheckoutPage() {
     country: 'India',
   });
 
-  // Pre-fill user details if logged in
+  // Pre-fill user details and saved addresses if logged in
   useEffect(() => {
     async function initCheckout() {
       try {
-        const [cartRes, meRes] = await Promise.all([
+        const [cartRes, meRes, addrRes] = await Promise.all([
           api.getCart(),
           api.getMe(),
+          api.getAddresses(),
         ]);
 
         if (cartRes.success && cartRes.data) {
@@ -74,6 +77,24 @@ export default function CheckoutPage() {
             customerEmail: u.email || '',
             customerPhone: u.phone || '',
           }));
+        }
+
+        if (addrRes.success && addrRes.data && addrRes.data.length > 0) {
+          setSavedAddresses(addrRes.data);
+          const defaultAddr = addrRes.data.find((a: any) => a.isDefault) || addrRes.data[0];
+          if (defaultAddr) {
+            setSelectedAddressId(defaultAddr.id);
+            setFormData((prev) => ({
+              ...prev,
+              customerName: defaultAddr.name || prev.customerName,
+              customerPhone: defaultAddr.phone || prev.customerPhone,
+              shippingAddress: defaultAddr.streetAddress,
+              city: defaultAddr.city,
+              state: defaultAddr.state,
+              pinCode: defaultAddr.pinCode,
+              country: defaultAddr.country || 'India',
+            }));
+          }
         }
       } catch (err) {
         console.error('Checkout init error:', err);
@@ -337,12 +358,68 @@ export default function CheckoutPage() {
 
           {/* Delivery Address */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-100 pb-3 flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px]">
-                2
-              </span>
-              <span>Delivery Address</span>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-100 pb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px]">
+                  2
+                </span>
+                <span>Delivery Address</span>
+              </div>
+              {savedAddresses.length > 0 && (
+                <span className="text-[11px] text-stone-500 font-normal">
+                  {savedAddresses.length} Saved {savedAddresses.length === 1 ? 'Address' : 'Addresses'}
+                </span>
+              )}
             </h2>
+
+            {/* Saved Addresses Selector Cards */}
+            {savedAddresses.length > 0 && (
+              <div className="space-y-2">
+                <label className="block text-xs font-medium text-stone-700">
+                  Select from your saved addresses:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {savedAddresses.map((addr) => {
+                    const isSelected = selectedAddressId === addr.id;
+                    return (
+                      <div
+                        key={addr.id}
+                        onClick={() => {
+                          setSelectedAddressId(addr.id);
+                          setFormData((prev) => ({
+                            ...prev,
+                            customerName: addr.name || prev.customerName,
+                            customerPhone: addr.phone || prev.customerPhone,
+                            shippingAddress: addr.streetAddress,
+                            city: addr.city,
+                            state: addr.state,
+                            pinCode: addr.pinCode,
+                            country: addr.country || 'India',
+                          }));
+                        }}
+                        className={`cursor-pointer rounded-xl border p-3 text-xs space-y-1 transition-all ${
+                          isSelected
+                            ? 'border-purple-600 bg-purple-50/40 ring-1 ring-purple-600/30'
+                            : 'border-stone-200 bg-white hover:bg-stone-50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-stone-900">{addr.name}</span>
+                          {addr.isDefault && (
+                            <span className="rounded bg-stone-100 text-stone-700 text-[9px] font-bold px-1.5 py-0.2">
+                              DEFAULT
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-stone-600 line-clamp-2">{addr.streetAddress}, {addr.city}</p>
+                        <p className="text-stone-400 font-mono text-[10px]">{addr.pinCode} • {addr.phone}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <Input
               label="Street Address / Flat No."
               name="shippingAddress"

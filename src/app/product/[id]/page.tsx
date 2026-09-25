@@ -45,6 +45,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [eligibility, setEligibility] = useState<{
+    isLoggedIn: boolean;
+    hasPurchased: boolean;
+    canReview: boolean;
+    existingReview?: any;
+    message?: string;
+  } | null>(null);
 
   useEffect(() => {
     async function loadProduct() {
@@ -57,6 +65,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           if (res.data.reviews) {
             setReviews(res.data.reviews);
           }
+
+          // Check if current user has purchased this product
+          try {
+            const eligRes = await api.checkReviewEligibility(res.data.id);
+            if (eligRes.success && eligRes.data) {
+              setEligibility(eligRes.data);
+              if (eligRes.data.existingReview) {
+                setNewRating(eligRes.data.existingReview.rating);
+                setReviewComment(eligRes.data.existingReview.comment);
+                setReviewerName(eligRes.data.existingReview.userName || '');
+              }
+            }
+          } catch (e) {}
         }
       } catch (err) {
         console.error('Failed to load product:', err);
@@ -136,6 +157,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     if (!reviewComment.trim()) return;
 
     setSubmittingReview(true);
+    setReviewError('');
     try {
       const res = await api.submitReview({
         productId: product.id,
@@ -145,13 +167,17 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       });
 
       if (res.success && res.data) {
-        setReviews([res.data, ...reviews]);
-        setReviewComment('');
+        setReviews((prev) => {
+          const filtered = prev.filter((r) => r.id !== res.data.id && r.userId !== res.data.userId);
+          return [res.data, ...filtered];
+        });
         setReviewSuccess(true);
-        setTimeout(() => setReviewSuccess(false), 3000);
+        setTimeout(() => setReviewSuccess(false), 4000);
+      } else {
+        setReviewError(res.message || 'Failed to submit review.');
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      setReviewError(e.message || 'Error submitting review.');
     } finally {
       setSubmittingReview(false);
     }
@@ -503,60 +529,84 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         {/* Write a Review Form */}
         <div className="pt-5 border-t border-[#F0EBE3]">
           <h3 className="text-xs font-bold text-[#211B26] uppercase tracking-wider mb-3">
-            Write a Review
+            {eligibility?.existingReview ? 'Update Your Review' : 'Write a Verified Review'}
           </h3>
-          <form onSubmit={handleReviewSubmit} className="space-y-3 max-w-lg">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-stone-700">Rating:</span>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setNewRating(star)}
-                    className="p-0.5 text-amber-500 focus:outline-hidden"
-                  >
-                    <Star className={`w-4 h-4 ${star <= newRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'}`} />
-                  </button>
-                ))}
+
+          {!eligibility?.isLoggedIn ? (
+            <div className="rounded-xl border border-stone-200 bg-[#FAF8F5] p-4 text-xs text-stone-600 space-y-2">
+              <p>Only verified customers who have purchased this saree can submit a rating and review.</p>
+              <Link href={`/login?redirect=/product/${id}`}>
+                <Button variant="secondary" size="xs" className="mt-1">
+                  Sign In to Review
+                </Button>
+              </Link>
+            </div>
+          ) : !eligibility.hasPurchased ? (
+            <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 text-xs text-stone-500">
+              <p>
+                🔒 <strong>Verified Purchase Required:</strong> You have not completed an order containing this saree under this account yet. Only verified purchasers may leave public reviews.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleReviewSubmit} className="space-y-3 max-w-lg">
+              {reviewError && (
+                <div className="rounded-lg border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-800">
+                  {reviewError}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-stone-700">Rating:</span>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setNewRating(star)}
+                      className="p-0.5 text-amber-500 focus:outline-hidden"
+                    >
+                      <Star className={`w-4 h-4 ${star <= newRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'}`} />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">Your Name</label>
-              <input
-                type="text"
-                value={reviewerName}
-                onChange={(e) => setReviewerName(e.target.value)}
-                placeholder="e.g. Shalini Roy"
-                className="w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-[#211B26] focus:border-[#211B26] focus:outline-hidden"
-              />
-            </div>
+              <div>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Your Name</label>
+                <input
+                  type="text"
+                  value={reviewerName}
+                  onChange={(e) => setReviewerName(e.target.value)}
+                  placeholder="e.g. Shalini Roy"
+                  className="w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-[#211B26] focus:border-[#211B26] focus:outline-hidden"
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-medium text-stone-700 mb-1">Your Review</label>
-              <textarea
-                required
-                rows={3}
-                value={reviewComment}
-                onChange={(e) => setReviewComment(e.target.value)}
-                placeholder="Share your experience about the zari shine, fabric softness, and delivery..."
-                className="w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-[#211B26] focus:border-[#211B26] focus:outline-hidden"
-              />
-            </div>
+              <div>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Your Review</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Share your experience about the zari shine, fabric softness, drape weight, and delivery..."
+                  className="w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-[#211B26] focus:border-[#211B26] focus:outline-hidden"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={submittingReview}
-              className="inline-flex items-center justify-center rounded-full bg-[#211B26] hover:bg-[#342b3d] text-white px-5 py-2 text-xs font-medium transition-all shadow-xs disabled:opacity-50"
-            >
-              {submittingReview ? 'Submitting...' : 'Submit Review'}
-            </button>
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="inline-flex items-center justify-center rounded-full bg-[#211B26] hover:bg-[#342b3d] text-white px-5 py-2 text-xs font-medium transition-all shadow-xs disabled:opacity-50"
+              >
+                {submittingReview ? 'Submitting...' : eligibility?.existingReview ? 'Update Review' : 'Submit Verified Review'}
+              </button>
 
-            {reviewSuccess && (
-              <p className="text-xs text-emerald-700 font-medium">Thank you! Your review has been added.</p>
-            )}
-          </form>
+              {reviewSuccess && (
+                <p className="text-xs text-emerald-700 font-medium">Thank you! Your verified review has been recorded.</p>
+              )}
+            </form>
+          )}
         </div>
       </div>
     </div>

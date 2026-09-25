@@ -40,11 +40,15 @@ export default function AdminAIAssistantPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const promptSuggestions = [
-    'Generate an executive sales and inventory summary',
-    'Which saree weaves are running dangerously low on stock?',
-    'Draft a WhatsApp promotional broadcast for the Diwali bridal collection',
-    'Recommend pricing or discount strategy for slow-moving inventory',
-    'Write a luxury product description for Pure Kanchipuram Gold Zari Silk',
+    "What are today's sales?",
+    "What is this month's revenue?",
+    "How many orders are pending?",
+    "Which products are best sellers?",
+    "Which products are low in stock?",
+    "Which category is selling the most?",
+    "How many customers ordered today?",
+    "What are the recent orders?",
+    "Which products are out of stock?",
   ];
 
   useEffect(() => {

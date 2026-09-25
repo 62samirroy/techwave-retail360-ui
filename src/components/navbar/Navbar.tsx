@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   LogOut,
   ChevronDown,
+  Bell,
+  Heart,
 } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -27,17 +29,26 @@ export function Navbar() {
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
 
   const refreshUserData = async () => {
     try {
       const res = await api.getMe();
       if (res.success && res.data?.user) {
         setUser(res.data.user);
+        try {
+          const notifRes = await api.getNotifications();
+          if (notifRes.success && notifRes.data) {
+            setUnreadNotifs(notifRes.data.unreadCount || 0);
+          }
+        } catch (e) {}
       } else {
         setUser(null);
+        setUnreadNotifs(0);
       }
     } catch (e) {
       setUser(null);
+      setUnreadNotifs(0);
     }
   };
 
@@ -161,6 +172,22 @@ export function Navbar() {
                 )}
               </Link>
 
+              {user && (
+                <Link
+                  href="/dashboard?tab=settings"
+                  aria-label="Notifications"
+                  className="relative rounded-full p-2 text-brand-700 hover:bg-brand-100 transition-colors"
+                  title="Notifications"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadNotifs > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white shadow-sm">
+                      {unreadNotifs}
+                    </span>
+                  )}
+                </Link>
+              )}
+
               {user ? (
                 <div className="relative group">
                   <button className="flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-800 hover:bg-brand-100 transition-colors">
@@ -186,11 +213,27 @@ export function Navbar() {
                     )}
 
                     <Link
-                      href="/account"
-                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50"
+                      href="/dashboard"
+                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50 font-medium"
                     >
                       <UserIcon className="w-3.5 h-3.5" />
-                      My Orders & Profile
+                      Customer Dashboard
+                    </Link>
+
+                    <Link
+                      href="/dashboard?tab=orders"
+                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      My Orders
+                    </Link>
+
+                    <Link
+                      href="/dashboard?tab=wishlist"
+                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50"
+                    >
+                      <Heart className="w-3.5 h-3.5" />
+                      Saved Wishlist
                     </Link>
 
                     <button
@@ -259,6 +302,48 @@ export function Navbar() {
               >
                 ★ Admin Control Center
               </Link>
+            )}
+
+            {user ? (
+              <div className="pt-2 border-t border-stone-100 space-y-1">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-1.5 text-xs font-semibold text-brand-900 rounded px-2"
+                >
+                  Customer Dashboard
+                </Link>
+                <Link
+                  href="/dashboard?tab=orders"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-1.5 text-xs text-stone-600 rounded px-2"
+                >
+                  My Orders ({user.name})
+                </Link>
+                <Link
+                  href="/dashboard?tab=wishlist"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-1.5 text-xs text-stone-600 rounded px-2"
+                >
+                  Saved Wishlist
+                </Link>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                  className="block w-full text-left py-1.5 text-xs text-rose-600 rounded px-2"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-stone-100">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-1.5 text-xs font-semibold text-brand-900 rounded px-2"
+                >
+                  Sign In / Register
+                </Link>
+              </div>
             )}
           </div>
         )}

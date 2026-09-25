@@ -6,6 +6,8 @@ export interface UserSession {
   name: string;
   role: Role;
   phone?: string | null;
+  avatarUrl?: string | null;
+  bio?: string | null;
 }
 
 export interface ApiResponse<T = any> {
@@ -13,6 +15,7 @@ export interface ApiResponse<T = any> {
   message?: string;
   data?: T;
   error?: string;
+  demoOtp?: string;
 }
 
 export interface ProductAttributeData {
@@ -211,4 +214,30 @@ export interface AnalyticsSummary {
     status: string;
     count: number;
   }[];
+}
+
+export interface AddressData {
+  id: string;
+  userId: string;
+  name: string;
+  phone: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  pinCode: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface NotificationData {
+  id: string;
+  userId?: string | null;
+  title: string;
+  message: string;
+  type: 'ORDER' | 'PAYMENT' | 'INVENTORY' | 'SYSTEM';
+  isRead: boolean;
+  link?: string | null;
+  createdAt: string | Date;
 }

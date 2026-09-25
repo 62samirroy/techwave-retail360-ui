@@ -54,10 +54,10 @@ export function CustomerAIChatModal() {
   }, [messages, isOpen]);
 
   const starterPrompts = [
-    'Red bridal sarees under ₹15,000',
-    'Where is my order TW-ORD-10021?',
-    'What is your return & exchange policy?',
-    'Show me lightweight Organza sarees',
+    'Where is my order?',
+    'Show me red sarees under ₹3000',
+    'Is Kanjivaram in stock?',
+    'What is your return & refund policy?',
   ];
 
   const handleSend = async (textToSend?: string) => {
@@ -190,7 +190,7 @@ export function CustomerAIChatModal() {
                         >
                           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-brand-200">
                             <Image
-                              src={prod.image}
+                              src={prod.image || 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=300'}
                               alt={prod.name}
                               fill
                               className="object-cover"

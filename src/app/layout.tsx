@@ -50,6 +50,8 @@ export default function RootLayout({
         />
         {/* Razorpay Checkout SDK Script */}
         <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+        {/* Google Identity Services SDK Script */}
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
       </head>
       <body className="min-h-screen bg-[#FAF8F5] text-stone-900 font-sans antialiased">
         <AppLayoutWrapper>{children}</AppLayoutWrapper>

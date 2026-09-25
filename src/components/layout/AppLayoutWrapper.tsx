@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Footer } from '@/components/footer/Footer';
 import { CustomerAIChatModal } from '@/components/ai/CustomerAIChatModal';
+import { WhatsAppFloatingButton } from '@/components/layout/WhatsAppFloatingButton';
 
 export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <WhatsAppFloatingButton />
       <CustomerAIChatModal />
     </div>
   );

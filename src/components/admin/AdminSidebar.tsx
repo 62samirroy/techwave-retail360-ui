@@ -16,6 +16,7 @@ import {
   Settings,
   ArrowLeft,
   Crown,
+  Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ export function AdminSidebar() {
     { label: 'Inventory & Alerts', href: '/admin/inventory', icon: Warehouse },
     { label: 'Orders & Shipments', href: '/admin/orders', icon: ShoppingBag },
     { label: 'Customers', href: '/admin/customers', icon: Users },
+    { label: 'Reviews', href: '/admin/reviews', icon: Star },
     { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
     { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { label: 'AI Business Stylist', href: '/admin/ai-assistant', icon: Sparkles, highlight: true },
