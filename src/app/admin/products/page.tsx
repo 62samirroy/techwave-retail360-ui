@@ -27,6 +27,7 @@ import { Modal } from '@/components/ui/Modal';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { LoadingSpinner } from '@/components/ui/LoadingState';
 import { Pagination } from '@/components/ui/Pagination';
+import { ImageUploadDropzone, UploadedImageItem } from '@/components/admin/ImageUploadDropzone';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductData[]>([]);
@@ -50,7 +51,24 @@ export default function AdminProductsPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   // Form Fields
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    slug: string;
+    description: string;
+    shortDescription: string;
+    categoryId: string;
+    price: string;
+    discountPrice: string;
+    sku: string;
+    stock: string;
+    lowStockThreshold: string;
+    status: string;
+    isFeatured: boolean;
+    isBestseller: boolean;
+    imageUrl: string;
+    images: UploadedImageItem[];
+    tags: string;
+  }>({
     name: '',
     slug: '',
     description: '',
@@ -65,6 +83,7 @@ export default function AdminProductsPage() {
     isFeatured: false,
     isBestseller: false,
     imageUrl: '',
+    images: [],
     tags: '',
   });
 
@@ -191,6 +210,7 @@ export default function AdminProductsPage() {
   const handleOpenCreate = () => {
     setModalMode('create');
     setSelectedProduct(null);
+    const sampleImg = 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=800';
     setFormData({
       name: '',
       slug: '',
@@ -205,7 +225,8 @@ export default function AdminProductsPage() {
       status: 'ACTIVE',
       isFeatured: false,
       isBestseller: false,
-      imageUrl: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=800',
+      imageUrl: sampleImg,
+      images: [{ url: sampleImg, isPrimary: true }],
       tags: 'silk, wedding, pure zari',
     });
     setFormError(null);
@@ -215,6 +236,16 @@ export default function AdminProductsPage() {
   const handleOpenEdit = (product: ProductData) => {
     setModalMode('edit');
     setSelectedProduct(product);
+    const existingImages: UploadedImageItem[] =
+      product.images && product.images.length > 0
+        ? product.images.map((img, idx) => ({
+            url: img.url,
+            isPrimary: img.isPrimary ?? idx === 0,
+            altText: img.altText || `${product.name} photo`,
+          }))
+        : [];
+    const primaryImgUrl = existingImages.find((i) => i.isPrimary)?.url || existingImages[0]?.url || '';
+
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -229,7 +260,8 @@ export default function AdminProductsPage() {
       status: product.status,
       isFeatured: !!product.isFeatured,
       isBestseller: !!product.isBestseller,
-      imageUrl: product.images?.[0]?.url || '',
+      imageUrl: primaryImgUrl,
+      images: existingImages,
       tags: product.tags || '',
     });
     setFormError(null);
@@ -242,6 +274,14 @@ export default function AdminProductsPage() {
     setFormError(null);
 
     try {
+      let finalImages: UploadedImageItem[] = [...formData.images];
+      if (finalImages.length === 0 && formData.imageUrl) {
+        finalImages = [{ url: formData.imageUrl, isPrimary: true }];
+      }
+      if (finalImages.length > 0 && !finalImages.some((i) => i.isPrimary)) {
+        finalImages[0].isPrimary = true;
+      }
+
       const payload: any = {
         name: formData.name,
         slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
@@ -257,7 +297,11 @@ export default function AdminProductsPage() {
         isFeatured: formData.isFeatured,
         isBestseller: formData.isBestseller,
         tags: formData.tags,
-        images: formData.imageUrl ? [{ url: formData.imageUrl, isPrimary: true }] : [],
+        images: finalImages.map((img, idx) => ({
+          url: img.url,
+          isPrimary: Boolean(img.isPrimary),
+          sortOrder: idx,
+        })),
       };
 
       let res;
@@ -692,12 +736,18 @@ export default function AdminProductsPage() {
             />
           </div>
 
-          <Input
-            label="Primary High-Res Saree Photo URL"
-            value={formData.imageUrl}
-            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            placeholder="https://images.pexels.com/..."
-            helperText="Pexels or Unsplash high-resolution photography URL"
+          <ImageUploadDropzone
+            label="Saree Photography Gallery & Attachments"
+            helperText="Upload photos from device, drag & drop files, or paste direct URLs. Star (★) sets the primary catalog photo."
+            multiple
+            images={formData.images}
+            onImagesChange={(imgs) =>
+              setFormData((prev) => ({
+                ...prev,
+                images: imgs,
+                imageUrl: imgs.find((i) => i.isPrimary)?.url || imgs[0]?.url || '',
+              }))
+            }
           />
 
           <Input

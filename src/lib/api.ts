@@ -268,4 +268,14 @@ export const api = {
   getSettings: () => fetcher<any>('/settings'),
   updateSettings: (data: any) =>
     fetcher<any>('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Media / File Upload
+  uploadImage: (file: string, filename?: string, contentType?: string) =>
+    fetcher<{ url: string; fallbackUrl?: string; filename: string; size: number; storage: string }>(
+      '/upload',
+      {
+        method: 'POST',
+        body: JSON.stringify({ file, filename, contentType }),
+      }
+    ),
 };

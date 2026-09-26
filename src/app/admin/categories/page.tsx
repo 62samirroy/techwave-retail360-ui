@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { LoadingSpinner } from '@/components/ui/LoadingState';
+import { ImageUploadDropzone } from '@/components/admin/ImageUploadDropzone';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -341,11 +342,12 @@ export default function AdminCategoriesPage() {
           </div>
 
           <div>
-            <Input
-              label="Cover Image URL"
+            <ImageUploadDropzone
+              label="Category Cover & Banner Photo"
+              helperText="Upload a high-res cover image via drag-and-drop, device file, or direct URL."
+              multiple={false}
               value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://images.unsplash.com/..."
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
             />
           </div>
 

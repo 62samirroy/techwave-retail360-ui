@@ -35,7 +35,7 @@ import {
 import { ProductCard } from '@/components/shop/ProductCard';
 import { ProductCardSkeleton } from '@/components/ui/LoadingState';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { AlponaDesign } from '@/components/ui/AlponaDesign';
+import { RoyalArchCard } from '@/components/shop/RoyalArchCard';
 import { api } from '@/lib/api';
 import { ProductData, CategoryData } from '@/types';
 import { APP_CONFIG } from '@/lib/constants';
@@ -70,6 +70,9 @@ export default function HomePage() {
     videoRef.current.muted = !videoRef.current.muted;
     setIsVideoMuted(videoRef.current.muted);
   };
+
+  // Fabric & Weave Carousel Pagination State (Matching screenshot 3 dots)
+  const [fabricPageIndex, setFabricPageIndex] = useState(0);
 
   // New Arrivals filter tab state
   const [arrivalTab, setArrivalTab] = useState<'all' | 'bridal' | 'festive' | 'lightweight'>('all');
@@ -163,52 +166,65 @@ export default function HomePage() {
   const [arrivalsPaused, setArrivalsPaused] = useState(false);
   const [kanjiPaused, setKanjiPaused] = useState(false);
 
-  // Auto-scroll New Arrivals slider (loops infinitely)
+  // Scroll helper by exact card step so cards never get cut off or half-visible
+  const scrollCarouselStep = (
+    ref: React.RefObject<HTMLDivElement | null>,
+    direction: 'left' | 'right'
+  ) => {
+    if (!ref.current) return;
+    const container = ref.current;
+    const firstCard = container.querySelector('[data-card-item]') as HTMLElement;
+    const step = firstCard ? firstCard.getBoundingClientRect().width + 16 : 280;
+    const currentScroll = container.scrollLeft;
+    const target = direction === 'left'
+      ? Math.max(0, currentScroll - step)
+      : currentScroll + step;
+    container.scrollTo({ left: target, behavior: 'smooth' });
+  };
+
+  // Auto-scroll New Arrivals slider (loops infinitely by clean card steps)
   useEffect(() => {
     if (arrivalsPaused || loading) return;
     const interval = setInterval(() => {
       if (arrivalScrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = arrivalScrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 20) {
-          arrivalScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        const el = arrivalScrollRef.current;
+        const { scrollLeft, scrollWidth, clientWidth } = el;
+        const firstCard = el.querySelector('[data-card-item]') as HTMLElement;
+        const step = firstCard ? firstCard.getBoundingClientRect().width + 16 : 280;
+        if (scrollLeft + clientWidth >= scrollWidth - 15) {
+          el.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          arrivalScrollRef.current.scrollBy({ left: 280, behavior: 'smooth' });
+          el.scrollTo({ left: scrollLeft + step, behavior: 'smooth' });
         }
       }
-    }, 3500);
+    }, 4000);
     return () => clearInterval(interval);
   }, [arrivalsPaused, loading]);
 
-  // Auto-scroll Kanchipuram slider (loops infinitely)
+  // Auto-scroll Kanchipuram slider (loops infinitely by clean card steps)
   useEffect(() => {
     if (kanjiPaused || loading) return;
     const interval = setInterval(() => {
       if (kanjiScrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = kanjiScrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 20) {
-          kanjiScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        const el = kanjiScrollRef.current;
+        const { scrollLeft, scrollWidth, clientWidth } = el;
+        const firstCard = el.querySelector('[data-card-item]') as HTMLElement;
+        const step = firstCard ? firstCard.getBoundingClientRect().width + 16 : 280;
+        if (scrollLeft + clientWidth >= scrollWidth - 15) {
+          el.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          kanjiScrollRef.current.scrollBy({ left: 280, behavior: 'smooth' });
+          el.scrollTo({ left: scrollLeft + step, behavior: 'smooth' });
         }
       }
-    }, 4200);
+    }, 4500);
     return () => clearInterval(interval);
   }, [kanjiPaused, loading]);
 
   // Scroll New Arrivals carousel manually
-  const scrollArrivals = (direction: 'left' | 'right') => {
-    if (arrivalScrollRef.current) {
-      const scrollAmount = direction === 'left' ? -380 : 380;
-      arrivalScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const scrollArrivals = (direction: 'left' | 'right') => scrollCarouselStep(arrivalScrollRef, direction);
 
-  const scrollKanji = (direction: 'left' | 'right') => {
-    if (kanjiScrollRef.current) {
-      const scrollAmount = direction === 'left' ? -340 : 340;
-      kanjiScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  // Scroll Kanchipuram carousel manually
+  const scrollKanji = (direction: 'left' | 'right') => scrollCarouselStep(kanjiScrollRef, direction);
 
   // Filtered Products for Today's New Arrivals
   const filteredNewArrivals = allProducts.filter((p) => {
@@ -455,37 +471,46 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column: Carousel of Folded Saree Cards with floating Right Arrow */}
+          {/* Right Column: Carousel of Folded Saree Cards with Left & Right Arrows & Clean Snap */}
           <div
-            className="lg:col-span-9 relative flex flex-col justify-center"
+            className="lg:col-span-9 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1"
             onMouseEnter={() => setArrivalsPaused(true)}
             onMouseLeave={() => setArrivalsPaused(false)}
           >
-            {/* Scroll Container */}
+            {/* Scroll Container with mandatory snap-x so cards never get stranded half-cut */}
             <div
               ref={arrivalScrollRef}
-              className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1"
+              className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 snap-x snap-mandatory"
             >
               {loading ? (
                 [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0">
+                  <div key={i} data-card-item className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0 snap-start">
                     <ProductCardSkeleton />
                   </div>
                 ))
               ) : (
                 filteredNewArrivals.slice(0, 10).map((product) => (
-                  <div key={product.id} className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0">
+                  <div key={product.id} data-card-item className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0 snap-start">
                     <ProductCard product={product} />
                   </div>
                 ))
               )}
             </div>
 
-            {/* Floating Right Arrow Circle Button overlapping card edge matching screenshot */}
+            {/* Left Navigation Arrow */}
+            <button
+              onClick={() => scrollArrivals('left')}
+              aria-label="Scroll previous sarees"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/95 text-stone-800 shadow-xl border border-stone-200/90 hover:bg-[#540924] hover:text-white transition-all hover:scale-105 cursor-pointer backdrop-blur-xs"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Right Navigation Arrow */}
             <button
               onClick={() => scrollArrivals('right')}
               aria-label="Scroll next sarees"
-              className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-stone-800 shadow-xl border border-stone-200 hover:bg-[#540924] hover:text-white transition-all hover:scale-105"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/95 text-stone-800 shadow-xl border border-stone-200/90 hover:bg-[#540924] hover:text-white transition-all hover:scale-105 cursor-pointer backdrop-blur-xs"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -494,12 +519,53 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. PURE KANCHIPURAM SILKS (Ornate Gold Frame matching Screenshot) */}
+      {/* 3. PURE KANCHIPURAM SILKS (Light Golden Silk Background & Ornate Border Design) */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="rounded-3xl border-2 border-[#d4af37]/60 bg-white p-6 sm:p-10 shadow-xs relative overflow-hidden">
-          {/* Subtle Top Filigree Line */}
-          <div className="w-24 h-0.5 bg-[#d4af37] mx-auto mb-4" />
+        <div className="rounded-3xl border-2 border-[#d4af37]/80 bg-gradient-to-b from-[#fffdf5] via-[#fef9e8] to-[#fffdf5] p-6 sm:p-10 shadow-sm relative overflow-hidden">
+          
+          {/* Ornate Gold Inset Border Line */}
+          <div className="pointer-events-none absolute inset-2.5 sm:inset-3.5 rounded-2xl border border-[#d4af37]/45" />
+
+          {/* Traditional Indian Gold Filigree Corner Brackets (All 4 Corners) */}
+          {/* Top-Left */}
+          <svg className="pointer-events-none absolute top-4 left-4 w-7 h-7 text-[#d4af37]" viewBox="0 0 40 40" fill="none">
+            <path d="M 4 22 L 4 4 L 22 4" stroke="currentColor" strokeWidth="2.5" />
+            <path d="M 8 18 L 8 8 L 18 8" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+            <circle cx="4" cy="4" r="2.5" fill="currentColor" />
+            <path d="M 12 12 Q 17 12 17 17 Q 12 17 12 12 Z" fill="currentColor" opacity="0.6" />
+          </svg>
+
+          {/* Top-Right */}
+          <svg className="pointer-events-none absolute top-4 right-4 w-7 h-7 text-[#d4af37]" viewBox="0 0 40 40" fill="none">
+            <path d="M 36 22 L 36 4 L 18 4" stroke="currentColor" strokeWidth="2.5" />
+            <path d="M 32 18 L 32 8 L 22 8" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+            <circle cx="36" cy="4" r="2.5" fill="currentColor" />
+            <path d="M 28 12 Q 23 12 23 17 Q 28 17 28 12 Z" fill="currentColor" opacity="0.6" />
+          </svg>
+
+          {/* Bottom-Left */}
+          <svg className="pointer-events-none absolute bottom-4 left-4 w-7 h-7 text-[#d4af37]" viewBox="0 0 40 40" fill="none">
+            <path d="M 4 18 L 4 36 L 22 36" stroke="currentColor" strokeWidth="2.5" />
+            <path d="M 8 22 L 8 32 L 18 32" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+            <circle cx="4" cy="36" r="2.5" fill="currentColor" />
+            <path d="M 12 28 Q 17 28 17 23 Q 12 23 12 28 Z" fill="currentColor" opacity="0.6" />
+          </svg>
+
+          {/* Bottom-Right */}
+          <svg className="pointer-events-none absolute bottom-4 right-4 w-7 h-7 text-[#d4af37]" viewBox="0 0 40 40" fill="none">
+            <path d="M 36 18 L 36 36 L 18 36" stroke="currentColor" strokeWidth="2.5" />
+            <path d="M 32 22 L 32 32 L 22 32" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+            <circle cx="36" cy="36" r="2.5" fill="currentColor" />
+            <path d="M 28 28 Q 23 28 23 23 Q 28 23 28 28 Z" fill="currentColor" opacity="0.6" />
+          </svg>
+
+          {/* Central Ornate Gold Crest Accent */}
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="h-[1px] w-14 bg-gradient-to-r from-transparent to-[#d4af37]" />
+            <span className="text-[#b48325] text-xs">✦ ❖ ✦</span>
+            <span className="h-[1px] w-14 bg-gradient-to-l from-transparent to-[#d4af37]" />
+          </div>
 
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
@@ -529,8 +595,8 @@ export default function HomePage() {
                   className={cn(
                     'rounded-full px-4 py-1 text-xs font-semibold border transition-all',
                     kanjiTab === tab.id
-                      ? 'border-[#540924] bg-[#540924] text-white'
-                      : 'border-stone-300 bg-white text-stone-700 hover:border-[#540924]'
+                      ? 'border-[#540924] bg-[#540924] text-white shadow-xs'
+                      : 'border-[#d4af37]/60 bg-white/80 text-stone-700 hover:border-[#540924]'
                   )}
                 >
                   {tab.label}
@@ -539,7 +605,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Split Content: Lookbook Visual Card Left + 3 Folded Saree Cards Right */}
+          {/* Split Content: Lookbook Visual Card Left + Saree Slider Right */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch relative">
             {/* Story Lookbook Left matching screenshot bride's hand on red silk */}
             <div className="lg:col-span-4 rounded-2xl overflow-hidden relative min-h-[380px] shadow-sm border border-stone-200 group">
@@ -564,36 +630,45 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Products Horizontal Slider Right with auto-scroll & skeletons */}
+            {/* Products Horizontal Slider Right with auto-scroll, snap, and Left/Right buttons */}
             <div
-              className="lg:col-span-8 relative flex flex-col justify-center"
+              className="lg:col-span-8 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1"
               onMouseEnter={() => setKanjiPaused(true)}
               onMouseLeave={() => setKanjiPaused(false)}
             >
               <div
                 ref={kanjiScrollRef}
-                className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 h-full"
+                className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 h-full snap-x snap-mandatory"
               >
                 {loading ? (
                   [1, 2, 3].map((i) => (
-                    <div key={i} className="min-w-[240px] sm:min-w-[260px] shrink-0">
+                    <div key={i} data-card-item className="min-w-[240px] sm:min-w-[260px] shrink-0 snap-start">
                       <ProductCardSkeleton />
                     </div>
                   ))
                 ) : (
                   kanchipuramProducts.slice(0, 8).map((product) => (
-                    <div key={product.id} className="min-w-[240px] sm:min-w-[260px] shrink-0">
+                    <div key={product.id} data-card-item className="min-w-[240px] sm:min-w-[260px] shrink-0 snap-start">
                       <ProductCard product={product} />
                     </div>
                   ))
                 )}
               </div>
 
-              {/* Floating Right Arrow */}
+              {/* Left Navigation Arrow */}
+              <button
+                onClick={() => scrollKanji('left')}
+                aria-label="Scroll previous sarees"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/95 text-stone-800 shadow-xl border border-stone-200/90 hover:bg-[#540924] hover:text-white transition-all hover:scale-105 cursor-pointer backdrop-blur-xs"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              {/* Right Navigation Arrow */}
               <button
                 onClick={() => scrollKanji('right')}
-                aria-label="Scroll next"
-                className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-stone-800 shadow-xl border border-stone-200 hover:bg-[#540924] hover:text-white transition-all hover:scale-105"
+                aria-label="Scroll next sarees"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/95 text-stone-800 shadow-xl border border-stone-200/90 hover:bg-[#540924] hover:text-white transition-all hover:scale-105 cursor-pointer backdrop-blur-xs"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -603,71 +678,145 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. SHOP BY FABRIC & WEAVE - ROW 1 (6 Square Tiles from Screenshot) */}
+      {/* 4. SHOP BY FABRIC & WEAVE - ROYAL JHAROKHA ARCH CARDS (User Provided Design) */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center max-w-xl mx-auto mb-6 space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
+        <div className="text-center max-w-xl mx-auto mb-8 space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 text-[#7a0a24] px-3.5 py-0.5 text-[11px] font-bold uppercase tracking-widest border border-rose-200/80">
+            <Sparkles className="w-3 h-3 text-[#d4af37]" />
+            <span>Master Artisan Collections</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#540924]">
             Shop by Fabric &amp; Weave
           </h2>
-          <p className="text-xs text-stone-500">
-            Curated weaves for every celebration and personal style
+          <p className="text-xs sm:text-sm text-stone-500 font-light">
+            Timeless regional masterpieces crafted inside generational Indian weaving clusters
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {[
-            {
-              name: 'Pure Kanchipuram',
-              href: '/categories/kanjivaram-silk',
-              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              name: 'Banarasi Silk',
-              href: '/categories/banarasi-brocade',
-              image: 'https://images.pexels.com/photos/3321793/pexels-photo-3321793.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              name: 'Chanderi Silk',
-              href: '/categories/chanderi-linen',
-              image: 'https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              name: 'Tussar Silk',
-              href: '/shop?search=tussar',
-              image: 'https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              name: 'Soft Silk Sarees',
-              href: '/shop?search=soft+silk',
-              image: 'https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              name: 'Organza Silks',
-              href: '/categories/organza-floral',
-              image: 'https://images.pexels.com/photos/30249383/pexels-photo-30249383.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-          ].map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="group flex flex-col items-center text-center p-2.5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-[#540924] hover:shadow-[0_12px_28px_rgba(84,9,36,0.12)] transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-2.5 bg-stone-100 border border-stone-200/70 shadow-2xs">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover group-hover:scale-108 transition-transform duration-500"
-                />
+        {/* Dynamic Card Display (3 Pages of 4 Royal Arch Cards matching reference screenshot) */}
+        {(() => {
+          const fabricCardPages = [
+            // Page 1: Exact matches to user screenshot
+            [
+              {
+                title: 'Bandhani Sarees',
+                href: '/categories/bandhani-leheriya',
+                image: '/images/products/saree-bandhani-gharchola.jpg',
+                badge: 'Royal Jaal',
+              },
+              {
+                title: 'Leheriya Sarees',
+                href: '/shop?fabric=leheriya',
+                image: '/images/products/saree-rose-tanchoi.jpg',
+                badge: 'Wave Dye',
+              },
+              {
+                title: 'Gota Patti Sarees',
+                href: '/shop?fabric=gota-patti',
+                image: '/images/products/saree-crimson-royal.jpg',
+                badge: 'Zari Zardozi',
+              },
+              {
+                title: 'Zari Work Sarees',
+                href: '/shop?fabric=zari-work',
+                image: '/images/products/saree-navy-kadwa.jpg',
+                badge: '24K Electroplate',
+              },
+            ],
+            // Page 2: Additional heritage fabrics
+            [
+              {
+                title: 'Pure Kanchipuram',
+                href: '/categories/kanjivaram-silk',
+                image: '/images/products/saree-emerald-peacock.jpg',
+                badge: 'Korvai Weave',
+              },
+              {
+                title: 'Banarasi Brocade',
+                href: '/categories/banarasi-brocade',
+                image: '/hero-banner-2.jpg',
+                badge: 'Kadwa Jaal',
+              },
+              {
+                title: 'Organza Floral',
+                href: '/categories/organza-floral',
+                image: '/images/products/saree-organza-lotus.jpg',
+                badge: 'Ethereal Tissue',
+              },
+              {
+                title: 'Chanderi Weaves',
+                href: '/categories/chanderi-linen',
+                image: 'https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?auto=compress&cs=tinysrgb&w=600',
+                badge: 'Zari Booti',
+              },
+            ],
+            // Page 3: Celebrated regional masterweaves
+            [
+              {
+                title: 'Patola Heritage',
+                href: '/shop?search=patola',
+                image: 'https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=600',
+                badge: 'Double Ikat',
+              },
+              {
+                title: 'Paithani Silks',
+                href: '/shop?search=paithani',
+                image: 'https://images.pexels.com/photos/1589216/pexels-photo-1589216.jpeg?auto=compress&cs=tinysrgb&w=600',
+                badge: 'Munia Border',
+              },
+              {
+                title: 'Tussar Silk',
+                href: '/shop?search=tussar',
+                image: 'https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=600',
+                badge: 'Wild Forest',
+              },
+              {
+                title: 'Mysore Crepe',
+                href: '/shop?search=crepe',
+                image: 'https://images.pexels.com/photos/247287/pexels-photo-247287.jpeg?auto=compress&cs=tinysrgb&w=600',
+                badge: 'Pure Georgette',
+              },
+            ],
+          ];
+
+          const currentCards = fabricCardPages[fabricPageIndex] || fabricCardPages[0];
+
+          return (
+            <div className="space-y-6">
+              {/* 4 Arch Cards in a Responsive Row */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-start justify-center">
+                {currentCards.map((card) => (
+                  <RoyalArchCard
+                    key={card.title}
+                    title={card.title}
+                    image={card.image}
+                    href={card.href}
+                    badge={card.badge}
+                  />
+                ))}
               </div>
-              <h3 className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#540924] transition-colors leading-tight">
-                {item.name}
-              </h3>
-              <span className="w-4 h-0.5 bg-[#d4af37]/60 group-hover:w-8 group-hover:bg-[#540924] transition-all duration-300 mt-1.5 rounded-full" />
-            </Link>
-          ))}
-        </div>
+
+              {/* Exact 3 Pagination Dots / Pill Indicator from User Screenshot */}
+              <div className="flex items-center justify-center gap-2.5 pt-2">
+                {fabricCardPages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setFabricPageIndex(idx)}
+                    aria-label={`View slide ${idx + 1}`}
+                    title={`Collection page ${idx + 1}`}
+                    className={cn(
+                      'transition-all duration-300 rounded-full cursor-pointer',
+                      fabricPageIndex === idx
+                        ? 'w-7 h-2.5 bg-[#7a0a24] shadow-sm'
+                        : 'w-2.5 h-2.5 bg-[#7a0a24]/30 hover:bg-[#7a0a24]/60'
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </section>
 
       {/* ========================================================================= */}
@@ -829,12 +978,12 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 6.5. ROYAL HANDLOOM VIDEO SHOWCASE BANNER (Requested by User) */}
+      {/* 6.5. ROYAL HANDLOOM VIDEO SHOWCASE BANNER (Full-Bleed 100% Screen Width) */}
       {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="relative rounded-3xl overflow-hidden border border-[#d4af37]/40 shadow-2xl bg-[#1e030c] min-h-[380px] sm:min-h-[460px] flex items-center">
+      <section className="relative w-full overflow-hidden bg-[#1e030c] border-y border-[#d4af37]/50 shadow-2xl my-6">
+        <div className="relative w-full min-h-[440px] sm:min-h-[500px] lg:min-h-[540px] flex items-center">
           
-          {/* Background Video with AutoPlay, Loop, Muted */}
+          {/* Background Video with AutoPlay, Loop, Muted, PlaysInline */}
           <div className="absolute inset-0 w-full h-full overflow-hidden">
             <video
               ref={videoRef}
@@ -843,74 +992,82 @@ export default function HomePage() {
               muted
               playsInline
               poster="/hero-banner-2.jpg"
-              className="w-full h-full object-cover object-center scale-102"
+              className="w-full h-full object-cover object-center"
             >
               <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-woman-weaving-on-a-loom-42827-large.mp4"
-                type="video/mp4"
+                src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm"
+                type="video/webm"
               />
               <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-traditional-silk-fabric-being-woven-on-a-loom-42826-large.mp4"
+                src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm.480p.vp9.webm"
+                type="video/webm"
+              />
+              <source
+                src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm.360p.mpeg4.mov"
                 type="video/mp4"
               />
             </video>
           </div>
 
-          {/* Deep Royal Wine Gradient Overlay for Contrast & Elegance */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#21020b]/92 via-[#42061a]/75 to-black/45" />
+          {/* High-Visibility Localized Gradient ONLY behind left text - 100% Bright, Vivid Video Across Center & Right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent w-full sm:w-7/12 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
 
-          {/* Golden Zari Frame Inset Line */}
-          <div className="pointer-events-none absolute inset-3 rounded-2xl border border-[#d4af37]/25" />
+          {/* Golden Zari Frame Inset Accent Lines across 100% width */}
+          <div className="pointer-events-none absolute inset-x-0 top-3 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent" />
 
           {/* Video Banner Content Overlay */}
-          <div className="relative z-10 p-6 sm:p-12 md:p-16 max-w-2xl text-white space-y-4">
-            
-            {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/50 backdrop-blur-md px-3.5 py-1 text-[11px] font-bold tracking-widest uppercase text-amber-200 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>THE ROYAL WEAVE IN MOTION</span>
-            </div>
+          <div className="relative z-10 max-w-7xl mx-auto w-full px-6 sm:px-12 py-16 text-white flex flex-col justify-center">
+            <div className="max-w-2xl space-y-4">
+              
+              {/* Top Pill Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/50 backdrop-blur-md px-3.5 py-1 text-[11px] font-bold tracking-widest uppercase text-amber-200 shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>THE ROYAL WEAVE IN MOTION</span>
+              </div>
 
-            {/* Heading */}
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-white leading-tight">
-              Generations of Handloom Artistry Captured on Film
-            </h2>
+              {/* Heading */}
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-white leading-tight">
+                Generations of Handloom Artistry Captured on Film
+              </h2>
 
-            {/* Story */}
-            <p className="text-xs sm:text-sm text-stone-200 font-normal leading-relaxed">
-              Witness how our master artisans interweave pure 3-ply mulberry silk with certified 24K electroplated gold zari. Each authentic bridal drape requires over 200 hours of unhurried pit-loom rhythm.
-            </p>
+              {/* Story */}
+              <p className="text-xs sm:text-sm text-stone-200 font-normal leading-relaxed">
+                Witness authentic master artisans at the pit loom weaving pure mulberry silk and certified 24K electroplated gold zari. Each heritage saree represents over 200 hours of unhurried generational rhythm.
+              </p>
 
-            {/* CTA Buttons */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link href="/shop?featured=true">
-                <button className="rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-stone-950 font-bold px-6 py-2.5 text-xs transition-all shadow-lg hover:shadow-amber-500/30 flex items-center gap-2 transform hover:-translate-y-0.5">
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>EXPLORE BRIDAL EDIT</span>
+              {/* CTA Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Link href="/shop?featured=true">
+                  <button className="rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-stone-950 font-bold px-6 py-2.5 text-xs transition-all shadow-lg hover:shadow-amber-500/30 flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>EXPLORE BRIDAL EDIT</span>
+                  </button>
+                </Link>
+
+                <button
+                  onClick={() => {
+                    setSelectedStore('kolkata');
+                    setAppointmentType('video_call');
+                  }}
+                  className="rounded-full bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white font-semibold px-5 py-2.5 text-xs transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Video className="w-4 h-4 text-amber-300" />
+                  <span>BOOK LIVE VIDEO DRAPE</span>
                 </button>
-              </Link>
+              </div>
 
-              <button
-                onClick={() => {
-                  setSelectedStore('kolkata');
-                  setAppointmentType('video_call');
-                }}
-                className="rounded-full bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white font-semibold px-5 py-2.5 text-xs transition-all flex items-center gap-2"
-              >
-                <Video className="w-4 h-4 text-amber-300" />
-                <span>BOOK LIVE VIDEO DRAPE</span>
-              </button>
             </div>
-
           </div>
 
           {/* Floating Video Controls in Bottom Right */}
-          <div className="absolute bottom-5 right-5 z-20 flex items-center gap-2">
+          <div className="absolute bottom-6 right-6 sm:right-12 z-20 flex items-center gap-2.5">
             <button
               onClick={toggleVideoPlay}
               aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
               title={isVideoPlaying ? 'Pause Video' : 'Play Video'}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 transition-all hover:scale-105 cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 transition-all hover:scale-105 cursor-pointer"
             >
               {isVideoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5 fill-white" />}
             </button>
@@ -919,7 +1076,7 @@ export default function HomePage() {
               onClick={toggleVideoMute}
               aria-label={isVideoMuted ? 'Unmute video' : 'Mute video'}
               title={isVideoMuted ? 'Unmute Audio' : 'Mute Audio'}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 transition-all hover:scale-105 cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 transition-all hover:scale-105 cursor-pointer"
             >
               {isVideoMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -1066,10 +1223,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ========================================================================= */}
-      {/* 8.5. TRADITIONAL SACRED ALPONA (ALPANA) ARTWORK SECTION (Requested by User) */}
-      {/* ========================================================================= */}
-      <AlponaDesign />
+
 
       {/* ========================================================================= */}
       {/* 9. READY TO SHIP SAREES (Express 24-hr Dispatch from Screenshot) */}
