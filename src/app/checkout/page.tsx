@@ -355,10 +355,10 @@ export default function CheckoutPage() {
           </div>
 
           {/* Delivery Address */}
-          <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-100 pb-3 flex items-center justify-between">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif border-b border-stone-100 pb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px]">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-[#540924] text-[10px] font-bold">
                   2
                 </span>
                 <span>Delivery Address</span>
@@ -395,16 +395,16 @@ export default function CheckoutPage() {
                             country: addr.country || 'India',
                           }));
                         }}
-                        className={`cursor-pointer rounded-xl border p-3 text-xs space-y-1 transition-all ${
+                        className={`cursor-pointer rounded-2xl border p-3.5 text-xs space-y-1 transition-all ${
                           isSelected
-                            ? 'border-purple-600 bg-purple-50/40 ring-1 ring-purple-600/30'
+                            ? 'border-[#540924] bg-rose-50/50 ring-1 ring-[#540924]/30'
                             : 'border-stone-200 bg-white hover:bg-stone-50'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-stone-900">{addr.name}</span>
                           {addr.isDefault && (
-                            <span className="rounded bg-stone-100 text-stone-700 text-[9px] font-bold px-1.5 py-0.2">
+                            <span className="rounded bg-rose-100 text-[#540924] text-[9px] font-bold px-1.5 py-0.5">
                               DEFAULT
                             </span>
                           )}
@@ -462,10 +462,10 @@ export default function CheckoutPage() {
           </div>
 
           {/* Payment Method Selector */}
-          <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900 flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-100 text-purple-700 text-[10px]">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-[#540924] text-[10px] font-bold">
                   3
                 </span>
                 <span>Payment Method</span>
@@ -476,9 +476,9 @@ export default function CheckoutPage() {
               {/* Option 1: Official Razorpay Payment */}
               <label
                 onClick={() => setPaymentMethod('RAZORPAY')}
-                className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+                className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
                   paymentMethod === 'RAZORPAY'
-                    ? 'border-purple-600 bg-purple-50/30 ring-1 ring-purple-600/30'
+                    ? 'border-[#540924] bg-rose-50/40 ring-1 ring-[#540924]/30'
                     : 'border-stone-200 bg-white hover:bg-stone-50'
                 }`}
               >
@@ -487,14 +487,14 @@ export default function CheckoutPage() {
                   name="paymentMethod"
                   checked={paymentMethod === 'RAZORPAY'}
                   onChange={() => setPaymentMethod('RAZORPAY')}
-                  className="mt-0.5 text-purple-600 focus:ring-purple-500"
+                  className="mt-0.5 text-[#540924] focus:ring-[#540924]"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold text-stone-900 text-xs flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-purple-600" />
+                      <CreditCard className="w-4 h-4 text-[#540924]" />
                       <span>Razorpay Payment Gateway</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-700">
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-[#540924]">
                         OFFICIAL
                       </span>
                     </p>
@@ -509,9 +509,9 @@ export default function CheckoutPage() {
               {/* Option 2: Cash on Delivery */}
               <label
                 onClick={() => setPaymentMethod('COD')}
-                className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+                className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
                   paymentMethod === 'COD'
-                    ? 'border-purple-600 bg-purple-50/30 ring-1 ring-purple-600/30'
+                    ? 'border-[#540924] bg-rose-50/40 ring-1 ring-[#540924]/30'
                     : 'border-stone-200 bg-white hover:bg-stone-50'
                 }`}
               >
@@ -520,7 +520,7 @@ export default function CheckoutPage() {
                   name="paymentMethod"
                   checked={paymentMethod === 'COD'}
                   onChange={() => setPaymentMethod('COD')}
-                  className="mt-0.5 text-purple-600 focus:ring-purple-500"
+                  className="mt-0.5 text-[#540924] focus:ring-[#540924]"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -541,10 +541,10 @@ export default function CheckoutPage() {
 
         {/* Right Column: Order Summary & Pay CTA */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4 sticky top-6">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-900 border-b border-stone-100 pb-3 flex items-center justify-between">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-6 shadow-xs space-y-4 sticky top-6">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif border-b border-stone-100 pb-3 flex items-center justify-between">
               <span>Order Summary</span>
-              <span className="font-mono text-purple-700">
+              <span className="font-mono text-[#540924] font-bold">
                 {cart?.items.length || 0} {cart?.items.length === 1 ? 'saree' : 'sarees'}
               </span>
             </h2>
@@ -602,7 +602,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-base font-bold text-stone-950 border-t border-stone-200 pt-3">
                 <span className="font-serif">Total Due</span>
-                <span className="text-purple-700 font-mono">
+                <span className="text-[#540924] font-mono font-bold">
                   {formatPrice(cart?.grandTotal)}
                 </span>
               </div>
@@ -614,13 +614,13 @@ export default function CheckoutPage() {
               size="lg"
               disabled={processing}
               isLoading={processing}
-              className="w-full gap-2 mt-3 bg-[#18181B] hover:bg-black text-white rounded-xl shadow-md hover:shadow-lg transition-all"
+              className="w-full gap-2 mt-3 bg-[#540924] hover:bg-[#3d0517] text-white rounded-full shadow-md hover:shadow-lg transition-all"
             >
               {processing ? (
                 'Opening Razorpay...'
               ) : (
                 <>
-                  <Lock className="w-4 h-4 text-purple-300" />
+                  <Lock className="w-4 h-4 text-[#d4af37]" />
                   <span>
                     Pay {formatPrice(cart?.grandTotal)}{' '}
                     {paymentMethod === 'COD' ? '(Confirm COD)' : 'via Razorpay'}

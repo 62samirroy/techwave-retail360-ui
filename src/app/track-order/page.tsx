@@ -96,29 +96,29 @@ function TrackOrderContent() {
     : '';
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <div className="min-h-[75vh] max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8 flex flex-col">
       {/* Header */}
       <div className="text-center max-w-xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-[11px] font-semibold text-primary-700 border border-primary-200">
-          <Truck className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3.5 py-1 text-[11px] font-semibold text-[#540924] border border-rose-200">
+          <Truck className="w-3.5 h-3.5 text-[#b48325]" />
           <span>Real-Time Express Tracking</span>
         </div>
-        <h1 className="text-xl sm:text-3xl font-serif font-bold text-brand-950">
+        <h1 className="text-2xl sm:text-4xl font-serif font-bold text-[#540924]">
           Track Your Saree Order
         </h1>
-        <p className="text-xs text-brand-500">
+        <p className="text-xs text-stone-500">
           Enter your Order Number (e.g. <strong>TW-ORD-10021</strong>) to check live packaging, transit, and delivery progress.
         </p>
       </div>
 
       {/* Search Input Box */}
-      <div className="rounded-lg border border-brand-200 bg-white p-4 sm:p-6 shadow-subtle max-w-2xl mx-auto space-y-4">
+      <div className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs max-w-2xl mx-auto space-y-4">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleTrack();
           }}
-          className="space-y-3"
+          className="space-y-4"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
@@ -136,20 +136,22 @@ function TrackOrderContent() {
             />
           </div>
 
-          <Button
+          <button
             type="submit"
-            variant="primary"
-            size="md"
-            className="w-full gap-2"
-            isLoading={loading}
+            disabled={loading}
+            className="w-full rounded-full bg-[#540924] hover:bg-[#3d0517] text-white py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
           >
-            <Search className="w-3.5 h-3.5" />
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-[#d4af37]" />
+            ) : (
+              <Search className="w-4 h-4 text-[#d4af37]" />
+            )}
             <span>Track Order Status</span>
-          </Button>
+          </button>
         </form>
 
         {/* Quick Demo Pre-fill Links */}
-        <div className="pt-2 border-t border-brand-100 flex items-center justify-between text-[11px] text-brand-500">
+        <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
           <span>Try demo order IDs:</span>
           <div className="flex gap-2">
             <button
@@ -157,7 +159,7 @@ function TrackOrderContent() {
                 setOrderNumber('TW-ORD-10021');
                 handleTrack('TW-ORD-10021');
               }}
-              className="text-primary-600 font-mono hover:underline"
+              className="text-[#540924] font-mono font-semibold hover:underline"
             >
               TW-ORD-10021 (Delivered)
             </button>
@@ -167,7 +169,7 @@ function TrackOrderContent() {
                 setOrderNumber('TW-ORD-10022');
                 handleTrack('TW-ORD-10022');
               }}
-              className="text-primary-600 font-mono hover:underline"
+              className="text-[#540924] font-mono font-semibold hover:underline"
             >
               TW-ORD-10022 (Shipped)
             </button>

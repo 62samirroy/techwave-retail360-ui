@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   ShoppingBag,
   Heart,
@@ -16,18 +16,22 @@ import {
   ArrowLeft,
   Loader2,
   Share2,
+  Search,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { Badge } from '@/components/ui/Badge';
+import { ProductCard } from '@/components/shop/ProductCard';
 import { ProductAiAsk } from '@/components/shop/ProductAiAsk';
 import { api } from '@/lib/api';
 import { ProductData, ReviewData } from '@/types';
-import { formatPrice, buildWhatsAppLink, formatDate } from '@/lib/utils';
+import { formatPrice, buildWhatsAppLink, formatDate, cn } from '@/lib/utils';
 import { APP_CONFIG } from '@/lib/constants';
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProductDetailPage({ params }: { params?: { id?: string } }) {
+  const routeParams = useParams();
+  const id = (params?.id || routeParams?.id || '') as string;
   const router = useRouter();
 
   const [product, setProduct] = useState<ProductData | null>(null);
@@ -37,6 +41,20 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [justAdded, setJustAdded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<ProductData[]>([]);
+
+  // Amazon/Myntra Interactive Zoom State
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomCoords, setZoomCoords] = useState({ x: 50, y: 50 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageContainerRef.current) return;
+    const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    setZoomCoords({ x, y });
+  };
 
   // Review submission state
   const [reviews, setReviews] = useState<ReviewData[]>([]);
@@ -78,6 +96,15 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               }
             }
           } catch (e) {}
+
+          // Load related sarees for bottom card showcase
+          try {
+            const relRes = await api.getProducts({ limit: 8 });
+            if (relRes.success && relRes.data) {
+              const allItems = Array.isArray(relRes.data) ? relRes.data : relRes.data.products || [];
+              setRelatedProducts(allItems.filter((p: ProductData) => p.id !== res.data.id).slice(0, 4));
+            }
+          } catch (e) {}
         }
       } catch (err) {
         console.error('Failed to load product:', err);
@@ -91,10 +118,23 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
-          <p className="text-xs text-brand-500 font-medium">Loading saree details & weaving notes...</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div className="md:col-span-6 space-y-4">
+            <div className="aspect-[3/4] w-full rounded-3xl bg-stone-200/80" />
+            <div className="flex gap-2.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-16 w-16 rounded-xl bg-stone-200/80" />
+              ))}
+            </div>
+          </div>
+          <div className="md:col-span-6 space-y-4 pt-4">
+            <div className="h-4 w-32 rounded-full bg-stone-200" />
+            <div className="h-8 w-4/5 rounded-lg bg-stone-200" />
+            <div className="h-6 w-36 rounded-lg bg-stone-200" />
+            <div className="h-24 w-full rounded-2xl bg-stone-100" />
+            <div className="h-12 w-full rounded-2xl bg-stone-200/80" />
+          </div>
         </div>
       </div>
     );
@@ -188,7 +228,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-10">
+    <div className="min-h-[75vh] max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-10 flex flex-col">
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-brand-500">
         <Link href="/shop" className="hover:text-primary-700 flex items-center gap-1">
@@ -201,72 +241,104 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
       {/* Main Product Showcase Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-        {/* Left Column: Image Gallery */}
-        <div className="lg:col-span-6 space-y-4">
-          {/* Large Main Preview */}
-          <div className="group relative aspect-[3/4.2] w-full rounded-3xl overflow-hidden border border-[#ECE7DF] bg-[#FAF8F5] shadow-[0_16px_40px_rgba(33,27,38,0.06)]">
-            <Image
-              src={selectedImage}
-              alt={product.name}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-            />
+        {/* Left Column: Image Gallery with Amazon/Flipkart Vertical Thumbnails & Interactive Zoom */}
+        <div className="lg:col-span-6 flex flex-col-reverse sm:flex-row gap-3.5 items-start">
+          {/* Vertical Thumbnails List on Left */}
+          {(() => {
+            const allImages = (product.images && product.images.length > 0)
+              ? product.images
+              : [{ url: selectedImage, id: '1' }];
 
-            {/* Bestseller Badge */}
-            {product.isBestseller && (
-              <div className="absolute top-3.5 left-3.5 z-10">
-                <span className="rounded-full bg-[#211B26] text-amber-200 border border-amber-300/40 px-3 py-1 text-xs font-semibold tracking-wider uppercase shadow-xs">
-                  ★ Bestseller
-                </span>
+            return (
+              <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto sm:max-h-[460px] w-full sm:w-20 shrink-0 pb-1 sm:pb-0 scrollbar-thin">
+                {allImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedImage(img.url)}
+                    onMouseEnter={() => setSelectedImage(img.url)}
+                    className={`relative h-18 sm:h-20 w-18 sm:w-20 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
+                      selectedImage === img.url
+                        ? 'border-[#540924] ring-2 ring-[#540924]/30 shadow-md scale-102'
+                        : 'border-stone-200/90 opacity-75 hover:opacity-100 hover:border-amber-400'
+                    }`}
+                  >
+                    <Image
+                      src={img.url}
+                      alt={`${product.name} thumbnail ${idx + 1}`}
+                      fill
+                      sizes="80px"
+                      className="object-cover object-top"
+                    />
+                  </button>
+                ))}
               </div>
-            )}
+            );
+          })()}
 
-            {/* Silk Mark Certified Badge */}
-            <div className="absolute bottom-3.5 left-3.5 z-10 flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1 text-[11px] font-semibold text-stone-800 shadow-sm border border-stone-200/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>100% Pure Silk Verified</span>
-            </div>
-          </div>
+          {/* Main Showcase & Amazon-style Interactive Zoom Lens */}
+          <div className="flex-1 w-full space-y-3">
+            <div
+              ref={imageContainerRef}
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+              className="relative w-full h-[380px] sm:h-[460px] rounded-2xl overflow-hidden border border-stone-200/90 bg-[#FAF8F5] shadow-sm cursor-crosshair group/zoom select-none"
+            >
+              <Image
+                src={selectedImage}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                style={{
+                  transformOrigin: `${zoomCoords.x}% ${zoomCoords.y}%`,
+                  transform: isZoomed ? 'scale(2.4)' : 'scale(1)',
+                  transition: isZoomed ? 'transform 0.05s ease-out' : 'transform 0.25s ease-out',
+                }}
+                className="object-cover object-top pointer-events-none"
+              />
 
-          {/* Thumbnails Row */}
-          {product.images && product.images.length > 1 && (
-            <div className="flex gap-2.5 overflow-x-auto pb-1">
-              {product.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(img.url)}
-                  className={`relative h-20 w-20 rounded-2xl border overflow-hidden shrink-0 transition-all ${
-                    selectedImage === img.url
-                      ? 'border-[#211B26] ring-2 ring-[#211B26]/20 shadow-xs scale-102'
-                      : 'border-stone-200 opacity-75 hover:opacity-100'
-                  }`}
-                >
-                  <Image
-                    src={img.url}
-                    alt={`${product.name} thumbnail ${idx + 1}`}
-                    fill
-                    className="object-cover object-top"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
+              {/* Bestseller Badge */}
+              {product.isBestseller && (
+                <div className="absolute top-3 left-3 z-10 pointer-events-none">
+                  <span className="rounded-full bg-[#540924] text-amber-200 border border-amber-400/40 px-3 py-1 text-xs font-semibold tracking-wider uppercase shadow-xs">
+                    ★ Bestseller
+                  </span>
+                </div>
+              )}
 
-          {/* Heritage Guarantees */}
-          <div className="grid grid-cols-3 gap-2 pt-2 text-[11px] text-stone-600">
-            <div className="rounded-xl border border-stone-200/80 bg-white p-2.5 text-center shadow-2xs">
-              <span className="block font-semibold text-[#211B26]">Handloom Woven</span>
-              <span className="text-[10px] text-stone-400">Master Artisan Legacy</span>
+              {/* Silk Mark Certified Badge */}
+              <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1 text-[11px] font-semibold text-stone-800 shadow-sm border border-stone-200/80 pointer-events-none">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>100% Pure Silk Verified</span>
+              </div>
+
+              {/* Interactive Zoom Roll-over Indicator (Amazon / Myntra style) */}
+              <div
+                className={`absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-black/65 backdrop-blur-md px-3 py-1 text-[11px] font-medium text-white transition-opacity duration-200 pointer-events-none ${
+                  isZoomed ? 'opacity-0' : 'opacity-85'
+                }`}
+              >
+                <Search className="w-3.5 h-3.5 text-amber-300" />
+                <span>Hover to inspect weave</span>
+              </div>
             </div>
-            <div className="rounded-xl border border-stone-200/80 bg-white p-2.5 text-center shadow-2xs">
-              <span className="block font-semibold text-[#211B26]">Real Zari Hallmark</span>
-              <span className="text-[10px] text-stone-400">Tested Quality</span>
-            </div>
-            <div className="rounded-xl border border-stone-200/80 bg-white p-2.5 text-center shadow-2xs">
-              <span className="block font-semibold text-[#211B26]">Insured Transit</span>
-              <span className="text-[10px] text-stone-400">Royal Box Packaging</span>
+
+            {/* Heritage Guarantees */}
+            <div className="grid grid-cols-3 gap-2 pt-1 text-[11px] text-stone-600">
+              <div className="rounded-xl border border-stone-200/80 bg-white p-2 text-center shadow-2xs">
+                <span className="block font-semibold text-[#540924]">Handloom Woven</span>
+                <span className="text-[10px] text-stone-400">Master Artisan Legacy</span>
+              </div>
+              <div className="rounded-xl border border-stone-200/80 bg-white p-2 text-center shadow-2xs">
+                <span className="block font-semibold text-[#540924]">Real Zari Hallmark</span>
+                <span className="text-[10px] text-stone-400">Tested Quality</span>
+              </div>
+              <div className="rounded-xl border border-stone-200/80 bg-white p-2 text-center shadow-2xs">
+                <span className="block font-semibold text-[#540924]">Insured Transit</span>
+                <span className="text-[10px] text-stone-400">Royal Box Packaging</span>
+              </div>
             </div>
           </div>
         </div>
@@ -275,13 +347,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         <div className="lg:col-span-6 space-y-5">
           <div>
             <div className="flex items-center justify-between text-xs text-stone-500 mb-1.5">
-              <span className="font-semibold text-[#9333EA] tracking-widest uppercase text-[11px]">
+              <span className="font-semibold text-[#b48325] tracking-widest uppercase text-[11px] font-serif">
                 {product.category?.name || 'Handloom Silk'}
               </span>
               <span className="font-mono text-stone-400">SKU: {product.sku}</span>
             </div>
 
-            <h1 className="text-xl sm:text-3xl font-serif font-bold text-[#211B26] leading-tight">
+            <h1 className="text-xl sm:text-3xl font-serif font-bold text-[#540924] leading-tight">
               {product.name}
             </h1>
 
@@ -335,7 +407,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 Only {product.stock} units remaining in warehouse
               </span>
             ) : (
-              <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+              <span className="text-[#540924] font-bold bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 flex items-center gap-1">
                 <Check className="w-3 h-3 stroke-[3]" /> In Stock — Ships within 24 hours
               </span>
             )}
@@ -354,7 +426,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 >
                   -
                 </button>
-                <span className="px-3.5 py-1.5 text-xs font-semibold text-[#211B26] border-x border-stone-200">
+                <span className="px-3.5 py-1.5 text-xs font-semibold text-[#540924] border-x border-stone-200">
                   {quantity}
                 </span>
                 <button
@@ -373,12 +445,12 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <button
                 disabled={isOutOfStock || isAdding}
                 onClick={handleAddToCart}
-                className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-xs sm:text-sm font-medium tracking-wide transition-all shadow-sm ${
+                className={`inline-flex items-center justify-center rounded-full px-6 py-3.5 text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-sm ${
                   justAdded
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-[#540924] text-white'
                     : isOutOfStock
                     ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                    : 'bg-[#211B26] hover:bg-[#342b3d] text-white active:scale-98'
+                    : 'bg-[#540924] hover:bg-[#3d0517] text-[#fbf6ec] active:scale-98'
                 }`}
               >
                 {justAdded ? (
@@ -387,7 +459,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-4 h-4 mr-1.5" /> Add to Cart
+                    <ShoppingBag className="w-4 h-4 mr-1.5 text-[#d4af37]" /> Add to Cart
                   </>
                 )}
               </button>
@@ -395,7 +467,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <button
                 disabled={isOutOfStock}
                 onClick={handleBuyNow}
-                className="inline-flex items-center justify-center rounded-full px-6 py-3 text-xs sm:text-sm font-medium tracking-wide bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-sm active:scale-98 transition-all disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-full px-6 py-3.5 text-xs sm:text-sm font-bold tracking-wide bg-[#d4af37] hover:bg-[#b48325] text-[#380419] shadow-sm active:scale-98 transition-all disabled:opacity-50"
               >
                 Buy Now
               </button>
@@ -409,8 +481,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 rel="noopener noreferrer"
                 className="flex-1"
               >
-                <button className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-800 px-4 py-2.5 text-xs font-medium transition-colors shadow-2xs">
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                <button className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-[#540924]/30 bg-white hover:bg-rose-50 text-[#540924] px-4 py-2.5 text-xs font-semibold transition-colors shadow-2xs">
+                  <MessageCircle className="w-4 h-4 text-[#540924]" />
                   <span>WhatsApp Video &amp; Drape Query</span>
                 </button>
               </a>
@@ -432,7 +504,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           {/* Value Props & Shipping Guarantees */}
           <div className="grid grid-cols-3 gap-2 pt-3 border-t border-stone-200/80 text-[11px] text-stone-600">
             <div className="flex items-center gap-1.5">
-              <Truck className="w-3.5 h-3.5 text-[#9333EA] shrink-0" />
+              <Truck className="w-3.5 h-3.5 text-[#540924] shrink-0" />
               <span>Free Delivery</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -440,7 +512,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <span>7-Day Return</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#b48325] shrink-0" />
               <span>100% Authentic</span>
             </div>
           </div>
@@ -609,6 +681,35 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           )}
         </div>
       </div>
+
+      {/* Related Products / More Handloom Treasures */}
+      {relatedProducts.length > 0 && (
+        <div className="pt-8 border-t border-[#ECE7DF] space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-bold tracking-widest text-[#b48325] uppercase font-serif">
+                Artisan Curation
+              </span>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#540924]">
+                You May Also Admire
+              </h2>
+            </div>
+            <Link
+              href="/shop"
+              className="text-xs font-semibold text-[#540924] hover:text-[#b48325] transition-colors flex items-center gap-1 group"
+            >
+              <span>Explore All Sarees</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            {relatedProducts.map((relProduct) => (
+              <ProductCard key={relProduct.id} product={relProduct} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

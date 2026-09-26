@@ -102,8 +102,27 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-stone-200 rounded-lg" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-4">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex gap-4 p-4 rounded-2xl border border-stone-200 bg-white">
+                <div className="h-24 w-20 rounded-xl bg-stone-200 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-stone-200" />
+                  <div className="h-3 w-1/4 rounded bg-stone-100" />
+                  <div className="h-5 w-24 rounded bg-stone-200 mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="lg:col-span-4 h-64 rounded-2xl border border-stone-200 bg-white p-6 space-y-3">
+            <div className="h-5 w-32 rounded bg-stone-200" />
+            <div className="h-3 w-full rounded bg-stone-100" />
+            <div className="h-10 w-full rounded-xl bg-stone-200 mt-4" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -115,13 +134,13 @@ export default function CartPage() {
   const grandTotalWithPromo = Math.max(0, (cart?.grandTotal || 0) - promoDiscount);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      <div className="flex items-center justify-between border-b border-brand-200 pb-3">
+    <div className="min-h-[75vh] max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 flex flex-col">
+      <div className="flex items-center justify-between border-b border-stone-200 pb-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-950">
-            Shopping Cart
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
+            Shopping Bag
           </h1>
-          <p className="text-xs text-brand-500">
+          <p className="text-xs text-stone-500 mt-0.5">
             {isEmpty ? 'Your bag is empty' : `${cart?.itemCount || 0} authentic sarees ready for checkout`}
           </p>
         </div>
@@ -129,26 +148,26 @@ export default function CartPage() {
         {!isEmpty && (
           <button
             onClick={handleClearCart}
-            className="text-xs text-rose-600 hover:text-rose-700 font-medium"
+            className="text-xs text-rose-600 hover:text-rose-700 font-semibold"
           >
-            Clear Cart
+            Clear Bag
           </button>
         )}
       </div>
 
       {isEmpty ? (
-        <div className="rounded-lg border border-dashed border-brand-200 bg-brand-50/50 p-12 text-center max-w-lg mx-auto space-y-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm border border-brand-200 mx-auto text-brand-400">
-            <ShoppingBag className="w-6 h-6 text-brand-500" />
+        <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-12 text-center max-w-lg mx-auto space-y-4 shadow-sm">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 text-[#540924] mx-auto border border-rose-100">
+            <ShoppingBag className="w-7 h-7 text-[#540924]" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-brand-900">Your shopping cart is currently empty</h2>
-            <p className="text-xs text-brand-500 mt-1">Discover handcrafted silks, brocades, and festive designer sarees.</p>
+            <h2 className="text-base font-serif font-bold text-stone-900">Your shopping bag is currently empty</h2>
+            <p className="text-xs text-stone-500 mt-1 max-w-xs mx-auto">Discover handcrafted silks, brocades, and festive designer sarees.</p>
           </div>
-          <Link href="/shop">
-            <Button variant="primary" size="md">
+          <Link href="/shop" className="inline-block pt-2">
+            <button className="rounded-full bg-[#540924] hover:bg-[#3d0517] text-white px-7 py-3 text-xs font-semibold shadow-sm transition-all">
               Start Shopping Sarees
-            </Button>
+            </button>
           </Link>
         </div>
       ) : (
@@ -157,16 +176,16 @@ export default function CartPage() {
           <div className="lg:col-span-8 space-y-4">
             {/* Free Shipping Progress Indicator */}
             {cart && (
-              <div className="rounded-lg border border-royal-200 bg-royal-50/80 p-3 text-xs">
+              <div className="rounded-2xl border border-[#d4af37]/30 bg-[#fdfbf7] p-3.5 text-xs shadow-xs">
                 {cart.freeShippingRemaining > 0 ? (
                   <div className="space-y-1.5">
-                    <p className="text-royal-900 font-medium flex items-center gap-1.5">
-                      <Truck className="w-3.5 h-3.5 text-royal-600" />
-                      <span>Add <strong>{formatPrice(cart.freeShippingRemaining)}</strong> more for <strong>FREE Express Shipping</strong>!</span>
+                    <p className="text-[#540924] font-medium flex items-center gap-1.5">
+                      <Truck className="w-4 h-4 text-[#b48325]" />
+                      <span>Add <strong className="text-[#540924]">{formatPrice(cart.freeShippingRemaining)}</strong> more for <strong className="text-[#b48325]">FREE Express Insured Shipping</strong>!</span>
                     </p>
-                    <div className="h-1.5 w-full bg-royal-200 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-royal-600 transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-[#b48325] to-[#d4af37] transition-all duration-300"
                         style={{
                           width: `${Math.min(100, (cart.subtotal / cart.freeShippingThreshold) * 100)}%`,
                         }}
@@ -174,8 +193,8 @@ export default function CartPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-emerald-800 font-semibold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <p className="text-[#540924] font-semibold flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#b48325]" />
                     <span>Congratulations! You have qualified for <strong>FREE Insured Express Shipping</strong>!</span>
                   </p>
                 )}
@@ -183,11 +202,11 @@ export default function CartPage() {
             )}
 
             {/* Cart Table / Cards */}
-            <div className="rounded-lg border border-brand-200 bg-white overflow-hidden shadow-subtle divide-y divide-brand-100">
+            <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-xs divide-y divide-stone-100">
               {items.map((item) => (
-                <div key={item.id} className="p-3 sm:p-4 flex gap-3 sm:gap-4 items-center">
+                <div key={item.id} className="p-4 flex gap-4 items-center">
                   {/* Thumbnail */}
-                  <div className="relative h-20 w-16 shrink-0 rounded overflow-hidden border border-brand-200 bg-brand-100">
+                  <div className="relative h-20 w-16 shrink-0 rounded-xl overflow-hidden border border-stone-200 bg-stone-100">
                     <Image
                       src={item.product.images?.[0]?.url || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80'}
                       alt={item.product.name}
@@ -200,34 +219,34 @@ export default function CartPage() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/product/${item.product.id}`}
-                      className="text-xs font-semibold text-brand-900 hover:text-primary-700 line-clamp-1"
+                      className="text-xs sm:text-sm font-serif font-bold text-stone-900 hover:text-[#540924] line-clamp-1 transition-colors"
                     >
                       {item.product.name}
                     </Link>
-                    <p className="text-[10px] text-brand-400 font-mono mt-0.5">
+                    <p className="text-[10px] text-stone-400 font-mono mt-0.5">
                       SKU: {item.product.sku} • {item.product.category?.name || 'Saree'}
                     </p>
-                    <p className="text-xs font-semibold text-brand-900 mt-1">
+                    <p className="text-xs font-bold text-[#540924] mt-1">
                       {formatPrice(item.price)}
                     </p>
                   </div>
 
                   {/* Quantity Controller with Stock Cap */}
-                  <div className="flex items-center rounded border border-brand-300 bg-white shrink-0">
+                  <div className="flex items-center rounded-xl border border-stone-300 bg-white shrink-0 shadow-2xs">
                     <button
                       disabled={item.quantity <= 1 || updatingId === item.id}
                       onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                      className="px-2 py-0.5 text-xs font-bold text-brand-600 hover:bg-brand-50 disabled:opacity-40"
+                      className="px-2.5 py-1 text-xs font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40"
                     >
                       -
                     </button>
-                    <span className="px-2.5 py-0.5 text-xs font-semibold text-brand-900 border-x border-brand-200">
+                    <span className="px-3 py-1 text-xs font-semibold text-stone-900 border-x border-stone-200">
                       {item.quantity}
                     </span>
                     <button
                       disabled={item.quantity >= item.product.stock || updatingId === item.id}
                       onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                      className="px-2 py-0.5 text-xs font-bold text-brand-600 hover:bg-brand-50 disabled:opacity-40"
+                      className="px-2.5 py-1 text-xs font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40"
                     >
                       +
                     </button>
@@ -235,7 +254,7 @@ export default function CartPage() {
 
                   {/* Item Total */}
                   <div className="text-right shrink-0 w-20">
-                    <p className="text-xs font-bold text-brand-950">
+                    <p className="text-xs sm:text-sm font-bold text-stone-900">
                       {formatPrice(item.itemTotal)}
                     </p>
                   </div>
@@ -245,7 +264,7 @@ export default function CartPage() {
                     onClick={() => handleRemoveItem(item.id)}
                     disabled={updatingId === item.id}
                     title="Remove item"
-                    className="text-brand-400 hover:text-rose-600 p-1 transition-colors shrink-0"
+                    className="text-stone-400 hover:text-rose-600 p-1.5 transition-colors shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -253,8 +272,8 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="flex justify-between items-center text-xs text-brand-600 pt-2">
-              <Link href="/shop" className="hover:text-primary-700 flex items-center gap-1 font-medium">
+            <div className="flex justify-between items-center text-xs text-stone-600 pt-2">
+              <Link href="/shop" className="hover:text-[#540924] flex items-center gap-1 font-semibold">
                 ← Continue Browsing Sarees
               </Link>
             </div>
@@ -262,8 +281,8 @@ export default function CartPage() {
 
           {/* Order Summary Checkout Card */}
           <div className="lg:col-span-4 space-y-4">
-            <div className="rounded-lg border border-brand-200 bg-white p-4 shadow-subtle space-y-4">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-brand-900 border-b border-brand-100 pb-2">
+            <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-xs space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif border-b border-stone-100 pb-2">
                 Order Summary
               </h2>
 
@@ -274,21 +293,20 @@ export default function CartPage() {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Coupon code (e.g. FESTIVE10)"
+                    placeholder="Coupon (e.g. FESTIVE10)"
                     disabled={couponApplied}
-                    className="flex-1 rounded-md border border-brand-300 px-2.5 py-1 text-xs text-brand-900 uppercase focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    className="flex-1 rounded-xl border border-stone-300 px-3 py-1.5 text-xs text-stone-900 uppercase focus:outline-none focus:ring-1 focus:ring-[#540924]"
                   />
-                  <Button
+                  <button
                     type="submit"
-                    size="xs"
-                    variant={couponApplied ? 'secondary' : 'primary'}
                     disabled={couponApplied || !couponCode.trim()}
+                    className="rounded-xl bg-[#540924] hover:bg-[#3d0517] text-white px-3.5 py-1.5 text-xs font-semibold transition-all disabled:opacity-50"
                   >
                     {couponApplied ? 'Applied' : 'Apply'}
-                  </Button>
+                  </button>
                 </form>
                 {couponApplied && (
-                  <p className="text-[11px] text-emerald-700 font-medium mt-1">
+                  <p className="text-[11px] text-[#540924] font-medium mt-1">
                     ✓ Promo applied! Discount of {formatPrice(promoDiscount)} applied.
                   </p>
                 )}
@@ -298,50 +316,50 @@ export default function CartPage() {
               </div>
 
               {/* Cost Breakdown */}
-              <div className="space-y-2 text-xs border-t border-brand-100 pt-3">
-                <div className="flex justify-between text-brand-600">
+              <div className="space-y-2 text-xs border-t border-stone-100 pt-3">
+                <div className="flex justify-between text-stone-600">
                   <span>Bag Subtotal</span>
-                  <span className="font-semibold text-brand-900">{formatPrice(cart?.subtotal)}</span>
+                  <span className="font-semibold text-stone-900">{formatPrice(cart?.subtotal)}</span>
                 </div>
 
                 {couponApplied && (
-                  <div className="flex justify-between text-emerald-700 font-medium">
+                  <div className="flex justify-between text-[#540924] font-medium">
                     <span>Festive Discount</span>
                     <span>- {formatPrice(promoDiscount)}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between text-brand-600">
+                <div className="flex justify-between text-stone-600">
                   <span>Standard Shipping</span>
-                  <span>{cart?.shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : formatPrice(cart?.shippingFee)}</span>
+                  <span>{cart?.shippingFee === 0 ? <strong className="text-[#540924]">FREE</strong> : formatPrice(cart?.shippingFee)}</span>
                 </div>
 
-                <div className="flex justify-between text-brand-600">
+                <div className="flex justify-between text-stone-600">
                   <span>Applicable GST (5%)</span>
                   <span>{formatPrice(cart?.tax)}</span>
                 </div>
 
-                <div className="flex justify-between text-sm font-bold text-brand-950 border-t border-brand-200 pt-2">
+                <div className="flex justify-between text-base font-bold text-stone-900 border-t border-stone-200 pt-3">
                   <span>Grand Total</span>
-                  <span className="text-primary-700">{formatPrice(grandTotalWithPromo)}</span>
+                  <span className="text-[#540924]">{formatPrice(grandTotalWithPromo)}</span>
                 </div>
               </div>
 
               {/* Checkout CTA Button */}
               <Link href="/checkout" className="block pt-1">
-                <Button variant="primary" size="md" className="w-full gap-2">
+                <button className="w-full rounded-full bg-[#540924] hover:bg-[#3d0517] text-white py-3.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all">
                   <span>Proceed to Secure Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+                  <ArrowRight className="w-4 h-4 text-[#d4af37]" />
+                </button>
               </Link>
 
               {/* Security Badges */}
-              <div className="pt-2 text-center text-[10px] text-brand-400 space-y-1">
-                <p className="flex items-center justify-center gap-1">
+              <div className="pt-2 text-center text-[10px] text-stone-400 space-y-1">
+                <p className="flex items-center justify-center gap-1 font-medium text-stone-600">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Razorpay Test Mode 256-Bit SSL Encrypted</span>
+                  <span>Razorpay 256-Bit SSL Encrypted Checkout</span>
                 </p>
-                <p>Support for UPI, NetBanking, Credit & Debit Cards</p>
+                <p>Support for UPI, NetBanking, Credit &amp; Debit Cards</p>
               </div>
             </div>
           </div>

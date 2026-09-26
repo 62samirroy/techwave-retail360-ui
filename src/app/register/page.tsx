@@ -199,34 +199,34 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 space-y-6">
+    <div className="min-h-[75vh] max-w-md mx-auto px-4 sm:px-6 py-12 space-y-6 flex flex-col justify-center">
       <div className="text-center space-y-1.5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-900 text-white font-serif font-bold text-xl mx-auto shadow-md">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#540924] text-[#d4af37] font-serif font-bold text-xl mx-auto shadow-md border border-[#d4af37]/30">
           R
         </div>
-        <h1 className="text-2xl font-serif font-bold text-brand-950">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
           Create an Account
         </h1>
-        <p className="text-xs text-brand-600">
-          Join Royal Saree &amp; Fashion for order tracking, saved addresses, and wishlist
+        <p className="text-xs text-stone-500">
+          Join Royal Saree &amp; Family (Retail 360°) for order tracking, saved addresses, and wishlist
         </p>
       </div>
 
       {error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 flex items-center gap-2.5 text-xs text-rose-800 animate-fadeIn">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 flex items-center gap-2.5 text-xs text-rose-800 animate-fadeIn">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 flex items-center gap-2.5 text-xs text-emerald-800 animate-fadeIn">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 flex items-center gap-2.5 text-xs text-emerald-800 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
-      <div className="rounded-2xl border border-brand-200 bg-white p-6 sm:p-7 shadow-subtle space-y-5">
+      <div className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-5">
         {step === 'FORM' ? (
           <>
             {/* 1. Official Google Sign-Up Button */}
@@ -237,10 +237,10 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-brand-200" />
+                <div className="w-full border-t border-stone-200" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase font-semibold">
-                <span className="bg-white px-3 text-brand-400">or register with email</span>
+                <span className="bg-white px-3 text-stone-400">or register with email</span>
               </div>
             </div>
 
@@ -276,15 +276,13 @@ export default function RegisterPage() {
                 disabled={loading}
               />
 
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                size="md"
-                className="w-full mt-2 font-medium"
-                isLoading={loading}
+                disabled={loading}
+                className="w-full rounded-full bg-[#540924] hover:bg-[#3d0517] text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all disabled:opacity-50 mt-2"
               >
-                Send Verification Code
-              </Button>
+                {loading ? 'Sending Code...' : 'Send Verification Code'}
+              </button>
             </form>
           </>
         ) : (

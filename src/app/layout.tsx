@@ -3,9 +3,9 @@ import './globals.css';
 import { AppLayoutWrapper } from '@/components/layout/AppLayoutWrapper';
 
 export const metadata: Metadata = {
-  title: 'Royal Saree & Fashion | TechWave Retail360',
+  title: 'Royal Saree & Family | Retail 360°',
   description:
-    'Exquisite handloom Kanjivaram silk, Banarasi brocades, and designer organza sarees. Built with TechWave Retail360 AI-powered commerce platform.',
+    'Exquisite handloom Kanjivaram silk, Banarasi brocades, and designer organza sarees. Curated by Royal Saree & Family powered by Retail 360°.',
   keywords: [
     'Sarees',
     'Kanjivaram Silk',
@@ -13,22 +13,23 @@ export const metadata: Metadata = {
     'Organza Saree',
     'Handloom Saree',
     'Indian Fashion',
-    'TechWave Retail360',
+    'Retail 360',
+    'Royal Saree & Family',
     'Bridal Sarees',
   ],
-  authors: [{ name: 'TechWave Solutions', url: 'https://techwavesolutions.dev' }],
+  authors: [{ name: 'Retail 360° Solutions', url: 'https://techwavesolutions.dev' }],
   openGraph: {
-    title: 'Royal Saree & Fashion | TechWave Retail360',
+    title: 'Royal Saree & Family | Retail 360°',
     description:
       'Curated masterweaver authentic handlooms, pure zari borders, and contemporary draping.',
     type: 'website',
     locale: 'en_IN',
-    siteName: 'Royal Saree & Fashion',
+    siteName: 'Royal Saree & Family',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0f172a',
+  themeColor: '#540924',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

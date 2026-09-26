@@ -448,16 +448,16 @@ function CustomerDashboardContent() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      {/* Luxury VIP Customer Card Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#18131D] via-[#2A1F35] to-[#18131D] p-6 sm:p-8 text-white shadow-xl border border-purple-900/40">
+    <div className="min-h-[75vh] max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 flex flex-col">
+      {/* Luxury VIP Customer Card Banner - Softened Warm Ruby Tone & Compact Height */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#630f2c] via-[#7d173c] to-[#630f2c] p-4 sm:p-6 text-white shadow-md border border-[#d4af37]/40">
         {/* Subtle decorative glow aura */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-600/15 blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#d4af37]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-purple-600 to-indigo-700 text-white font-serif font-bold text-2xl sm:text-3xl overflow-hidden shrink-0 shadow-lg ring-2 ring-amber-400/40">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-center gap-3.5">
+            <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d4af37] via-[#b48325] to-[#540924] text-white font-serif font-bold text-xl sm:text-2xl overflow-hidden shrink-0 shadow-md ring-2 ring-[#d4af37]/50">
               {user?.avatarUrl ? (
                 <Image
                   src={user.avatarUrl}
@@ -476,10 +476,10 @@ function CustomerDashboardContent() {
                 <h1 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-tight">
                   {user?.name}
                 </h1>
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[11px] font-semibold px-2.5 py-0.5 shadow-xs">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/40 text-[#fef3c7] text-[11px] font-semibold px-2.5 py-0.5 shadow-xs">
                   <span>★</span> VIP Patron Club
                 </span>
-                <span className="rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-medium px-2 py-0.5">
+                <span className="rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/30 text-[10px] font-medium px-2 py-0.5">
                   Verified Customer
                 </span>
               </div>
@@ -507,14 +507,14 @@ function CustomerDashboardContent() {
 
             <Link href="/shop">
               <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold backdrop-blur-xs transition-all shadow-xs">
-                <ShoppingBag className="w-3.5 h-3.5 text-amber-300" />
+                <ShoppingBag className="w-3.5 h-3.5 text-[#d4af37]" />
                 <span>Browse Sarees</span>
               </button>
             </Link>
 
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-300 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>
@@ -542,11 +542,11 @@ function CustomerDashboardContent() {
               onClick={() => setActiveTab(tab.key as TabType)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all shrink-0 font-medium ${
                 isActive
-                  ? 'bg-purple-900 text-white font-bold shadow-xs'
+                  ? 'bg-[#540924] text-white font-bold shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-amber-300' : 'text-stone-400'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#d4af37]' : 'text-stone-400'}`} />
               <span>{tab.label}</span>
             </button>
           );
@@ -562,16 +562,16 @@ function CustomerDashboardContent() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             <div
               onClick={() => setActiveTab('orders')}
-              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-purple-300 hover:shadow-md transition-all group"
+              className="cursor-pointer rounded-2xl border border-stone-200/90 bg-white p-4 shadow-xs hover:border-[#b48325] hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between text-stone-500 text-xs mb-1">
                 <span className="font-semibold text-stone-600">Total Orders</span>
-                <div className="p-1.5 rounded-lg bg-purple-50 text-purple-700 group-hover:scale-110 transition-transform">
-                  <Package className="w-4 h-4" />
+                <div className="p-1.5 rounded-lg bg-rose-50 text-[#540924] group-hover:scale-110 transition-transform">
+                  <Package className="w-4 h-4 text-[#540924]" />
                 </div>
               </div>
               <div className="text-2xl font-serif font-bold text-stone-900">{orders.length}</div>
-              <span className="text-[11px] text-purple-700 font-medium">Inspect orders history →</span>
+              <span className="text-[11px] text-[#540924] font-medium">Inspect orders history →</span>
             </div>
 
             <div

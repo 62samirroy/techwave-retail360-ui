@@ -26,8 +26,8 @@ export function AdminHeader() {
   return (
     <header className="h-14 border-b border-stone-200/90 bg-white/95 backdrop-blur-md px-6 flex items-center justify-between shadow-xs shrink-0 select-none">
       <div className="flex items-center gap-3">
-        <span className="font-serif text-sm font-bold text-stone-900 tracking-tight">
-          Royal Saree &amp; Fashion
+        <span className="font-serif text-sm font-bold text-[#540924] tracking-tight">
+          Royal Saree &amp; Family
         </span>
         <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 text-[11px] font-medium text-emerald-800">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -39,17 +39,17 @@ export function AdminHeader() {
         <Link
           href="/"
           target="_blank"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-purple-700 bg-stone-100/70 hover:bg-stone-100 px-3 py-1.5 rounded-full transition-all"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-[#540924] bg-stone-100/70 hover:bg-rose-50/70 hover:border-rose-200 border border-stone-200 px-3 py-1.5 rounded-full transition-all"
         >
           <span>Live Storefront</span>
-          <ExternalLink className="w-3 h-3" />
+          <ExternalLink className="w-3 h-3 text-[#b48325]" />
         </Link>
 
         <div className="h-4 w-px bg-stone-200" />
 
         <div className="flex items-center gap-2.5 text-xs">
-          <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-            {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : 'A'}
+          <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-[#540924] to-[#7d173c] border border-[#d4af37]/40 text-amber-200 flex items-center justify-center font-bold text-xs shadow-xs">
+            {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : 'R'}
           </div>
           <div className="hidden sm:flex flex-col text-left">
             <span className="font-semibold text-stone-900 leading-tight truncate max-w-[130px]">
@@ -60,7 +60,7 @@ export function AdminHeader() {
           <button
             onClick={handleLogout}
             title="Sign Out"
-            className="text-stone-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition-colors ml-1"
+            className="text-stone-400 hover:text-[#540924] hover:bg-rose-50 p-1.5 rounded-lg transition-colors ml-1"
           >
             <LogOut className="w-4 h-4" />
           </button>

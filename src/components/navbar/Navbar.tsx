@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   ShoppingBag,
@@ -15,10 +16,14 @@ import {
   ChevronDown,
   Bell,
   Heart,
+  Phone,
+  Truck,
+  MapPin,
+  Clock,
+  Compass,
 } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 
 export function Navbar() {
@@ -26,8 +31,8 @@ export function Navbar() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [unreadNotifs, setUnreadNotifs] = useState(0);
 
@@ -61,19 +66,32 @@ export function Navbar() {
     } catch (e) {}
   };
 
+  const refreshWishlistData = async () => {
+    try {
+      const res = await api.getWishlist();
+      if (res.success && res.data?.items) {
+        setWishlistCount(res.data.items.length);
+      }
+    } catch (e) {}
+  };
+
   useEffect(() => {
     refreshUserData();
     refreshCartData();
+    refreshWishlistData();
 
     const handleCartUpdate = () => refreshCartData();
     const handleAuthUpdate = () => refreshUserData();
+    const handleWishlistUpdate = () => refreshWishlistData();
 
     window.addEventListener('cart-updated', handleCartUpdate);
     window.addEventListener('auth-updated', handleAuthUpdate);
+    window.addEventListener('wishlist-updated', handleWishlistUpdate);
 
     return () => {
       window.removeEventListener('cart-updated', handleCartUpdate);
       window.removeEventListener('auth-updated', handleAuthUpdate);
+      window.removeEventListener('wishlist-updated', handleWishlistUpdate);
     };
   }, []);
 
@@ -88,266 +106,325 @@ export function Navbar() {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
     }
   };
 
-  const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop All', href: '/shop' },
-    { label: 'Kanjivaram Silk', href: '/categories/kanjivaram-silk' },
+  // Sub-Navigation Categories directly matching the reference layout
+  const subNavCategories = [
+    { label: 'Pure Silk Sarees', href: '/shop?category=kanjivaram-silk' },
+    { label: 'Kanchipuram Silks', href: '/categories/kanjivaram-silk' },
     { label: 'Banarasi Brocade', href: '/categories/banarasi-brocade' },
-    { label: 'Track Order', href: '/track-order' },
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Soft Silk & Chanderi', href: '/categories/chanderi-linen' },
+    { label: 'Organza & Floral', href: '/categories/organza-floral' },
+    { label: 'Bandhani & Leheriya', href: '/categories/bandhani-leheriya' },
+    { label: 'Bridal Heritage', href: '/shop?featured=true' },
+    { label: 'Visit Our Stores', href: '/#stores' },
   ];
 
   return (
-    <>
-      {/* Main Navbar */}
-      <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EAE6DF] shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden rounded-full p-2 text-stone-700 hover:bg-stone-200/60"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-
-              <Link href="/" className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#211B26] text-white font-serif font-bold text-base shadow-sm">
-                  R
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold tracking-tight text-[#211B26] font-serif leading-tight">
-                    Royal Saree & Fashion
-                  </span>
-                  <span className="text-[9px] font-medium tracking-widest text-[#9333EA] uppercase">
-                    Handloom & Bridal Couture
-                  </span>
-                </div>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-7">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'text-xs font-medium transition-colors hover:text-[#9333EA]',
-                    pathname === link.href ? 'text-[#9333EA] font-semibold' : 'text-stone-700'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Action Icons */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setSearchOpen(!searchOpen)}
-                aria-label="Search sarees"
-                className="rounded-full p-2 text-brand-700 hover:bg-brand-100 transition-colors"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-
-              <Link
-                href="/cart"
-                aria-label="Cart"
-                className="relative rounded-full p-2 text-brand-700 hover:bg-brand-100 transition-colors"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow-sm">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-
-              {user && (
-                <Link
-                  href="/dashboard?tab=settings"
-                  aria-label="Notifications"
-                  className="relative rounded-full p-2 text-brand-700 hover:bg-brand-100 transition-colors"
-                  title="Notifications"
-                >
-                  <Bell className="w-4 h-4" />
-                  {unreadNotifs > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white shadow-sm">
-                      {unreadNotifs}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              {user ? (
-                <div className="relative group">
-                  <button className="flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-800 hover:bg-brand-100 transition-colors">
-                    <UserIcon className="w-3.5 h-3.5 text-primary-600" />
-                    <span className="max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
-                    <ChevronDown className="w-3 h-3 text-brand-400" />
-                  </button>
-
-                  <div className="absolute right-0 mt-1 w-48 rounded-md border border-brand-200 bg-white py-1 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                    <div className="px-3 py-1.5 border-b border-brand-100">
-                      <p className="text-xs font-semibold text-brand-900 truncate">{user.name}</p>
-                      <p className="text-[10px] text-brand-500 truncate">{user.email}</p>
-                    </div>
-
-                    {user.role === 'ADMIN' && (
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-primary-50 hover:text-primary-700"
-                      >
-                        <ShieldCheck className="w-3.5 h-3.5 text-royal-600" />
-                        Admin Dashboard
-                      </Link>
-                    )}
-
-                    <Link
-                      href="/dashboard"
-                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50 font-medium"
-                    >
-                      <UserIcon className="w-3.5 h-3.5" />
-                      Customer Dashboard
-                    </Link>
-
-                    <Link
-                      href="/dashboard?tab=orders"
-                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50"
-                    >
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                      My Orders
-                    </Link>
-
-                    <Link
-                      href="/dashboard?tab=wishlist"
-                      className="flex items-center gap-2 px-3 py-1.5 text-xs text-brand-700 hover:bg-brand-50"
-                    >
-                      <Heart className="w-3.5 h-3.5" />
-                      Saved Wishlist
-                    </Link>
-
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5">
-                  <Link href="/login">
-                    <Button variant="outline" size="xs">
-                      Sign In
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
+    <header className="sticky top-0 z-50 w-full shadow-md font-sans">
+      {/* 1. TOP ANNOUNCEMENT BAR (Deep Rich Wine) */}
+      <div className="bg-[#3d0517] text-[#fef3c7] text-[11px] py-1.5 px-4 sm:px-6 border-b border-[#520921]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Announcement Text */}
+          <div className="flex items-center gap-2 overflow-hidden truncate">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#d4af37] animate-pulse" />
+            <p className="truncate font-medium text-[11px] tracking-wide text-rose-100">
+              Free Express Insured Shipping Across India Above ₹1,999 • 100% Pure Silk Mark Certified Handlooms
+            </p>
           </div>
 
-          {searchOpen && (
-            <div className="py-2 pb-3 border-t border-brand-100 animate-in fade-in duration-150">
-              <form onSubmit={handleSearchSubmit} className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search Kanjivaram, Banarasi, Organza, Red Sarees, SKUs..."
-                    className="w-full rounded-md border border-brand-300 pl-8 pr-3 py-1.5 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
-                    autoFocus
-                  />
+          {/* Quick Header Utility Links */}
+          <div className="hidden md:flex items-center gap-5 text-[11px] font-medium text-rose-200 shrink-0">
+            <Link
+              href="/track-order"
+              className="flex items-center gap-1 hover:text-[#d4af37] transition-colors"
+            >
+              <Truck className="w-3 h-3 text-[#d4af37]" />
+              <span>Track Order</span>
+            </Link>
+            <Link
+              href="/#stores"
+              className="flex items-center gap-1 hover:text-[#d4af37] transition-colors"
+            >
+              <MapPin className="w-3 h-3 text-[#d4af37]" />
+              <span>Flagship Stores</span>
+            </Link>
+            <a
+              href="tel:+919641145871"
+              className="flex items-center gap-1 hover:text-[#d4af37] transition-colors"
+            >
+              <Phone className="w-3 h-3 text-[#d4af37]" />
+              <span>+91 9641145871</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MAIN HEADER ROW: Crisp White Luxury with Deep Royal Wine & Gold Accents */}
+      <div className="bg-white border-b border-stone-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4 lg:gap-8">
+          {/* Mobile Menu Button & Brand Logo */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden rounded-lg p-2 text-stone-700 hover:bg-stone-100 transition-colors"
+              aria-label="Toggle navigation"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+
+            <Link href="/" className="flex items-center gap-3 group">
+              {/* Generated Royal Emblem Logo */}
+              <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-[#d4af37] shadow-sm bg-white p-0.5 group-hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/brand-logo.png"
+                  alt="Royal Saree and Family Crest"
+                  fill
+                  className="object-contain p-0.5"
+                  priority
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl sm:text-2xl font-serif font-bold text-[#540924] tracking-normal leading-none group-hover:text-[#3d0517] transition-colors">
+                  Royal Saree &amp; Family
+                </span>
+                <span className="text-[10px] sm:text-[10.5px] font-semibold tracking-[0.2em] text-[#b48325] uppercase mt-0.5">
+                  A Retail 360° Venture • Pure Silks
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          {/* Prominent Centered Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-xl mx-2">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search pure silk sarees, kanjivaram, banarasi, bridal, organza..."
+                className="w-full rounded-full border border-stone-300 bg-stone-50/70 hover:bg-white focus:bg-white pl-5 pr-28 py-2.5 text-xs text-stone-900 placeholder:text-stone-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-[#540924] focus:border-[#540924] transition-all"
+              />
+              <button
+                type="submit"
+                className="absolute right-1 top-1 bottom-1 px-5 rounded-full bg-[#540924] hover:bg-[#3d0517] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all border border-[#d4af37]/40"
+              >
+                <Search className="w-3.5 h-3.5 text-[#d4af37]" />
+                <span className="text-white">Search</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Action Icons (Wishlist, Account, Cart) */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Wishlist Link with Live Badge */}
+            <Link
+              href="/dashboard?tab=wishlist"
+              aria-label="Wishlist"
+              className="relative flex items-center justify-center p-2 rounded-full text-stone-700 hover:text-[#540924] hover:bg-stone-100 transition-colors"
+              title="Saved Wishlist"
+            >
+              <Heart className="w-5 h-5 text-stone-700 hover:text-[#540924] transition-colors" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#540924] px-1 text-[9.5px] font-bold text-white shadow-xs">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* User Account / Profile Dropdown */}
+            {user ? (
+              <div className="relative group">
+                <button className="flex items-center gap-2 rounded-full border border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-stone-100 transition-colors">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#540924] text-[#d4af37] text-[10px] font-bold">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="max-w-[80px] sm:max-w-[100px] truncate font-medium text-stone-800">
+                    {user.name.split(' ')[0]}
+                  </span>
+                  <ChevronDown className="w-3 h-3 text-stone-500 group-hover:rotate-180 transition-transform" />
+                </button>
+
+                <div className="absolute right-0 mt-1 w-52 rounded-xl border border-stone-200 bg-white py-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-stone-800">
+                  <div className="px-4 py-2 border-b border-stone-100">
+                    <p className="text-xs font-bold text-[#540924] truncate">{user.name}</p>
+                    <p className="text-[10px] text-stone-500 truncate">{user.email}</p>
+                  </div>
+
+                  {user.role === 'ADMIN' && (
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#540924] hover:bg-rose-50"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+                      <span>Admin Control Center</span>
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2 px-4 py-2 text-xs text-stone-700 hover:bg-stone-50"
+                  >
+                    <UserIcon className="w-3.5 h-3.5 text-stone-500" />
+                    <span>My Profile</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard?tab=orders"
+                    className="flex items-center gap-2 px-4 py-2 text-xs text-stone-700 hover:bg-stone-50"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 text-stone-500" />
+                    <span>My Orders</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard?tab=wishlist"
+                    className="flex items-center gap-2 px-4 py-2 text-xs text-stone-700 hover:bg-stone-50"
+                  >
+                    <Heart className="w-3.5 h-3.5 text-stone-500" />
+                    <span>Saved Wishlist</span>
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 border-t border-stone-100 mt-1"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
-                <Button type="submit" size="xs" variant="primary">
-                  Search
-                </Button>
-              </form>
-            </div>
-          )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 hover:border-[#540924] bg-stone-50 hover:bg-[#540924] hover:text-white px-3.5 py-1.5 text-xs font-semibold text-stone-800 transition-all group"
+              >
+                <UserIcon className="w-3.5 h-3.5 text-[#540924] group-hover:text-white transition-colors" />
+                <span>Sign In</span>
+              </Link>
+            )}
+
+            {/* Shopping Bag / Cart */}
+            <Link
+              href="/cart"
+              aria-label="Shopping Cart"
+              className="relative flex items-center justify-center p-2.5 rounded-full bg-[#540924] hover:bg-[#3d0517] text-white shadow-sm transition-all"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#d4af37]" />
+              {cartCount > 0 ? (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#d4af37] px-1 text-[9.5px] font-bold text-[#540924] shadow-xs">
+                  {cartCount}
+                </span>
+              ) : (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#d4af37] px-1 text-[9.5px] font-bold text-[#540924] shadow-xs">
+                  0
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
 
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-brand-200 bg-white px-4 py-3 space-y-2">
-            {navLinks.map((link) => (
+        {/* Mobile Search Bar Display */}
+        <div className="md:hidden px-4 pb-3">
+          <form onSubmit={handleSearchSubmit} className="relative w-full">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search sarees, silks, motifs..."
+              className="w-full rounded-full border border-stone-300 bg-stone-50 pl-4 pr-10 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#540924]"
+            />
+            <button
+              type="submit"
+              className="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-full bg-[#540924] text-white flex items-center justify-center"
+            >
+              <Search className="w-3 h-3 text-[#d4af37]" />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* 3. SUB-NAVIGATION CATEGORY BAR (Pure White Background with Distinct Deep Wine/Ruby Text) */}
+      <nav className="hidden lg:block bg-white border-y border-stone-200/90 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <ul className="flex items-center justify-between gap-2 xl:gap-5 py-2.5 text-xs font-bold text-[#540924] w-full">
+            {subNavCategories.map((item) => (
+              <li key={item.label} className="shrink-0">
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'transition-all tracking-wider py-1.5 border-b-2 border-transparent uppercase text-[10.5px] xl:text-[11.5px] font-bold whitespace-nowrap block',
+                    pathname === item.href
+                      ? 'text-[#b48325] border-[#b48325]'
+                      : 'text-[#540924] hover:text-[#b48325] hover:border-[#b48325]/50'
+                  )}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      {/* 4. MOBILE SLIDE-OUT MENU */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-b border-stone-200 bg-white px-4 py-4 space-y-3 animate-in fade-in duration-200 shadow-xl">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#b48325]">
+            Explore Collections
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {subNavCategories.map((item) => (
               <Link
-                key={link.href}
-                href={link.href}
+                key={item.label}
+                href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  'block py-1.5 text-xs font-medium rounded px-2',
-                  pathname === link.href ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-brand-800'
-                )}
+                className="py-2 px-3 rounded-lg bg-stone-50 hover:bg-emerald-50 hover:text-[#053728] text-stone-700 font-medium transition-colors"
               >
-                {link.label}
+                {item.label}
               </Link>
             ))}
-            {user?.role === 'ADMIN' && (
+          </div>
+
+          {user?.role === 'ADMIN' && (
+            <div className="pt-2 border-t border-stone-100">
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-1.5 text-xs font-semibold text-royal-700 bg-royal-50 rounded px-2"
+                className="flex items-center gap-2 py-2 px-3 rounded-lg bg-[#053728] text-white text-xs font-semibold"
               >
-                ★ Admin Control Center
+                <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+                <span>Admin Dashboard</span>
               </Link>
-            )}
+            </div>
+          )}
 
-            {user ? (
-              <div className="pt-2 border-t border-stone-100 space-y-1">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1.5 text-xs font-semibold text-brand-900 rounded px-2"
-                >
-                  Customer Dashboard
-                </Link>
-                <Link
-                  href="/dashboard?tab=orders"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1.5 text-xs text-stone-600 rounded px-2"
-                >
-                  My Orders ({user.name})
-                </Link>
-                <Link
-                  href="/dashboard?tab=wishlist"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1.5 text-xs text-stone-600 rounded px-2"
-                >
-                  Saved Wishlist
-                </Link>
-                <button
-                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
-                  className="block w-full text-left py-1.5 text-xs text-rose-600 rounded px-2"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <div className="pt-2 border-t border-stone-100">
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-1.5 text-xs font-semibold text-brand-900 rounded px-2"
-                >
-                  Sign In / Register
-                </Link>
-              </div>
-            )}
+          <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
+            <Link
+              href="/track-order"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#053728] font-medium"
+            >
+              Track Order
+            </Link>
+            <Link
+              href="/#stores"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#053728] font-medium"
+            >
+              Our Stores
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#053728] font-medium"
+            >
+              Contact Us
+            </Link>
           </div>
-        )}
-      </header>
-    </>
+        </div>
+      )}
+    </header>
   );
 }

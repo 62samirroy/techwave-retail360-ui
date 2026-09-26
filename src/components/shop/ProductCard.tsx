@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Heart, MessageCircle, Check, Star } from 'lucide-react';
+import { ShoppingBag, Heart, MessageCircle, Check, Star, Loader2 } from 'lucide-react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { Badge } from '@/components/ui/Badge';
 import { cn, buildWhatsAppLink } from '@/lib/utils';
@@ -52,7 +52,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isOutOfStock || isAdding) return;
+    if (isOutOfStock || isAdding || justAdded) return;
 
     setIsAdding(true);
     try {
@@ -65,7 +65,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
         }
       }
       setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 1800);
+      setTimeout(() => setJustAdded(false), 2000);
     } catch (err) {
       console.error(err);
     } finally {
@@ -88,11 +88,11 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
     }
   };
 
-  const waMessage = `Namaste Royal Saree team, I am interested in: ${product.name} (SKU: ${product.sku}). Can you share fabric details & blouse piece draping photos?`;
+  const waMessage = `Namaste Royal Saree & Family team, I am interested in: ${product.name}. Can you share fabric details & draping photos?`;
   const whatsappUrl = buildWhatsAppLink(waMessage);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/90 bg-white transition-all duration-300 hover:border-purple-300 hover:shadow-[0_16px_36px_rgba(88,28,135,0.08)] hover:-translate-y-1">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/90 bg-white transition-all duration-300 hover:border-[#540924]/50 hover:shadow-[0_16px_36px_rgba(84,9,36,0.14)] hover:-translate-y-1">
       {/* Product Image Frame */}
       <div className="relative aspect-[3/4.2] w-full overflow-hidden bg-stone-100">
         <Link href={`/product/${product.id}`} className="block h-full w-full">
@@ -111,17 +111,17 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
         {/* Top-Left Status & Craft Badges */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
           {product.isBestseller && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-stone-950/90 backdrop-blur-xs text-amber-300 border border-amber-400/40 px-2.5 py-0.5 text-[9.5px] font-bold tracking-wider uppercase shadow-xs">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#540924]/95 backdrop-blur-xs text-[#d4af37] border border-[#d4af37]/40 px-2.5 py-0.5 text-[9.5px] font-bold tracking-wider uppercase shadow-xs">
               <span>★</span> Bestseller
             </span>
           )}
           {discountPercent && (
-            <span className="inline-flex items-center rounded-full bg-emerald-600 text-white font-bold px-2 py-0.5 text-[9.5px] tracking-wide shadow-xs">
+            <span className="inline-flex items-center rounded-full bg-[#b48325] text-white font-bold px-2 py-0.5 text-[9.5px] tracking-wide shadow-xs">
               {discountPercent}% OFF
             </span>
           )}
           {product.isFeatured && !product.isBestseller && (
-            <span className="rounded-full bg-purple-700 text-white px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase shadow-xs">
+            <span className="rounded-full bg-[#540924] text-[#fbf6ec] border border-[#d4af37]/30 px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase shadow-xs">
               Heritage Edit
             </span>
           )}
@@ -137,7 +137,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
           )}
         </div>
 
-        {/* Top-Right Floating Actions: Wishlist & WhatsApp */}
+        {/* Top-Right Floating Actions: Wishlist & WhatsApp (Inquiry hidden until hover) */}
         <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
           <button
             onClick={handleWishlist}
@@ -150,6 +150,8 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
           >
             <Heart className={cn('h-3.5 w-3.5 transition-transform', isWishlisted && 'fill-rose-600 scale-110')} />
           </button>
+          
+          {/* WhatsApp Inquiry button: Hidden by default, visible only on hover */}
           <a
             href={whatsappUrl}
             target="_blank"
@@ -157,18 +159,18 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
             aria-label="Inquire on WhatsApp"
             title="Inquire with Saree Stylist"
             onClick={(e) => e.stopPropagation()}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md hover:bg-emerald-600 hover:scale-105 active:scale-90 transition-all"
+            className="opacity-0 group-hover:opacity-100 flex h-8 w-8 items-center justify-center rounded-full bg-[#540924] text-[#d4af37] shadow-md hover:bg-[#3d0517] hover:scale-105 active:scale-90 transition-all duration-200 border border-[#d4af37]/30"
           >
             <MessageCircle className="h-3.5 w-3.5" />
           </a>
         </div>
       </div>
 
-      {/* Card Details Body */}
-      <div className="flex flex-1 flex-col p-3.5 sm:p-4">
+      {/* Card Details Body (Clean & Minimal: Category, Rating, Title, Price & Hover Add) */}
+      <div className="flex flex-1 flex-col p-3 sm:p-3.5">
         {/* Category & Star Rating */}
         <div className="flex items-center justify-between text-[11px] mb-1">
-          <span className="text-[10px] uppercase tracking-widest font-semibold text-purple-700 truncate max-w-[70%]">
+          <span className="text-[10px] uppercase tracking-widest font-semibold text-[#b48325] truncate max-w-[70%]">
             {categoryName}
           </span>
           <div className="flex items-center gap-1 font-semibold text-[10.5px] text-stone-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
@@ -178,21 +180,14 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
         </div>
 
         {/* Product Title */}
-        <Link href={`/product/${product.id}`} className="group-hover:text-purple-900 transition-colors">
+        <Link href={`/product/${product.id}`} className="group-hover:text-[#540924] transition-colors mb-2">
           <h3 className="line-clamp-1 text-sm font-serif font-bold text-stone-900 leading-snug">
             {product.name}
           </h3>
         </Link>
 
-        {/* SKU & Authenticity Hallmark */}
-        <p className="text-[10px] text-stone-400 mt-0.5 mb-2.5 font-mono flex items-center gap-1">
-          <span>SKU: {product.sku}</span>
-          <span>•</span>
-          <span className="text-emerald-700 font-sans font-medium">Silk Hallmark</span>
-        </p>
-
         {/* Bottom Price and Add-To-Bag Action Bar */}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 border-t border-stone-100">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2 border-t border-stone-100 min-h-[36px]">
           <div>
             <PriceDisplay
               price={product.price}
@@ -201,19 +196,28 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
             />
           </div>
 
+          {/* Add Button: Slides in from left to right on card hover */}
           <button
             onClick={handleAddToCart}
-            disabled={isOutOfStock || isAdding}
+            disabled={isOutOfStock || isAdding || justAdded}
             className={cn(
-              'inline-flex items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold tracking-wide transition-all duration-200 shadow-xs',
+              'inline-flex items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold tracking-wide shadow-xs transition-all duration-300 ease-out',
+              'opacity-100 sm:opacity-0 sm:-translate-x-3 sm:group-hover:opacity-100 sm:group-hover:translate-x-0',
               justAdded
-                ? 'bg-emerald-600 text-white shadow-emerald-600/20'
+                ? 'bg-[#540924] text-white shadow-[#540924]/20 !opacity-100 !translate-x-0'
+                : isAdding
+                ? 'bg-[#3d0517] text-white cursor-wait !opacity-100 !translate-x-0'
                 : isOutOfStock
                 ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
-                : 'bg-stone-900 hover:bg-black text-white hover:shadow-md active:scale-95'
+                : 'bg-[#540924] hover:bg-[#3d0517] text-white hover:shadow-md active:scale-95 border border-[#d4af37]/30'
             )}
           >
-            {justAdded ? (
+            {isAdding ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin text-[#d4af37]" />
+                <span>Adding...</span>
+              </>
+            ) : justAdded ? (
               <>
                 <Check className="w-3.5 h-3.5 mr-1 stroke-[2.5]" /> Added
               </>
@@ -221,7 +225,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
               'Sold Out'
             ) : (
               <>
-                <ShoppingBag className="w-3.5 h-3.5 mr-1 text-purple-300" /> Add
+                <ShoppingBag className="w-3.5 h-3.5 mr-1 text-[#d4af37]" /> Add
               </>
             )}
           </button>

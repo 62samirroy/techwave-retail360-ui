@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
 import { ProductGridSkeleton, EmptyState } from '@/components/ui/LoadingState';
@@ -9,8 +10,9 @@ import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { ProductData, CategoryData } from '@/types';
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default function CategoryPage({ params }: { params?: { slug?: string } }) {
+  const routeParams = useParams();
+  const slug = (params?.slug || routeParams?.slug || '') as string;
   const [category, setCategory] = useState<CategoryData | null>(null);
   const [products, setProducts] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,27 +44,27 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
   }, [slug]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="min-h-[75vh] max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 flex flex-col">
       {/* Breadcrumb / Back button */}
-      <div className="flex items-center gap-2 text-xs text-brand-500">
-        <Link href="/shop" className="hover:text-primary-700 flex items-center gap-1">
+      <div className="flex items-center gap-2 text-xs text-stone-500">
+        <Link href="/shop" className="hover:text-[#540924] flex items-center gap-1 font-medium">
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>All Sarees</span>
         </Link>
         <span>/</span>
-        <span className="font-semibold text-brand-900">{category?.name || slug}</span>
+        <span className="font-semibold text-[#540924]">{category?.name || slug}</span>
       </div>
 
-      {/* Category Header */}
-      <div className="rounded-xl border border-brand-200 bg-gradient-to-r from-brand-900 via-primary-950 to-brand-950 text-white p-6 sm:p-8 relative overflow-hidden shadow-sm">
-        <div className="relative z-10 max-w-xl space-y-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-royal-400">
+      {/* Category Header - Compact Sleek Height & Reduced Darkness */}
+      <div className="rounded-2xl border border-[#d4af37]/35 bg-gradient-to-r from-[#630f2c] via-[#7d173c] to-[#630f2c] text-white py-4 px-6 sm:py-5 sm:px-8 relative overflow-hidden shadow-xs">
+        <div className="relative z-10 max-w-2xl space-y-1">
+          <span className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#fde68a]">
             Handloom Special Collection
           </span>
-          <h1 className="text-xl sm:text-3xl font-serif font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-normal">
             {category?.name || 'Exclusive Weave'}
           </h1>
-          <p className="text-xs text-brand-300 leading-relaxed">
+          <p className="text-xs text-rose-100/90 leading-relaxed font-normal max-w-xl">
             {category?.description || 'Authentic regional weaves handcrafted with generational mastery and certified pure materials.'}
           </p>
         </div>

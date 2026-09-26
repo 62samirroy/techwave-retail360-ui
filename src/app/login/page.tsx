@@ -150,34 +150,34 @@ function LoginForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 space-y-6">
+    <div className="min-h-[75vh] max-w-md mx-auto px-4 sm:px-6 py-12 space-y-6 flex flex-col justify-center">
       <div className="text-center space-y-1.5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-900 text-white font-serif font-bold text-xl mx-auto shadow-md">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#540924] text-[#d4af37] font-serif font-bold text-xl mx-auto shadow-md border border-[#d4af37]/30">
           R
         </div>
-        <h1 className="text-2xl font-serif font-bold text-brand-950">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
           Sign In
         </h1>
-        <p className="text-xs text-brand-600">
-          Welcome back to Royal Saree &amp; Fashion
+        <p className="text-xs text-stone-500">
+          Welcome back to Royal Saree &amp; Family • Retail 360°
         </p>
       </div>
 
       {error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 flex items-center gap-2.5 text-xs text-rose-800 animate-fadeIn">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 flex items-center gap-2.5 text-xs text-rose-800 animate-fadeIn">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 flex items-center gap-2.5 text-xs text-emerald-800 animate-fadeIn">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 flex items-center gap-2.5 text-xs text-emerald-800 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
-      <div className="rounded-2xl border border-brand-200 bg-white p-6 sm:p-7 shadow-subtle space-y-5">
+      <div className="rounded-3xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-5">
         {/* 1. Official Google Sign-In Button */}
         <div className="flex flex-col items-center justify-center space-y-2">
           <div id="googleLoginButtonDiv" className="min-h-[44px] flex items-center justify-center" />
@@ -186,10 +186,10 @@ function LoginForm() {
         {/* Divider */}
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-brand-200" />
+            <div className="w-full border-t border-stone-200" />
           </div>
           <div className="relative flex justify-center text-[10px] uppercase font-semibold">
-            <span className="bg-white px-3 text-brand-400">or sign in with email</span>
+            <span className="bg-white px-3 text-stone-400">or sign in with email</span>
           </div>
         </div>
 
@@ -207,12 +207,12 @@ function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-brand-800">
+              <label className="text-xs font-medium text-stone-800">
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-primary-600 hover:text-primary-700 hover:underline font-medium"
+                className="text-xs text-[#b48325] hover:text-[#540924] hover:underline font-medium"
               >
                 Forgot Password?
               </Link>
@@ -227,20 +227,18 @@ function LoginForm() {
             />
           </div>
 
-          <Button
+          <button
             type="submit"
-            variant="primary"
-            size="md"
-            className="w-full mt-2 font-medium"
-            isLoading={loading}
+            disabled={loading}
+            className="w-full rounded-full bg-[#540924] hover:bg-[#3d0517] text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all disabled:opacity-50 mt-2"
           >
-            Sign In
-          </Button>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
         </form>
 
-        <div className="pt-3 text-center text-xs text-brand-600 border-t border-brand-100">
+        <div className="pt-3 text-center text-xs text-stone-600 border-t border-stone-100">
           Don&apos;t have an account yet?{' '}
-          <Link href="/register" className="font-semibold text-primary-600 hover:text-primary-700 hover:underline">
+          <Link href="/register" className="font-semibold text-[#540924] hover:text-[#b48325] hover:underline">
             Create an account
           </Link>
         </div>

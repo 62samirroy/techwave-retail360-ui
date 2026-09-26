@@ -1,8 +1,9 @@
 export const APP_CONFIG = {
-  name: 'TechWave Retail360',
-  company: 'TechWave Solutions',
+  name: 'Retail 360°',
+  company: 'Retail 360° Solutions',
   tagline: 'Build • Innovate • Transform',
-  demoStore: 'Royal Saree & Fashion',
+  demoStore: 'Royal Saree & Family',
+  parentBrand: 'Retail 360°',
   phone: '+91 9641145871',
   email: 'techwavesolutions.dev@gmail.com',
   whatsapp: '+919641145871',

@@ -51,10 +51,10 @@ export default function ContactPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div className="text-center space-y-1">
-        <h1 className="text-xl sm:text-3xl font-serif font-bold text-brand-950">
-          Get in Touch
+        <h1 className="text-2xl sm:text-4xl font-serif font-bold text-[#540924]">
+          Get in Touch with our Curators
         </h1>
-        <p className="text-xs text-brand-500">
+        <p className="text-xs sm:text-sm text-stone-500">
           We are here to assist you with custom orders, bridal consultations, and dispatch queries.
         </p>
       </div>
@@ -62,43 +62,43 @@ export default function ContactPage() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Contact Info */}
         <div className="md:col-span-5 space-y-4">
-          <div className="rounded-lg border border-brand-200 bg-white p-5 shadow-subtle space-y-4 text-xs">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-brand-900 border-b border-brand-100 pb-2">
+          <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-xs space-y-4 text-xs">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif border-b border-stone-100 pb-2">
               Contact Channels
             </h2>
 
             <div className="space-y-3">
               <div className="flex items-start gap-2.5">
-                <Phone className="w-4 h-4 text-royal-600 shrink-0 mt-0.5" />
+                <Phone className="w-4 h-4 text-[#b48325] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-brand-900">Phone Support</p>
-                  <p className="text-brand-600">{APP_CONFIG.phone}</p>
+                  <p className="font-semibold text-stone-900">Phone Support</p>
+                  <p className="text-stone-600">{APP_CONFIG.phone}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <Mail className="w-4 h-4 text-royal-600 shrink-0 mt-0.5" />
+                <Mail className="w-4 h-4 text-[#b48325] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-brand-900">Email Address</p>
-                  <p className="text-brand-600 truncate">{APP_CONFIG.email}</p>
+                  <p className="font-semibold text-stone-900">Email Address</p>
+                  <p className="text-stone-600 truncate">{APP_CONFIG.email}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-royal-600 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#b48325] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-brand-900">Registered Office</p>
-                  <p className="text-brand-600 leading-relaxed text-[11px]">{APP_CONFIG.address}</p>
+                  <p className="font-semibold text-stone-900">Registered Flagship</p>
+                  <p className="text-stone-600 leading-relaxed text-[11px]">{APP_CONFIG.address}</p>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-brand-100">
+            <div className="pt-2 border-t border-stone-100">
               <a href={whatsappDirectUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="w-full text-emerald-700 border-emerald-300 hover:bg-emerald-50 gap-2">
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                <button className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-rose-300 bg-rose-50/50 hover:bg-rose-100/60 text-[#540924] px-4 py-2.5 text-xs font-semibold transition-colors shadow-2xs">
+                  <MessageCircle className="w-4 h-4 text-[#540924]" />
                   <span>Chat on WhatsApp Directly</span>
-                </Button>
+                </button>
               </a>
             </div>
           </div>
@@ -106,8 +106,8 @@ export default function ContactPage() {
 
         {/* Inquiry Form */}
         <div className="md:col-span-7">
-          <div className="rounded-lg border border-brand-200 bg-white p-5 shadow-subtle space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-brand-900 border-b border-brand-100 pb-2">
+          <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-xs space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif border-b border-stone-100 pb-2">
               Send an Inquiry
             </h2>
 

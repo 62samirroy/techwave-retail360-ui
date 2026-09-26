@@ -146,34 +146,44 @@ export function CustomerAIChatModal() {
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 rounded-full bg-[#9333EA] hover:bg-[#8017d4] text-white px-5 py-2.5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 group"
+            aria-label="Ask Silk Agent"
+            className="flex items-center gap-2.5 rounded-full bg-[#540924] hover:bg-[#6b0d30] text-white border-2 border-[#d4af37] px-4 sm:px-5 py-2.5 shadow-2xl hover:shadow-[#d4af37]/30 hover:scale-105 active:scale-95 transition-all duration-200 group"
           >
-            <Sparkles className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
-            <span className="text-sm font-medium">Ask our assistant</span>
+            <div className="w-6 h-6 rounded-full bg-[#d4af37] text-[#540924] flex items-center justify-center shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#540924] group-hover:rotate-12 transition-transform" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold tracking-wider text-white uppercase leading-none">
+                Ask Silk Agent
+              </span>
+              <span className="text-[9.5px] font-semibold text-[#fde68a] leading-none mt-0.5">
+                Retail 360° AI
+              </span>
+            </div>
           </button>
         )}
       </div>
 
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[92vw] sm:w-[390px] h-[540px] max-h-[85vh] rounded-xl border border-brand-200 bg-white shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-5 right-5 z-50 w-[92vw] sm:w-[390px] h-[540px] max-h-[85vh] rounded-2xl border border-stone-200 bg-white shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between px-3.5 py-2.5 bg-gradient-to-r from-brand-950 via-brand-900 to-primary-950 text-white border-b border-brand-800">
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-royal-500/20 text-royal-400 border border-royal-500/30">
-                <Sparkles className="w-3.5 h-3.5 text-royal-400" />
+          <div className="flex items-center justify-between px-4 py-3 bg-[#540924] text-white border-b border-[#3d0517]">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d4af37] text-[#540924] shadow-xs">
+                <Sparkles className="w-4 h-4 text-[#540924]" />
               </div>
               <div>
-                <h4 className="text-xs font-semibold leading-tight text-white flex items-center gap-1.5">
-                  <span>Retail360 Customer AI</span>
+                <h4 className="text-xs font-bold leading-tight text-white flex items-center gap-1.5">
+                  <span>Retail 360° Silk Stylist</span>
                 </h4>
-                <p className="text-[10px] text-royal-300 font-medium">
-                  Live Supabase Catalog & Order Tracking
+                <p className="text-[10px] text-[#fde68a] font-medium">
+                  Royal Saree &amp; Family • Catalog &amp; Tracking
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="rounded p-1 text-brand-400 hover:text-white hover:bg-brand-800 transition-colors"
+              className="rounded-full p-1 text-rose-200 hover:text-white hover:bg-[#3d0517] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -181,12 +191,12 @@ export function CustomerAIChatModal() {
 
           {/* Starter prompt pills */}
           {messages.length <= 2 && (
-            <div className="bg-brand-50/80 px-3 py-2 border-b border-brand-200/60 overflow-x-auto no-scrollbar flex gap-1.5 shrink-0">
+            <div className="bg-stone-50 px-3 py-2 border-b border-stone-200 overflow-x-auto no-scrollbar flex gap-1.5 shrink-0">
               {starterPrompts.map((p, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(p)}
-                  className="whitespace-nowrap text-[10px] font-medium bg-white hover:bg-brand-100 text-brand-700 px-2 py-1 rounded-full border border-brand-200 shadow-2xs transition-colors shrink-0"
+                  className="whitespace-nowrap text-[10px] font-semibold bg-white hover:bg-rose-50 text-[#540924] px-2.5 py-1 rounded-full border border-stone-300 hover:border-[#540924] shadow-2xs transition-colors shrink-0"
                 >
                   {p}
                 </button>
@@ -195,7 +205,7 @@ export function CustomerAIChatModal() {
           )}
 
           {/* Messages list */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-slate-50/50 text-xs">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-stone-50/50 text-xs">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -203,10 +213,10 @@ export function CustomerAIChatModal() {
               >
                 <div
                   className={cn(
-                    'max-w-[88%] rounded-lg px-3 py-2 text-xs leading-relaxed',
+                    'max-w-[88%] rounded-xl px-3 py-2 text-xs leading-relaxed',
                     m.sender === 'user'
-                      ? 'bg-primary-600 text-white rounded-br-none shadow-2xs'
-                      : 'bg-white text-brand-900 border border-brand-200 shadow-2xs rounded-bl-none'
+                      ? 'bg-[#540924] text-white rounded-br-none shadow-xs'
+                      : 'bg-white text-stone-900 border border-stone-200 shadow-xs rounded-bl-none'
                   )}
                 >
                   <div className="space-y-0.5">{formatText(m.content)}</div>
@@ -286,24 +296,22 @@ export function CustomerAIChatModal() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-2 border-t border-brand-200 bg-white flex items-center gap-1.5"
+            className="p-3 border-t border-stone-200 bg-white flex items-center gap-2"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about sarees, prices, order ID..."
-              className="flex-1 rounded-md border border-brand-300 px-3 py-1.5 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+              className="flex-1 rounded-full border border-stone-300 bg-stone-50 px-4 py-2 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#540924] focus:border-[#540924] transition-all"
             />
-            <Button
+            <button
               type="submit"
-              size="xs"
-              variant="primary"
               disabled={isLoading || !input.trim()}
-              className="h-8 px-2.5"
+              className="h-8 w-8 rounded-full bg-[#540924] hover:bg-[#3d0517] disabled:opacity-40 text-white flex items-center justify-center shadow-xs transition-all shrink-0"
             >
-              <Send className="w-3.5 h-3.5" />
-            </Button>
+              <Send className="w-3.5 h-3.5 text-[#d4af37]" />
+            </button>
           </form>
         </div>
       )}

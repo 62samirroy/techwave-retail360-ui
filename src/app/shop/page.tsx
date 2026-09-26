@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Filter, X, ArrowUpDown, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
+import { AlponaDesign } from '@/components/ui/AlponaDesign';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { ProductGridSkeleton, EmptyState } from '@/components/ui/LoadingState';
@@ -104,15 +105,15 @@ function ShopContent() {
   const hasActiveFilters = Boolean(search || category || minPrice || maxPrice || inStock);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="min-h-[75vh] max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 flex flex-col">
       {/* Top Banner / Heading */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-brand-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-stone-200 pb-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-950">
-            Saree & Fashion Collection
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
+            Saree &amp; Fashion Collection
           </h1>
-          <p className="text-xs text-brand-500 mt-0.5">
-            Showing <strong className="text-brand-900">{totalCount}</strong> authentic handloom & contemporary sarees
+          <p className="text-xs text-stone-500 mt-1">
+            Showing <strong className="text-[#b48325]">{totalCount}</strong> authentic handloom &amp; contemporary sarees
           </p>
         </div>
 
@@ -122,18 +123,18 @@ function ShopContent() {
             variant="outline"
             size="sm"
             onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-            className="lg:hidden gap-1.5"
+            className="lg:hidden gap-1.5 border-stone-300 text-stone-700 hover:text-[#540924]"
           >
             <Filter className="w-3.5 h-3.5" />
             <span>Filters</span>
           </Button>
 
-          <div className="flex items-center gap-1.5 text-xs text-brand-600">
+          <div className="flex items-center gap-1.5 text-xs text-stone-600">
             <span className="hidden sm:inline font-medium">Sort by:</span>
             <select
               value={sort}
               onChange={(e) => updateFilters({ sort: e.target.value })}
-              className="rounded-md border border-brand-300 bg-white px-2.5 py-1 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#540924] focus:border-[#540924]"
             >
               <option value="newest">Newest Arrivals</option>
               <option value="price-asc">Price: Low to High</option>
@@ -149,18 +150,18 @@ function ShopContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Desktop Sidebar Filters */}
         <aside
-          className={`lg:col-span-3 space-y-5 bg-white lg:bg-transparent p-4 lg:p-0 rounded-lg border lg:border-0 border-brand-200 ${
+          className={`lg:col-span-3 space-y-5 bg-white lg:bg-transparent p-4 lg:p-0 rounded-2xl border lg:border-0 border-stone-200 ${
             mobileFilterOpen ? 'block' : 'hidden lg:block'
           }`}
         >
-          <div className="flex items-center justify-between border-b border-brand-200 pb-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-brand-900">
+          <div className="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#540924] font-serif">
               Filter Options
             </h3>
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className="text-[11px] text-primary-600 hover:text-primary-700 font-medium"
+                className="text-[11px] text-[#b48325] hover:text-[#540924] font-semibold"
               >
                 Clear all
               </button>
@@ -169,7 +170,7 @@ function ShopContent() {
 
           {/* Search Box */}
           <div>
-            <label className="block text-xs font-semibold text-brand-800 mb-1.5">
+            <label className="block text-xs font-semibold text-stone-800 mb-1.5">
               Search by Weave or SKU
             </label>
             <form onSubmit={handleSearchSubmit} className="flex gap-1.5">
@@ -178,24 +179,27 @@ function ShopContent() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="e.g. Kanjivaram, Organza, Red..."
-                className="w-full rounded-md border border-brand-300 px-2.5 py-1 text-xs text-brand-900 placeholder:text-brand-400 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-[#540924]"
               />
-              <Button type="submit" size="xs" variant="primary">
+              <button
+                type="submit"
+                className="rounded-xl bg-[#540924] hover:bg-[#3d0517] text-white px-3 py-1.5 text-xs font-medium transition-all"
+              >
                 Go
-              </Button>
+              </button>
             </form>
           </div>
 
           {/* Category Filter */}
           <div>
-            <label className="block text-xs font-semibold text-brand-800 mb-1.5">
+            <label className="block text-xs font-semibold text-stone-800 mb-1.5">
               Weave Category
             </label>
             <div className="space-y-1">
               <button
                 onClick={() => updateFilters({ category: null })}
-                className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
-                  !category ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-brand-700 hover:bg-brand-50'
+                className={`w-full text-left text-xs px-3 py-2 rounded-xl transition-all ${
+                  !category ? 'bg-[#540924] text-white font-semibold shadow-xs' : 'text-stone-700 hover:bg-stone-100'
                 }`}
               >
                 All Categories
@@ -204,14 +208,14 @@ function ShopContent() {
                 <button
                   key={c.id}
                   onClick={() => updateFilters({ category: c.slug })}
-                  className={`w-full text-left text-xs px-2 py-1 rounded flex items-center justify-between transition-colors ${
+                  className={`w-full text-left text-xs px-3 py-2 rounded-xl flex items-center justify-between transition-all ${
                     category === c.slug
-                      ? 'bg-primary-50 text-primary-700 font-semibold'
-                      : 'text-brand-700 hover:bg-brand-50'
+                      ? 'bg-[#540924] text-white font-semibold shadow-xs'
+                      : 'text-stone-700 hover:bg-stone-100'
                   }`}
                 >
                   <span className="truncate">{c.name}</span>
-                  <span className="text-[10px] text-brand-400 font-mono">
+                  <span className={`text-[10px] font-mono ${category === c.slug ? 'text-[#d4af37]' : 'text-stone-400'}`}>
                     {c._count?.products || ''}
                   </span>
                 </button>
@@ -221,7 +225,7 @@ function ShopContent() {
 
           {/* Price Range */}
           <div>
-            <label className="block text-xs font-semibold text-brand-800 mb-1.5">
+            <label className="block text-xs font-semibold text-stone-800 mb-1.5">
               Price Range (₹)
             </label>
             <div className="flex items-center gap-2">
@@ -230,27 +234,27 @@ function ShopContent() {
                 value={minPrice}
                 onChange={(e) => updateFilters({ minPrice: e.target.value || null })}
                 placeholder="Min"
-                className="w-1/2 rounded-md border border-brand-300 px-2 py-1 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-1/2 rounded-xl border border-stone-300 px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#540924]"
               />
-              <span className="text-xs text-brand-400">-</span>
+              <span className="text-xs text-stone-400">-</span>
               <input
                 type="number"
                 value={maxPrice}
                 onChange={(e) => updateFilters({ maxPrice: e.target.value || null })}
                 placeholder="Max"
-                className="w-1/2 rounded-md border border-brand-300 px-2 py-1 text-xs text-brand-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-1/2 rounded-xl border border-stone-300 px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#540924]"
               />
             </div>
           </div>
 
           {/* Availability */}
-          <div className="pt-2 border-t border-brand-200">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-brand-800">
+          <div className="pt-2 border-t border-stone-200">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-stone-800">
               <input
                 type="checkbox"
                 checked={inStock}
                 onChange={(e) => updateFilters({ inStock: e.target.checked ? 'true' : null })}
-                className="rounded border-brand-300 text-primary-600 focus:ring-primary-500"
+                className="rounded border-stone-300 text-[#540924] focus:ring-[#540924]"
               />
               <span>In Stock Ready to Dispatch Only</span>
             </label>
@@ -341,6 +345,9 @@ function ShopContent() {
           )}
         </main>
       </div>
+
+      {/* Traditional Auspicious Alpona Design Accent */}
+      <AlponaDesign className="mt-8" />
     </div>
   );
 }
