@@ -92,7 +92,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
   const whatsappUrl = buildWhatsAppLink(waMessage);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/90 bg-white transition-all duration-300 hover:border-[#540924]/50 hover:shadow-[0_16px_36px_rgba(84,9,36,0.14)] hover:-translate-y-1">
+    <div className="h-full group relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/90 bg-white transition-all duration-300 hover:border-[#540924]/50 hover:shadow-[0_16px_36px_rgba(84,9,36,0.14)] hover:-translate-y-1">
       {/* Product Image Frame */}
       <div className="relative aspect-[3/4.2] w-full overflow-hidden bg-stone-100">
         <Link href={`/product/${product.id}`} className="block h-full w-full">
@@ -201,7 +201,7 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
             onClick={handleAddToCart}
             disabled={isOutOfStock || isAdding || justAdded}
             className={cn(
-              'inline-flex items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold tracking-wide shadow-xs transition-all duration-300 ease-out',
+              'inline-flex items-center justify-center rounded-xl px-3 py-1.5 text-xs font-semibold tracking-wide shadow-xs transition-all duration-300 ease-out shrink-0',
               'opacity-100 sm:opacity-0 sm:-translate-x-3 sm:group-hover:opacity-100 sm:group-hover:translate-x-0',
               justAdded
                 ? 'bg-[#540924] text-white shadow-[#540924]/20 !opacity-100 !translate-x-0'

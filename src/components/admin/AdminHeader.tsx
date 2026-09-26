@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, ExternalLink, Database } from 'lucide-react';
+import { LogOut, ExternalLink, Database, Menu } from 'lucide-react';
 import { api } from '@/lib/api';
 
-export function AdminHeader() {
+export function AdminHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<{ name: string; email: string } | null>(null);
 
@@ -24,9 +24,17 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="h-14 border-b border-stone-200/90 bg-white/95 backdrop-blur-md px-6 flex items-center justify-between shadow-xs shrink-0 select-none">
+    <header className="h-14 border-b border-stone-200/90 bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shadow-xs shrink-0 select-none">
       <div className="flex items-center gap-3">
-        <span className="font-serif text-sm font-bold text-[#540924] tracking-tight">
+        {onMenuClick && (
+          <button 
+            onClick={onMenuClick}
+            className="lg:hidden p-1.5 rounded-lg text-stone-600 hover:bg-stone-100 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+        <span className="font-serif text-sm font-bold text-[#540924] tracking-tight hidden sm:block">
           Royal Saree &amp; Family
         </span>
         <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 text-[11px] font-medium text-emerald-800">

@@ -20,7 +20,7 @@ export function LoadingSpinner({
 
 export function ProductCardSkeleton() {
   return (
-    <div className="relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-xs animate-pulse">
+    <div className="h-full relative flex flex-col overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-xs animate-pulse">
       <div className="relative aspect-[3/4.2] w-full bg-stone-200/80 overflow-hidden">
         <div className="absolute top-2.5 left-2.5 h-4 w-16 rounded-full bg-stone-300" />
         <div className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-stone-300" />

@@ -34,6 +34,7 @@ export function Navbar() {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
 
   const refreshUserData = async () => {
@@ -163,20 +164,20 @@ export function Navbar() {
 
       {/* 2. MAIN HEADER ROW: Crisp White Luxury with Deep Royal Wine & Gold Accents */}
       <div className="bg-white border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4 lg:gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-2 md:gap-4 lg:gap-8">
           {/* Mobile Menu Button & Brand Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden rounded-lg p-2 text-stone-700 hover:bg-stone-100 transition-colors"
+              className="lg:hidden rounded-lg p-1.5 sm:p-2 text-stone-700 hover:bg-stone-100 transition-colors"
               aria-label="Toggle navigation"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
 
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
               {/* Generated Royal Emblem Logo */}
-              <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border-2 border-[#d4af37] shadow-sm bg-white p-0.5 group-hover:scale-105 transition-transform duration-300">
+              <div className="relative h-9 w-9 sm:h-12 sm:w-12 shrink-0 rounded-full overflow-hidden border-2 border-[#d4af37] shadow-sm bg-white p-0.5 group-hover:scale-105 transition-transform duration-300">
                 <Image
                   src="/brand-logo.png"
                   alt="Royal Saree and Family Crest"
@@ -186,10 +187,10 @@ export function Navbar() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-serif font-bold text-[#540924] tracking-normal leading-none group-hover:text-[#3d0517] transition-colors">
+                <span className="text-sm sm:text-lg lg:text-2xl font-serif font-bold text-[#540924] tracking-tight sm:tracking-normal leading-none group-hover:text-[#3d0517] transition-colors whitespace-nowrap">
                   Royal Saree &amp; Family
                 </span>
-                <span className="text-[10px] sm:text-[10.5px] font-semibold tracking-[0.2em] text-[#b48325] uppercase mt-0.5">
+                <span className="hidden lg:block text-[10.5px] font-semibold tracking-[0.2em] text-[#b48325] uppercase mt-0.5">
                   A Retail 360° Venture • Pure Silks
                 </span>
               </div>
@@ -197,35 +198,43 @@ export function Navbar() {
           </div>
 
           {/* Prominent Centered Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-xl mx-2">
+          <div className="hidden md:flex flex-1 max-w-sm lg:max-w-xl mx-2">
             <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search pure silk sarees, kanjivaram, banarasi, bridal, organza..."
-                className="w-full rounded-full border border-stone-300 bg-stone-50/70 hover:bg-white focus:bg-white pl-5 pr-28 py-2.5 text-xs text-stone-900 placeholder:text-stone-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-[#540924] focus:border-[#540924] transition-all"
+                placeholder="Search pure silk sarees, kanjivaram, bridal..."
+                className="w-full rounded-full border border-stone-300 bg-stone-50/70 hover:bg-white focus:bg-white pl-5 pr-24 py-2.5 text-xs text-stone-900 placeholder:text-stone-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-[#540924] focus:border-[#540924] transition-all"
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1 bottom-1 px-5 rounded-full bg-[#540924] hover:bg-[#3d0517] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all border border-[#d4af37]/40"
+                className="absolute right-1 top-1 bottom-1 px-4 rounded-full bg-[#540924] hover:bg-[#3d0517] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all border border-[#d4af37]/40"
               >
                 <Search className="w-3.5 h-3.5 text-[#d4af37]" />
-                <span className="text-white">Search</span>
+                <span className="text-white hidden lg:inline">Search</span>
               </button>
             </form>
           </div>
 
           {/* Action Icons (Wishlist, Account, Cart) */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
+            {/* Mobile Search Toggle Icon */}
+            <button
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              className="md:hidden flex items-center justify-center p-1.5 sm:p-2 rounded-full text-stone-700 hover:text-[#540924] hover:bg-stone-100 transition-colors"
+              aria-label="Toggle mobile search"
+            >
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
             {/* Wishlist Link with Live Badge */}
             <Link
               href="/dashboard?tab=wishlist"
               aria-label="Wishlist"
-              className="relative flex items-center justify-center p-2 rounded-full text-stone-700 hover:text-[#540924] hover:bg-stone-100 transition-colors"
+              className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-full text-stone-700 hover:text-[#540924] hover:bg-stone-100 transition-colors"
               title="Saved Wishlist"
             >
-              <Heart className="w-5 h-5 text-stone-700 hover:text-[#540924] transition-colors" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-stone-700 hover:text-[#540924] transition-colors" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#540924] px-1 text-[9.5px] font-bold text-white shadow-xs">
                   {wishlistCount}
@@ -236,14 +245,14 @@ export function Navbar() {
             {/* User Account / Profile Dropdown */}
             {user ? (
               <div className="relative group">
-                <button className="flex items-center gap-2 rounded-full border border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-stone-100 transition-colors">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#540924] text-[#d4af37] text-[10px] font-bold">
+                <button className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-stone-300 bg-stone-50 p-1 sm:px-3 sm:py-1.5 text-xs font-semibold text-stone-800 hover:bg-stone-100 transition-colors">
+                  <div className="flex h-7 w-7 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-[#540924] text-[#d4af37] text-xs sm:text-[10px] font-bold">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="max-w-[80px] sm:max-w-[100px] truncate font-medium text-stone-800">
+                  <span className="hidden sm:block max-w-[80px] sm:max-w-[100px] truncate font-medium text-stone-800">
                     {user.name.split(' ')[0]}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-stone-500 group-hover:rotate-180 transition-transform" />
+                  <ChevronDown className="hidden sm:block w-3 h-3 text-stone-500 group-hover:rotate-180 transition-transform" />
                 </button>
 
                 <div className="absolute right-0 mt-1 w-52 rounded-xl border border-stone-200 bg-white py-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-stone-800">
@@ -298,10 +307,10 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 hover:border-[#540924] bg-stone-50 hover:bg-[#540924] hover:text-white px-3.5 py-1.5 text-xs font-semibold text-stone-800 transition-all group"
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 hover:border-[#540924] bg-stone-50 hover:bg-[#540924] hover:text-white px-2.5 py-1.5 sm:px-3.5 text-xs font-semibold text-stone-800 transition-all group"
               >
-                <UserIcon className="w-3.5 h-3.5 text-[#540924] group-hover:text-white transition-colors" />
-                <span>Sign In</span>
+                <UserIcon className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#540924] group-hover:text-white transition-colors" />
+                <span className="hidden sm:inline">Sign In</span>
               </Link>
             )}
 
@@ -326,23 +335,25 @@ export function Navbar() {
         </div>
 
         {/* Mobile Search Bar Display */}
-        <div className="md:hidden px-4 pb-3">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search sarees, silks, motifs..."
-              className="w-full rounded-full border border-stone-300 bg-stone-50 pl-4 pr-10 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#540924]"
-            />
-            <button
-              type="submit"
-              className="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-full bg-[#540924] text-white flex items-center justify-center"
-            >
-              <Search className="w-3 h-3 text-[#d4af37]" />
-            </button>
-          </form>
-        </div>
+        {mobileSearchOpen && (
+          <div className="md:hidden px-4 pb-3 animate-in fade-in slide-in-from-top-2 duration-200">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search sarees, silks, motifs..."
+                className="w-full rounded-full border border-stone-300 bg-stone-50 pl-4 pr-10 py-2 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#540924]"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-full bg-[#540924] text-white flex items-center justify-center"
+              >
+                <Search className="w-3 h-3 text-[#d4af37]" />
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* 3. SUB-NAVIGATION CATEGORY BAR (Pure White Background with Distinct Deep Wine/Ruby Text) */}

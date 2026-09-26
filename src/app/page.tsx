@@ -473,24 +473,24 @@ export default function HomePage() {
 
           {/* Right Column: Carousel of Folded Saree Cards with Left & Right Arrows & Clean Snap */}
           <div
-            className="lg:col-span-9 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1"
+            className="lg:col-span-9 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1 min-w-0"
             onMouseEnter={() => setArrivalsPaused(true)}
             onMouseLeave={() => setArrivalsPaused(false)}
           >
             {/* Scroll Container with mandatory snap-x so cards never get stranded half-cut */}
             <div
               ref={arrivalScrollRef}
-              className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 snap-x snap-mandatory"
+              className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 snap-x snap-mandatory items-stretch"
             >
               {loading ? (
                 [1, 2, 3, 4].map((i) => (
-                  <div key={i} data-card-item className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0 snap-start">
+                  <div key={i} data-card-item className="w-[85vw] sm:w-[260px] sm:max-w-[270px] shrink-0 snap-center sm:snap-start">
                     <ProductCardSkeleton />
                   </div>
                 ))
               ) : (
                 filteredNewArrivals.slice(0, 10).map((product) => (
-                  <div key={product.id} data-card-item className="min-w-[240px] sm:min-w-[260px] max-w-[270px] shrink-0 snap-start">
+                  <div key={product.id} data-card-item className="w-[85vw] sm:w-[260px] sm:max-w-[270px] shrink-0 snap-center sm:snap-start">
                     <ProductCard product={product} />
                   </div>
                 ))
@@ -521,8 +521,8 @@ export default function HomePage() {
       {/* ========================================================================= */}
       {/* 3. PURE KANCHIPURAM SILKS (Light Golden Silk Background & Ornate Border Design) */}
       {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="rounded-3xl border-2 border-[#d4af37]/80 bg-gradient-to-b from-[#fffdf5] via-[#fef9e8] to-[#fffdf5] p-6 sm:p-10 shadow-sm relative overflow-hidden">
+      <section className="max-w-7xl mx-auto px-2 sm:px-6">
+        <div className="rounded-3xl border-2 border-[#d4af37]/80 bg-gradient-to-b from-[#fffdf5] via-[#fef9e8] to-[#fffdf5] p-3 sm:p-10 shadow-sm relative overflow-hidden">
           
           {/* Ornate Gold Inset Border Line */}
           <div className="pointer-events-none absolute inset-2.5 sm:inset-3.5 rounded-2xl border border-[#d4af37]/45" />
@@ -632,23 +632,23 @@ export default function HomePage() {
 
             {/* Products Horizontal Slider Right with auto-scroll, snap, and Left/Right buttons */}
             <div
-              className="lg:col-span-8 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1"
+              className="lg:col-span-8 relative flex flex-col justify-center overflow-hidden rounded-2xl p-1 min-w-0"
               onMouseEnter={() => setKanjiPaused(true)}
               onMouseLeave={() => setKanjiPaused(false)}
             >
               <div
                 ref={kanjiScrollRef}
-                className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 h-full snap-x snap-mandatory"
+                className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1 snap-x snap-mandatory items-stretch"
               >
                 {loading ? (
                   [1, 2, 3].map((i) => (
-                    <div key={i} data-card-item className="min-w-[240px] sm:min-w-[260px] shrink-0 snap-start">
+                    <div key={i} data-card-item className="w-[75vw] sm:w-[260px] shrink-0 snap-center sm:snap-start">
                       <ProductCardSkeleton />
                     </div>
                   ))
                 ) : (
                   kanchipuramProducts.slice(0, 8).map((product) => (
-                    <div key={product.id} data-card-item className="min-w-[240px] sm:min-w-[260px] shrink-0 snap-start">
+                    <div key={product.id} data-card-item className="w-[75vw] sm:w-[260px] shrink-0 snap-center sm:snap-start">
                       <ProductCard product={product} />
                     </div>
                   ))
@@ -784,16 +784,17 @@ export default function HomePage() {
 
           return (
             <div className="space-y-6">
-              {/* 4 Arch Cards in a Responsive Row */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-start justify-center">
+              {/* Arch Cards - Slider on mobile, Grid on tablet/desktop */}
+              <div className="flex md:grid md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory items-start pb-4 px-2">
                 {currentCards.map((card) => (
-                  <RoyalArchCard
-                    key={card.title}
-                    title={card.title}
-                    image={card.image}
-                    href={card.href}
-                    badge={card.badge}
-                  />
+                  <div key={card.title} className="w-[65vw] sm:w-[260px] md:w-full shrink-0 snap-center md:snap-align-none">
+                    <RoyalArchCard
+                      title={card.title}
+                      image={card.image}
+                      href={card.href}
+                      badge={card.badge}
+                    />
+                  </div>
                 ))}
               </div>
 

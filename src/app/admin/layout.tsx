@@ -31,6 +31,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     checkAdmin();
   }, [router]);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-950 text-white">
@@ -47,11 +49,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F7F4] text-stone-900 font-sans antialiased">
-      <AdminSidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">{children}</main>
+    <div className="flex min-h-screen bg-[#F8F7F4] text-stone-900 font-sans antialiased overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-stone-900/50 z-40 lg:hidden backdrop-blur-sm" 
+          onClick={() => setSidebarOpen(false)} 
+        />
+      )}
+
+      {/* Sidebar Drawer / Fixed sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex h-full ${
+        sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+      }`}>
+        <AdminSidebar onClose={() => setSidebarOpen(false)} />
+      </div>
+
+      <div className="flex-1 flex flex-col min-w-0 w-full lg:w-auto h-screen overflow-hidden">
+        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden w-full">{children}</main>
       </div>
     </div>
   );

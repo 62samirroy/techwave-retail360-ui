@@ -18,10 +18,11 @@ import {
   ArrowLeft,
   Crown,
   Star,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function AdminSidebar() {
+export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
 
   const links = [
@@ -63,6 +64,14 @@ export function AdminSidebar() {
             </div>
           </div>
         </Link>
+        {onClose && (
+          <button 
+            onClick={onClose} 
+            className="lg:hidden p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors ml-2"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -78,6 +87,7 @@ export function AdminSidebar() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={onClose}
               className={cn(
                 'flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all',
                 isActive

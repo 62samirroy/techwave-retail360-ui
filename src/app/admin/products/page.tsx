@@ -434,7 +434,82 @@ export default function AdminProductsPage() {
           </div>
         ) : (
           <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
-            <table className="w-full text-left text-xs">
+            {/* Mobile / Tablet Card View */}
+            <div className="grid grid-cols-1 gap-3 p-3 lg:hidden">
+              {products.map((p) => {
+                const currentStock = p.inventory?.currentStock ?? p.stock ?? 0;
+                const isLow = currentStock <= (p.lowStockThreshold || 5);
+                const isOut = currentStock === 0;
+
+                return (
+                  <div key={p.id} className="bg-white border border-stone-200 rounded-xl p-3 flex flex-col gap-2.5 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="relative h-16 w-12 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200 shadow-xs">
+                        {p.images?.[0]?.url ? (
+                          <Image src={p.images[0].url} alt={p.name} fill className="object-cover" sizes="60px" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-stone-400">
+                            <Package className="w-4 h-4" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-stone-900 block truncate text-[11px] leading-tight">{p.name}</span>
+                        <span className="text-[9px] text-stone-500 font-mono block mt-0.5 truncate">{p.sku}</span>
+                        <span className="inline-flex mt-1 items-center px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[8.5px] font-semibold border border-stone-200/60 truncate max-w-full">
+                          {p.category?.name || 'Unassigned'}
+                        </span>
+                      </div>
+                      <div className="shrink-0 flex flex-col items-end gap-1">
+                        <span
+                          className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wide ${
+                            p.status === 'ACTIVE'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : p.status === 'DRAFT'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-stone-100 text-stone-600 border border-stone-200'
+                          }`}
+                        >
+                          {p.status}
+                        </span>
+                        <div className="flex gap-1 mt-1">
+                          {p.isFeatured && <Star className="w-3 h-3 fill-amber-500 text-amber-500" />}
+                          {p.isBestseller && <Flame className="w-3 h-3 fill-rose-500 text-rose-500" />}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between border-t border-stone-100 pt-2 mt-0.5">
+                      <div className="flex flex-col">
+                        <div className="font-bold text-stone-900 font-mono text-[11px]">
+                          <PriceDisplay amount={p.price} discountPrice={p.discountPrice} size="sm" />
+                        </div>
+                      </div>
+                      <span className={`inline-flex items-center gap-1 font-mono font-bold px-1.5 py-0.5 rounded text-[9.5px] border ${
+                        isOut ? 'bg-rose-50 text-rose-800 border-rose-200' : isLow ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      }`}>
+                        {currentStock} in stock
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-end gap-1 border-t border-stone-100 pt-2 mt-0.5">
+                      <button onClick={() => handleOpenEdit(p)} className="p-1.5 rounded-md text-stone-500 hover:text-purple-700 hover:bg-purple-50 transition-colors">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <a href={`/product/${p.slug || p.id}`} target="_blank" rel="noreferrer" className="p-1.5 rounded-md text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                      <button onClick={() => handleDeleteProduct(p.id, p.name)} className="p-1.5 rounded-md text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <table className="hidden lg:table w-full text-left text-xs">
               <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-2.5 px-4">Saree &amp; Visual</th>
