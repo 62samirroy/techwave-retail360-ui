@@ -258,8 +258,8 @@ export default function HomePage() {
   const kanchipuramProducts = React.useMemo(() => {
     return allProducts.filter(
       (p) =>
-        p.category === 'Kanjivaram Silk' ||
-        (typeof p.category === 'object' && p.category?.slug === 'kanjivaram-silk') ||
+        p.category?.name === 'Kanjivaram Silk' ||
+        p.category?.slug === 'kanjivaram-silk' ||
         p.name.toLowerCase().includes('kanjivaram') ||
         p.name.toLowerCase().includes('silk')
     );
