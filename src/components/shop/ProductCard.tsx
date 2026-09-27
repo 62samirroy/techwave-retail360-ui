@@ -28,7 +28,11 @@ export interface ProductCardProps {
   onWishlistToggle?: (productId: string) => Promise<void>;
 }
 
-export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductCardProps) {
+export const ProductCard = React.memo(function ProductCard({
+  product,
+  onAddToCart,
+  onWishlistToggle,
+}: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -233,4 +237,4 @@ export function ProductCard({ product, onAddToCart, onWishlistToggle }: ProductC
       </div>
     </div>
   );
-}
+});

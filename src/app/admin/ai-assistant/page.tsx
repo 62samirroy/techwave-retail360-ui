@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Sparkles,
   Send,
@@ -444,13 +445,15 @@ export default function AdminAIAssistantPage() {
             className="flex items-center gap-3 p-2.5 rounded-lg border border-brand-200 bg-white hover:border-royal-400 hover:shadow-xs transition-all"
           >
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-brand-100 border border-brand-200/60">
-              <img
+              <Image
                 src={
                   prod.image ||
                   'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400'
                 }
                 alt={prod.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="56px"
               />
             </div>
             <div className="flex-1 min-w-0">

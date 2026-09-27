@@ -59,6 +59,7 @@ export default function CategoriesIndexPage() {
                 src={cat.image || 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg'}
                 alt={cat.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover group-hover:scale-106 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#380419]/80 via-transparent to-transparent" />

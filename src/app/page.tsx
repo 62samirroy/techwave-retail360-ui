@@ -227,42 +227,48 @@ export default function HomePage() {
   const scrollKanji = (direction: 'left' | 'right') => scrollCarouselStep(kanjiScrollRef, direction);
 
   // Filtered Products for Today's New Arrivals
-  const filteredNewArrivals = allProducts.filter((p) => {
-    if (arrivalTab === 'bridal') {
-      return (
-        p.tags?.toLowerCase().includes('bridal') ||
-        p.name.toLowerCase().includes('kanjivaram') ||
-        p.name.toLowerCase().includes('crimson')
-      );
-    }
-    if (arrivalTab === 'festive') {
-      return (
-        p.tags?.toLowerCase().includes('wedding') ||
-        p.name.toLowerCase().includes('banarasi') ||
-        p.name.toLowerCase().includes('kadwa')
-      );
-    }
-    if (arrivalTab === 'lightweight') {
-      return (
-        p.name.toLowerCase().includes('chanderi') ||
-        p.name.toLowerCase().includes('organza') ||
-        p.name.toLowerCase().includes('linen')
-      );
-    }
-    return true;
-  });
+  const filteredNewArrivals = React.useMemo(() => {
+    return allProducts.filter((p) => {
+      if (arrivalTab === 'bridal') {
+        return (
+          p.tags?.toLowerCase().includes('bridal') ||
+          p.name.toLowerCase().includes('kanjivaram') ||
+          p.name.toLowerCase().includes('crimson')
+        );
+      }
+      if (arrivalTab === 'festive') {
+        return (
+          p.tags?.toLowerCase().includes('wedding') ||
+          p.name.toLowerCase().includes('banarasi') ||
+          p.name.toLowerCase().includes('kadwa')
+        );
+      }
+      if (arrivalTab === 'lightweight') {
+        return (
+          p.name.toLowerCase().includes('chanderi') ||
+          p.name.toLowerCase().includes('organza') ||
+          p.name.toLowerCase().includes('linen')
+        );
+      }
+      return true;
+    });
+  }, [allProducts, arrivalTab]);
 
   // Filtered Kanchipuram products
-  const kanchipuramProducts = allProducts.filter(
-    (p) =>
-      p.category === 'Kanjivaram Silk' ||
-      (typeof p.category === 'object' && p.category?.slug === 'kanjivaram-silk') ||
-      p.name.toLowerCase().includes('kanjivaram') ||
-      p.name.toLowerCase().includes('silk')
-  );
+  const kanchipuramProducts = React.useMemo(() => {
+    return allProducts.filter(
+      (p) =>
+        p.category === 'Kanjivaram Silk' ||
+        (typeof p.category === 'object' && p.category?.slug === 'kanjivaram-silk') ||
+        p.name.toLowerCase().includes('kanjivaram') ||
+        p.name.toLowerCase().includes('silk')
+    );
+  }, [allProducts]);
 
   // Ready to ship products
-  const readyToShipProducts = allProducts.filter((p) => p.stock > 0).slice(0, 4);
+  const readyToShipProducts = React.useMemo(() => {
+    return allProducts.filter((p) => p.stock > 0).slice(0, 4);
+  }, [allProducts]);
 
   // Store Booking Submit
   const handleStoreBookingSubmit = (e: React.FormEvent) => {

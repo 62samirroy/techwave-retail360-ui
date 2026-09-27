@@ -78,24 +78,27 @@ function ShopContent() {
     fetchProducts();
   }, [search, category, minPrice, maxPrice, sort, inStock, page]);
 
-  const updateFilters = (newParams: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const updateFilters = React.useCallback(
+    (newParams: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    Object.entries(newParams).forEach(([k, v]) => {
-      if (v === null || v === '') {
-        params.delete(k);
-      } else {
-        params.set(k, v);
-      }
-    });
+      Object.entries(newParams).forEach(([k, v]) => {
+        if (v === null || v === '') {
+          params.delete(k);
+        } else {
+          params.set(k, v);
+        }
+      });
 
-    params.set('page', '1'); // reset page on filter change
-    router.push(`/shop?${params.toString()}`);
-  };
+      params.set('page', '1'); // reset page on filter change
+      router.push(`/shop?${params.toString()}`);
+    },
+    [searchParams, router]
+  );
 
-  const clearAllFilters = () => {
+  const clearAllFilters = React.useCallback(() => {
     router.push('/shop');
-  };
+  }, [router]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
