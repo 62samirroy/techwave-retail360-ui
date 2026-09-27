@@ -1,5 +1,15 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import { APP_CONFIG } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy & Customer Security',
+  description:
+    'Our commitment to protecting your personal data, secure 256-bit encrypted payments with Razorpay, and enterprise data isolation.',
+  alternates: {
+    canonical: '/policies/privacy',
+  },
+};
 
 export default function PrivacyPolicyPage() {
   return (

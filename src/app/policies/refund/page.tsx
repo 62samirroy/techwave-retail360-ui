@@ -1,6 +1,16 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import { RotateCcw } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: '7-Day Return & Refund Policy',
+  description:
+    'Hassle-free 7-day returns and exchanges for authentic handloom sarees. Transparent refunds processed directly to your original payment method.',
+  alternates: {
+    canonical: '/policies/refund',
+  },
+};
 
 export default function RefundPolicyPage() {
   return (

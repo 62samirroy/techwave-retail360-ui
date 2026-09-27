@@ -227,8 +227,45 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
     `Namaste Royal Saree, I would like to inquire about: ${product.name} (SKU: ${product.sku}, Price: ${formatPrice(product.discountPrice || product.price)}). Can you send fabric drape video?`
   );
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: product.images?.map((img) => img.url) || [selectedImage],
+    description: product.shortDescription || product.description,
+    sku: product.sku,
+    brand: {
+      '@type': 'Brand',
+      name: 'Royal Saree & Family',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://royalsaree.techwavesolutions.dev/product/${product.slug || product.id}`,
+      priceCurrency: 'INR',
+      price: product.discountPrice || product.price,
+      availability:
+        product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+    },
+    ...(product.rating
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: product.rating,
+            reviewCount: Math.max(1, reviews.length),
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="min-h-[75vh] max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-10 flex flex-col">
+      {/* Schema.org Product Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-brand-500">
         <Link href="/shop" className="hover:text-primary-700 flex items-center gap-1">

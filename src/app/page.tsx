@@ -324,9 +324,15 @@ export default function HomePage() {
                   </div>
 
                   {/* Showcase Title */}
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white tracking-tight leading-tight drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
-                    {slide.title}
-                  </h2>
+                  {index === 0 ? (
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white tracking-tight leading-tight drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
+                      {slide.title}
+                    </h1>
+                  ) : (
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white tracking-tight leading-tight drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)]">
+                      {slide.title}
+                    </h2>
+                  )}
 
                   {/* Subtitle */}
                   <p className="text-xs sm:text-sm text-stone-100 leading-relaxed font-medium max-w-md drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">

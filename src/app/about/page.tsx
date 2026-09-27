@@ -1,9 +1,24 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Award, Heart, Sparkles, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { APP_CONFIG } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: 'Our Heritage & Masterweaver Legacy',
+  description:
+    'Discover the story behind Royal Saree & Family: empowering generational weaver clusters across Kanchipuram, Varanasi, Chanderi, and Kutch with Silk Mark certified purity.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'Our Heritage | Royal Saree & Family',
+    description:
+      'Empowering generational weaver clusters across India with Silk Mark certified pure zari handloom sarees.',
+  },
+};
 
 export default function AboutPage() {
   return (

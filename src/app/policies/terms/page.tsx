@@ -1,5 +1,15 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import { APP_CONFIG } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: 'Terms & Conditions of Service',
+  description:
+    'Review the terms, authenticity guarantees, handloom artisan variations, and billing conditions at Royal Saree & Family.',
+  alternates: {
+    canonical: '/policies/terms',
+  },
+};
 
 export default function TermsPage() {
   return (

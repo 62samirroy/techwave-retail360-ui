@@ -1,6 +1,16 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import { Truck } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: 'Shipping & Delivery Policy',
+  description:
+    'Free express shipping across India on orders above ₹1,999. Fast delivery via Blue Dart Air, DTDC Premium, and Delhivery Express.',
+  alternates: {
+    canonical: '/policies/shipping',
+  },
+};
 
 export default function ShippingPolicyPage() {
   return (
