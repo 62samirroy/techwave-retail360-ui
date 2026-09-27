@@ -278,7 +278,8 @@ export default function AdminOverviewPage() {
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
                 <tr>
@@ -337,6 +338,48 @@ export default function AdminOverviewPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile/Tablet Card View */}
+          <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-brand-50/30">
+            {data.recentOrders && data.recentOrders.length > 0 ? (
+              data.recentOrders.slice(0, 6).map((order) => (
+                <div key={order.id} className="p-3 flex flex-col gap-2 bg-white border border-brand-200 rounded-xl shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-mono font-medium text-brand-900 text-sm">{order.orderNumber}</div>
+                      <div className="font-medium text-brand-800 text-xs mt-1">{order.customerName}</div>
+                      <div className="text-[10px] text-brand-400">{order.city}, {order.state}</div>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1">
+                      <PriceDisplay amount={order.total} />
+                      <StatusBadge status={order.status} />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-brand-50">
+                    <span
+                      className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                        order.paymentStatus === 'PAID'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}
+                    >
+                      {order.paymentStatus}
+                    </span>
+                    <Link
+                      href={`/admin/orders?search=${order.orderNumber}`}
+                      className="text-primary-600 hover:text-primary-800 font-medium inline-flex items-center gap-0.5 text-[11px] px-2 py-1 bg-primary-50 rounded"
+                    >
+                      <span>Manage</span>
+                    </Link>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-brand-400 text-xs">
+                No customer orders found.
+              </div>
+            )}
           </div>
         </div>
 

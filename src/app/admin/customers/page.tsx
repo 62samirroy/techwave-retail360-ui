@@ -154,105 +154,177 @@ export default function AdminCustomersPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
-            <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-2.5 px-4">Customer Name</th>
-                  <th className="py-2.5 px-4">Contact Info</th>
-                  <th className="py-2.5 px-4">Registered Date</th>
-                  <th className="py-2.5 px-4">Lifetime Orders</th>
-                  <th className="py-2.5 px-4">Total Spent</th>
-                  <th className="py-2.5 px-4">Primary Destination</th>
-                  <th className="py-2.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {customers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-purple-50/20 transition-colors">
-                    {/* Name */}
-                    <td className="py-2.5 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
-                          {customer.name?.charAt(0).toUpperCase() || 'C'}
+          <div className="flex-1 overflow-y-auto">
+            <div className="hidden lg:block overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
+              <table className="w-full text-left text-xs">
+                <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Customer Name</th>
+                    <th className="py-2.5 px-4">Contact Info</th>
+                    <th className="py-2.5 px-4">Registered Date</th>
+                    <th className="py-2.5 px-4">Lifetime Orders</th>
+                    <th className="py-2.5 px-4">Total Spent</th>
+                    <th className="py-2.5 px-4">Primary Destination</th>
+                    <th className="py-2.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {customers.map((customer) => (
+                    <tr key={customer.id} className="hover:bg-purple-50/20 transition-colors">
+                      {/* Name */}
+                      <td className="py-2.5 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+                            {customer.name?.charAt(0).toUpperCase() || 'C'}
+                          </div>
+                          <div>
+                            <span className="font-semibold text-stone-900 block">{customer.name}</span>
+                            <span className="text-[10px] text-stone-400 font-mono">
+                              ID: {customer.id.slice(0, 8)}...
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="font-semibold text-stone-900 block">{customer.name}</span>
-                          <span className="text-[10px] text-stone-400 font-mono">
-                            ID: {customer.id.slice(0, 8)}...
+                      </td>
+
+                      {/* Contact */}
+                      <td className="py-2.5 px-4">
+                        <div className="text-stone-800 font-medium">{customer.email}</div>
+                        <div className="text-[11px] text-stone-500 font-mono">
+                          {customer.phone || 'No phone recorded'}
+                        </div>
+                      </td>
+
+                      {/* Registered Date */}
+                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
+                        {new Date(customer.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+
+                      {/* Orders Count */}
+                      <td className="py-2.5 px-4">
+                        <span className="inline-flex items-center gap-1.5 font-mono font-bold bg-stone-100 text-stone-800 px-2.5 py-0.5 rounded-full text-[11px] border border-stone-200/60">
+                          <ShoppingBag className="w-3 h-3 text-stone-500" />
+                          {customer.orderCount} orders
+                        </span>
+                      </td>
+
+                      {/* Lifetime Value */}
+                      <td className="py-2.5 px-4 font-mono font-bold text-purple-700 text-xs">
+                        <PriceDisplay amount={customer.totalSpent} />
+                      </td>
+
+                      {/* Location */}
+                      <td className="py-2.5 px-4 text-stone-600">
+                        {customer.defaultAddress ? (
+                          <span>
+                            {customer.defaultAddress.city}, {customer.defaultAddress.state}
                           </span>
+                        ) : (
+                          <span className="text-stone-300 italic">—</span>
+                        )}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-2.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {customer.phone && (
+                            <a
+                              href={`https://wa.me/${customer.phone.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Chat on WhatsApp"
+                              className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                            </a>
+                          )}
+                          <button
+                            onClick={() => setSelectedCustomer(customer)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-purple-700" />
+                            <span>View Profile</span>
+                          </button>
                         </div>
-                      </div>
-                    </td>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-                    {/* Contact */}
-                    <td className="py-2.5 px-4">
-                      <div className="text-stone-800 font-medium">{customer.email}</div>
-                      <div className="text-[11px] text-stone-500 font-mono">
-                        {customer.phone || 'No phone recorded'}
+            {/* Mobile/Tablet Card View */}
+            <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-stone-50/50 max-h-[calc(100vh-270px)] min-h-[360px] overflow-auto">
+              {customers.map((customer) => (
+                <div key={customer.id} className="p-4 flex flex-col gap-3 bg-white border border-stone-300 rounded-xl shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                        {customer.name?.charAt(0).toUpperCase() || 'C'}
                       </div>
-                    </td>
+                      <div>
+                        <div className="font-semibold text-stone-900 text-sm">{customer.name}</div>
+                        <div className="text-[11px] text-stone-500 font-mono">{customer.email}</div>
+                      </div>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1">
+                      <span className="font-mono font-bold text-purple-700 text-sm">
+                        <PriceDisplay amount={customer.totalSpent} />
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-mono font-bold bg-stone-100 text-stone-800 px-2 py-0.5 rounded-full text-[9px] border border-stone-200/60">
+                        <ShoppingBag className="w-2.5 h-2.5 text-stone-500" />
+                        {customer.orderCount} orders
+                      </span>
+                    </div>
+                  </div>
 
-                    {/* Registered Date */}
-                    <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
-                      {new Date(customer.createdAt).toLocaleDateString('en-IN', {
+                  <div className="grid grid-cols-2 gap-2 text-[11px] mt-1">
+                    <div>
+                      <span className="text-stone-500 block mb-0.5">Contact</span>
+                      <span className="font-mono text-stone-700">{customer.phone || 'No phone'}</span>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block mb-0.5">Location</span>
+                      <span className="text-stone-700 truncate block">
+                        {customer.defaultAddress ? `${customer.defaultAddress.city}, ${customer.defaultAddress.state}` : '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-stone-100">
+                    <div className="text-[10px] text-stone-500 font-mono">
+                      Joined: {new Date(customer.createdAt).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric',
                       })}
-                    </td>
-
-                    {/* Orders Count */}
-                    <td className="py-2.5 px-4">
-                      <span className="inline-flex items-center gap-1.5 font-mono font-bold bg-stone-100 text-stone-800 px-2.5 py-0.5 rounded-full text-[11px] border border-stone-200/60">
-                        <ShoppingBag className="w-3 h-3 text-stone-500" />
-                        {customer.orderCount} orders
-                      </span>
-                    </td>
-
-                    {/* Lifetime Value */}
-                    <td className="py-2.5 px-4 font-mono font-bold text-purple-700 text-xs">
-                      <PriceDisplay amount={customer.totalSpent} />
-                    </td>
-
-                    {/* Location */}
-                    <td className="py-2.5 px-4 text-stone-600">
-                      {customer.defaultAddress ? (
-                        <span>
-                          {customer.defaultAddress.city}, {customer.defaultAddress.state}
-                        </span>
-                      ) : (
-                        <span className="text-stone-300 italic">—</span>
-                      )}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="py-2.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {customer.phone && (
-                          <a
-                            href={`https://wa.me/${customer.phone.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            title="Chat on WhatsApp"
-                            className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                          </a>
-                        )}
-                        <button
-                          onClick={() => setSelectedCustomer(customer)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {customer.phone && (
+                        <a
+                          href={`https://wa.me/${customer.phone.replace(/[^0-9]/g, '')}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-1.5 text-emerald-600 bg-emerald-50 rounded-lg"
                         >
-                          <Eye className="w-3.5 h-3.5 text-purple-700" />
-                          <span>View Profile</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <MessageCircle className="w-4 h-4" />
+                        </a>
+                      )}
+                      <button
+                        onClick={() => setSelectedCustomer(customer)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-800 text-xs font-semibold"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-purple-700" />
+                        <span>Profile</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

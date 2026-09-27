@@ -281,48 +281,134 @@ export default function AdminOrdersPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
-            <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-2.5 px-4">Order ID</th>
-                  <th className="py-2.5 px-4">Customer Details</th>
-                  <th className="py-2.5 px-4">Placement Date</th>
-                  <th className="py-2.5 px-4">Fulfillment Status</th>
-                  <th className="py-2.5 px-4">Payment</th>
-                  <th className="py-2.5 px-4">Total Amount</th>
-                  <th className="py-2.5 px-4">Courier Tracking</th>
-                  <th className="py-2.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-purple-50/20 transition-colors">
-                    <td className="py-2.5 px-4 font-mono font-bold text-stone-900">
-                      {order.orderNumber}
-                    </td>
+          <div className="flex-1 overflow-y-auto">
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
+              <table className="w-full text-left text-xs">
+                <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-4">Order ID</th>
+                    <th className="py-2.5 px-4">Customer Details</th>
+                    <th className="py-2.5 px-4">Placement Date</th>
+                    <th className="py-2.5 px-4">Fulfillment Status</th>
+                    <th className="py-2.5 px-4">Payment</th>
+                    <th className="py-2.5 px-4">Total Amount</th>
+                    <th className="py-2.5 px-4">Courier Tracking</th>
+                    <th className="py-2.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {orders.map((order) => (
+                    <tr key={order.id} className="hover:bg-purple-50/20 transition-colors">
+                      <td className="py-2.5 px-4 font-mono font-bold text-stone-900">
+                        {order.orderNumber}
+                      </td>
 
-                    <td className="py-2.5 px-4">
-                      <div className="font-semibold text-stone-900">{order.customerName}</div>
-                      <div className="text-[11px] text-stone-400">{order.customerEmail}</div>
-                      <div className="text-[10px] text-stone-500 font-mono">{order.customerPhone}</div>
-                    </td>
+                      <td className="py-2.5 px-4">
+                        <div className="font-semibold text-stone-900">{order.customerName}</div>
+                        <div className="text-[11px] text-stone-400">{order.customerEmail}</div>
+                        <div className="text-[10px] text-stone-500 font-mono">{order.customerPhone}</div>
+                      </td>
 
-                    <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
-                      {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
+                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
+                        {new Date(order.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
 
-                    <td className="py-2.5 px-4">
+                      <td className="py-2.5 px-4">
+                        <StatusBadge status={order.status} />
+                      </td>
+
+                      <td className="py-2.5 px-4">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            order.paymentStatus === 'PAID'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}
+                        >
+                          {order.paymentStatus}
+                        </span>
+                        <div className="text-[10px] text-stone-400 uppercase font-mono mt-0.5">
+                          {order.paymentMethod}
+                        </div>
+                      </td>
+
+                      <td className="py-2.5 px-4 font-mono font-bold text-stone-900 text-xs">
+                        <PriceDisplay amount={order.total} />
+                      </td>
+
+                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600">
+                        {order.trackingNumber ? (
+                          <span className="bg-stone-100 px-2 py-0.5 rounded text-stone-800 font-medium">
+                            {order.trackingNumber}
+                          </span>
+                        ) : (
+                          <span className="text-stone-300 italic">Not Dispatched</span>
+                        )}
+                      </td>
+
+                      <td className="py-2.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <a
+                            href={getWhatsAppUpdateLink(order)}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Send WhatsApp Update"
+                            className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </a>
+                          <button
+                            onClick={() => handleOpenDetail(order)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-purple-700" />
+                            <span>Inspect</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile/Tablet Card View */}
+            <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-stone-50/50 max-h-[calc(100vh-270px)] min-h-[360px] overflow-auto">
+              {orders.map((order) => (
+                <div key={order.id} className="p-4 flex flex-col gap-3 bg-white border border-stone-300 rounded-xl shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-mono font-bold text-stone-900 text-sm">{order.orderNumber}</div>
+                      <div className="font-semibold text-stone-900 text-xs mt-1">{order.customerName}</div>
+                      <div className="text-[11px] text-stone-500">{order.customerEmail}</div>
+                      <div className="text-[10px] text-stone-400 font-mono">{order.customerPhone}</div>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1.5">
+                      <PriceDisplay amount={order.total} />
                       <StatusBadge status={order.status} />
-                    </td>
-
-                    <td className="py-2.5 px-4">
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-[11px] mt-1">
+                    <div>
+                      <span className="text-stone-500 block mb-0.5">Date</span>
+                      <span className="font-mono text-stone-700">
+                        {new Date(order.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-stone-500 block mb-0.5">Payment</span>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        className={`inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
                           order.paymentStatus === 'PAID'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : 'bg-amber-50 text-amber-700 border border-amber-200'
@@ -330,16 +416,11 @@ export default function AdminOrdersPage() {
                       >
                         {order.paymentStatus}
                       </span>
-                      <div className="text-[10px] text-stone-400 uppercase font-mono mt-0.5">
-                        {order.paymentMethod}
-                      </div>
-                    </td>
+                    </div>
+                  </div>
 
-                    <td className="py-2.5 px-4 font-mono font-bold text-stone-900 text-xs">
-                      <PriceDisplay amount={order.total} />
-                    </td>
-
-                    <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600">
+                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-stone-100">
+                    <div className="text-[11px] text-stone-600 font-mono">
                       {order.trackingNumber ? (
                         <span className="bg-stone-100 px-2 py-0.5 rounded text-stone-800 font-medium">
                           {order.trackingNumber}
@@ -347,32 +428,28 @@ export default function AdminOrdersPage() {
                       ) : (
                         <span className="text-stone-300 italic">Not Dispatched</span>
                       )}
-                    </td>
-
-                    <td className="py-2.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <a
-                          href={getWhatsAppUpdateLink(order)}
-                          target="_blank"
-                          rel="noreferrer"
-                          title="Send WhatsApp Update"
-                          className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                        </a>
-                        <button
-                          onClick={() => handleOpenDetail(order)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-purple-700" />
-                          <span>Inspect</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={getWhatsAppUpdateLink(order)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 text-emerald-600 bg-emerald-50 rounded-lg"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </a>
+                      <button
+                        onClick={() => handleOpenDetail(order)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-800 text-xs font-semibold"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-purple-700" />
+                        <span>Inspect</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

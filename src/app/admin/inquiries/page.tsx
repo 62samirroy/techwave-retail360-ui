@@ -124,8 +124,8 @@ export default function AdminInquiriesPage() {
           No customer inquiries recorded in this filter view.
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-brand-200 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-lg border border-brand-200 shadow-xs overflow-hidden flex-1 flex flex-col">
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
                 <tr>
@@ -228,6 +228,69 @@ export default function AdminInquiriesPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile/Tablet Card View */}
+          <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-brand-50/30">
+            {inquiries.map((inq) => (
+              <div key={inq.id} className="p-3 flex flex-col gap-2 bg-white border border-brand-200 rounded-xl shadow-sm">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-semibold text-brand-950 text-sm">{inq.name}</div>
+                    <div className="text-[11px] text-brand-500 font-mono mt-0.5">{inq.phone || 'No phone'}</div>
+                  </div>
+                  <div className="text-right flex flex-col items-end gap-1">
+                    <span
+                      className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase ${
+                        inq.status === 'NEW'
+                          ? 'bg-rose-100 text-rose-800'
+                          : inq.status === 'IN_PROGRESS'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-emerald-100 text-emerald-800'
+                      }`}
+                    >
+                      {inq.status.replace('_', ' ')}
+                    </span>
+                    <span className="font-mono text-[9px] font-semibold bg-brand-100 text-brand-800 px-1.5 py-0.5 rounded uppercase">
+                      {inq.inquiryType}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-brand-50/50 p-2 rounded border border-brand-100 mt-1">
+                  <p className="text-brand-800 text-xs font-medium line-clamp-2">{inq.message}</p>
+                </div>
+
+                <div className="flex justify-between items-center mt-2 pt-2 border-t border-brand-50">
+                  <div className="text-[10px] text-brand-500 font-mono">
+                    {new Date(inq.createdAt).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {inq.phone && (
+                      <a
+                        href={`https://wa.me/${inq.phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 text-emerald-600 bg-emerald-50 rounded"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      onClick={() => handleOpenEdit(inq)}
+                      leftIcon={<Eye className="w-3 h-3 text-primary-600" />}
+                    >
+                      Review
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

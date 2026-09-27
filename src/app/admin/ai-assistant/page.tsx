@@ -514,34 +514,82 @@ export default function AdminAIAssistantPage() {
             <span className="text-[10px] text-brand-500 font-medium">{table.rows.length} rows</span>
           </div>
         )}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-[11px]">
-            <thead className="bg-brand-100/60 text-brand-700 font-semibold uppercase text-[10px] tracking-wider border-b border-brand-200">
-              <tr>
-                {table.headers.map((h, i) => (
-                  <th key={i} className="px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-100 text-brand-800">
-              {table.rows.map((row, rIdx) => (
-                <tr key={rIdx} className="hover:bg-brand-50/50 transition-colors">
-                  {row.map((cell, cIdx) => {
-                    const str = String(cell);
-                    const isBadge =
-                      str === 'PAID' ||
-                      str === 'HEALTHY' ||
-                      str === 'CONFIRMED' ||
-                      str === 'PENDING' ||
-                      str === 'LOW STOCK' ||
-                      str === 'OUT OF STOCK' ||
-                      str === 'CRITICAL' ||
-                      str.startsWith('#');
+        <div className="flex-1 overflow-y-auto">
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-left text-[11px]">
+              <thead className="bg-brand-100/60 text-brand-700 font-semibold uppercase text-[10px] tracking-wider border-b border-brand-200">
+                <tr>
+                  {table.headers.map((h, i) => (
+                    <th key={i} className="px-3 py-2">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-brand-100 text-brand-800">
+                {table.rows.map((row, rIdx) => (
+                  <tr key={rIdx} className="hover:bg-brand-50/50 transition-colors">
+                    {row.map((cell, cIdx) => {
+                      const str = String(cell);
+                      const isBadge =
+                        str === 'PAID' ||
+                        str === 'HEALTHY' ||
+                        str === 'CONFIRMED' ||
+                        str === 'PENDING' ||
+                        str === 'LOW STOCK' ||
+                        str === 'OUT OF STOCK' ||
+                        str === 'CRITICAL' ||
+                        str.startsWith('#');
 
-                    return (
-                      <td key={cIdx} className="px-3 py-2 whitespace-nowrap">
+                      return (
+                        <td key={cIdx} className="px-3 py-2 whitespace-nowrap">
+                          {isBadge ? (
+                            <span
+                              className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                                str === 'PAID' || str === 'HEALTHY' || str === 'CONFIRMED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : str === 'PENDING' || str === 'LOW STOCK'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : str === 'OUT OF STOCK' || str === 'CRITICAL'
+                                  ? 'bg-rose-100 text-rose-800 font-bold'
+                                  : 'bg-brand-100 text-brand-700 font-bold'
+                              }`}
+                            >
+                              {str}
+                            </span>
+                          ) : (
+                            <span>{str}</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Mobile/Tablet Card View */}
+          <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-brand-50/30 text-[11px]">
+            {table.rows.map((row, rIdx) => (
+              <div key={rIdx} className="p-3 space-y-1.5 bg-white border border-brand-200 rounded-xl shadow-sm">
+                {row.map((cell, cIdx) => {
+                  const header = table.headers[cIdx];
+                  const str = String(cell);
+                  const isBadge =
+                    str === 'PAID' ||
+                    str === 'HEALTHY' ||
+                    str === 'CONFIRMED' ||
+                    str === 'PENDING' ||
+                    str === 'LOW STOCK' ||
+                    str === 'OUT OF STOCK' ||
+                    str === 'CRITICAL' ||
+                    str.startsWith('#');
+                  
+                  return (
+                    <div key={cIdx} className="flex justify-between items-start gap-2">
+                      <span className="font-semibold text-brand-500 uppercase text-[9px] mt-0.5">{header}</span>
+                      <div className="text-right font-medium text-brand-900 break-words text-left">
                         {isBadge ? (
                           <span
                             className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${
@@ -559,13 +607,13 @@ export default function AdminAIAssistantPage() {
                         ) : (
                           <span>{str}</span>
                         )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -603,13 +651,13 @@ export default function AdminAIAssistantPage() {
   return (
     <div className="h-[calc(100vh-100px)] flex flex-col space-y-3">
       {/* Header */}
-      <div className="bg-white p-3.5 rounded-lg border border-brand-200 shadow-xs flex items-center justify-between shrink-0">
+      <div className="bg-white p-2.5 sm:p-3.5 rounded-lg border border-brand-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-3">
         <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-royal-500 text-brand-950 flex items-center justify-center font-bold shadow-2xs">
             <Sparkles className="w-4 h-4 text-brand-950" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-brand-950 flex items-center gap-1.5">
+            <h1 className="text-sm font-bold text-brand-950 flex flex-wrap items-center gap-1.5">
               <span>Retail360 AI Business Copilot</span>
               <span className="bg-purple-100 text-purple-800 text-[10px] px-1.5 py-0.2 rounded font-semibold uppercase flex items-center gap-1">
                 <Sparkles className="w-2.5 h-2.5" /> Gemini API + Orchestrator
@@ -635,7 +683,7 @@ export default function AdminAIAssistantPage() {
       </div>
 
       {/* Chat Messages Log */}
-      <div className="flex-1 bg-white rounded-lg border border-brand-200 shadow-xs p-4 overflow-y-auto space-y-4">
+      <div className="flex-1 bg-white rounded-lg border border-brand-200 shadow-xs p-2 sm:p-4 overflow-y-auto space-y-4">
         {messages.map((m) => (
           <div
             key={m.id}
@@ -751,7 +799,7 @@ export default function AdminAIAssistantPage() {
       </div>
 
       {/* Message Input Box */}
-      <div className="bg-white p-2.5 rounded-lg border border-brand-200 shadow-xs flex items-center gap-2 shrink-0">
+      <div className="bg-white p-2 sm:p-2.5 rounded-lg border border-brand-200 shadow-xs flex items-center gap-2 shrink-0">
         <textarea
           rows={1}
           placeholder="Ask AI anything about sales, low inventory, 7-day revenue trend, category share, or gateway health..."

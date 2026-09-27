@@ -217,39 +217,67 @@ export default function AdminAnalyticsPage() {
           <h2 className="text-xs font-bold text-brand-900">Highest Grossing Saree Products</h2>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
-              <tr>
-                <th className="py-2.5 px-3">Product Name</th>
-                <th className="py-2.5 px-3">SKU</th>
-                <th className="py-2.5 px-3">Units Sold</th>
-                <th className="py-2.5 px-3 text-right">Gross Revenue Generated</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-100">
-              {data.topProducts && data.topProducts.length > 0 ? (
-                data.topProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-brand-50/50 transition-colors">
-                    <td className="py-2.5 px-3 font-semibold text-brand-950">{p.name}</td>
-                    <td className="py-2.5 px-3 font-mono text-brand-600">{p.sku}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-brand-800">
-                      {p.soldCount} units
-                    </td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-right text-emerald-700">
-                      ₹{p.revenue.toLocaleString('en-IN')}
+        <div className="flex-1 overflow-y-auto">
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-brand-50 border-b border-brand-200 text-brand-600 font-semibold">
+                <tr>
+                  <th className="py-2.5 px-3">Product Name</th>
+                  <th className="py-2.5 px-3">SKU</th>
+                  <th className="py-2.5 px-3">Units Sold</th>
+                  <th className="py-2.5 px-3 text-right">Gross Revenue Generated</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-brand-100">
+                {data.topProducts && data.topProducts.length > 0 ? (
+                  data.topProducts.map((p) => (
+                    <tr key={p.id} className="hover:bg-brand-50/50 transition-colors">
+                      <td className="py-2.5 px-3 font-semibold text-brand-950">{p.name}</td>
+                      <td className="py-2.5 px-3 font-mono text-brand-600">{p.sku}</td>
+                      <td className="py-2.5 px-3 font-mono font-bold text-brand-800">
+                        {p.soldCount} units
+                      </td>
+                      <td className="py-2.5 px-3 font-mono font-bold text-right text-emerald-700">
+                        ₹{p.revenue.toLocaleString('en-IN')}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="py-6 text-center text-brand-400">
+                      No top product orders in this period.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="py-6 text-center text-brand-400">
-                    No top product orders in this period.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile/Tablet Card View */}
+          <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-brand-50/30">
+            {data.topProducts && data.topProducts.length > 0 ? (
+              data.topProducts.map((p) => (
+                <div key={p.id} className="p-3 flex justify-between items-center bg-white border border-brand-200 rounded-xl shadow-sm">
+                  <div>
+                    <div className="font-semibold text-brand-950 text-sm max-w-[200px] truncate">{p.name}</div>
+                    <div className="font-mono text-brand-600 text-[11px] mt-0.5">{p.sku}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono font-bold text-emerald-700 text-sm">
+                      ₹{p.revenue.toLocaleString('en-IN')}
+                    </div>
+                    <div className="font-mono font-bold text-brand-800 text-[10px] mt-0.5">
+                      {p.soldCount} units sold
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-brand-400 text-xs">
+                No top product orders in this period.
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

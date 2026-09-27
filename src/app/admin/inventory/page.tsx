@@ -317,55 +317,111 @@ export default function AdminInventoryPage() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
-                <table className="w-full text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
-                    <tr>
-                      <th className="py-2.5 px-4">Saree Name</th>
-                      <th className="py-2.5 px-4">SKU Code</th>
-                      <th className="py-2.5 px-4">Craft / Category</th>
-                      <th className="py-2.5 px-4">Available Units</th>
-                      <th className="py-2.5 px-4">Threshold</th>
-                      <th className="py-2.5 px-4">Health Status</th>
-                      <th className="py-2.5 px-4 text-right">Adjustment Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-100">
-                    {items.map((item) => {
-                      const currentStock = item.currentStock ?? item.stock ?? 0;
-                      const threshold = item.lowStockThreshold || 5;
-                      const isLow = currentStock <= threshold && currentStock > 0;
-                      const isOut = currentStock === 0;
+              <div className="flex-1 overflow-y-auto">
+                <div className="hidden lg:block overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
+                  <table className="w-full text-left text-xs">
+                    <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                      <tr>
+                        <th className="py-2.5 px-4">Saree Name</th>
+                        <th className="py-2.5 px-4">SKU Code</th>
+                        <th className="py-2.5 px-4">Craft / Category</th>
+                        <th className="py-2.5 px-4">Available Units</th>
+                        <th className="py-2.5 px-4">Threshold</th>
+                        <th className="py-2.5 px-4">Health Status</th>
+                        <th className="py-2.5 px-4 text-right">Adjustment Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100">
+                      {items.map((item) => {
+                        const currentStock = item.currentStock ?? item.stock ?? 0;
+                        const threshold = item.lowStockThreshold || 5;
+                        const isLow = currentStock <= threshold && currentStock > 0;
+                        const isOut = currentStock === 0;
 
-                      return (
-                        <tr key={item.productId || item.id} className="hover:bg-purple-50/20 transition-colors">
-                          <td className="py-2.5 px-4">
-                            <span className="font-semibold text-stone-900 block truncate max-w-[260px]">
+                        return (
+                          <tr key={item.productId || item.id} className="hover:bg-purple-50/20 transition-colors">
+                            <td className="py-2.5 px-4">
+                              <span className="font-semibold text-stone-900 block truncate max-w-[260px]">
+                                {item.name}
+                              </span>
+                            </td>
+
+                            <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600 font-medium">
+                              {item.sku}
+                            </td>
+
+                            <td className="py-2.5 px-4 text-stone-600 font-medium">
+                              {item.category || 'Atelier'}
+                            </td>
+
+                            <td className="py-2.5 px-4">
+                              <span className="font-mono font-bold text-xs text-stone-900">
+                                {currentStock} units
+                              </span>
+                            </td>
+
+                            <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
+                              {threshold} min
+                            </td>
+
+                            <td className="py-2.5 px-4">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                  isOut
+                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                    : isLow
+                                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                }`}
+                              >
+                                {isOut ? 'Depleted' : isLow ? 'Low Stock' : 'Optimal'}
+                              </span>
+                            </td>
+
+                            <td className="py-2.5 px-4 text-right">
+                              <button
+                                onClick={() => handleOpenAdjust(item)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
+                              >
+                                <ArrowUpDown className="w-3.5 h-3.5 text-purple-700" />
+                                <span>Adjust Stock</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile/Tablet Card View */}
+                <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-stone-50/50 max-h-[calc(100vh-270px)] min-h-[360px] overflow-auto">
+                  {items.map((item) => {
+                    const currentStock = item.currentStock ?? item.stock ?? 0;
+                    const threshold = item.lowStockThreshold || 5;
+                    const isLow = currentStock <= threshold && currentStock > 0;
+                    const isOut = currentStock === 0;
+
+                    return (
+                      <div key={item.productId || item.id} className="p-4 flex flex-col gap-3 bg-white border border-stone-300 rounded-xl shadow-sm">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-semibold text-stone-900 text-sm truncate max-w-[200px] sm:max-w-[300px]">
                               {item.name}
-                            </span>
-                          </td>
-
-                          <td className="py-2.5 px-4 font-mono text-[11px] text-stone-600 font-medium">
-                            {item.sku}
-                          </td>
-
-                          <td className="py-2.5 px-4 text-stone-600 font-medium">
-                            {item.category || 'Atelier'}
-                          </td>
-
-                          <td className="py-2.5 px-4">
-                            <span className="font-mono font-bold text-xs text-stone-900">
+                            </div>
+                            <div className="font-mono text-[11px] text-stone-600 mt-1">
+                              {item.sku}
+                            </div>
+                            <div className="text-[11px] text-stone-500 mt-0.5">
+                              {item.category || 'Atelier'}
+                            </div>
+                          </div>
+                          <div className="text-right flex flex-col items-end gap-1.5">
+                            <span className="font-mono font-bold text-sm text-stone-900">
                               {currentStock} units
                             </span>
-                          </td>
-
-                          <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
-                            {threshold} min
-                          </td>
-
-                          <td className="py-2.5 px-4">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
                                 isOut
                                   ? 'bg-rose-50 text-rose-700 border border-rose-200'
                                   : isLow
@@ -375,22 +431,25 @@ export default function AdminInventoryPage() {
                             >
                               {isOut ? 'Depleted' : isLow ? 'Low Stock' : 'Optimal'}
                             </span>
-                          </td>
+                          </div>
+                        </div>
 
-                          <td className="py-2.5 px-4 text-right">
-                            <button
-                              onClick={() => handleOpenAdjust(item)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-all"
-                            >
-                              <ArrowUpDown className="w-3.5 h-3.5 text-purple-700" />
-                              <span>Adjust Stock</span>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                        <div className="flex justify-between items-center mt-1 pt-2 border-t border-stone-100">
+                          <div className="text-[11px] text-stone-500 font-mono">
+                            Threshold: {threshold}
+                          </div>
+                          <button
+                            onClick={() => handleOpenAdjust(item)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-800 text-xs font-semibold"
+                          >
+                            <ArrowUpDown className="w-3.5 h-3.5 text-purple-700" />
+                            <span>Adjust</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -425,53 +484,98 @@ export default function AdminInventoryPage() {
               No inventory transactions recorded yet.
             </div>
           ) : (
-            <div className="overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
-              <table className="w-full text-left text-xs">
-                <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
-                  <tr>
-                    <th className="py-2.5 px-4">Timestamp</th>
-                    <th className="py-2.5 px-4">Saree Name / SKU</th>
-                    <th className="py-2.5 px-4">Change</th>
-                    <th className="py-2.5 px-4">Balance After</th>
-                    <th className="py-2.5 px-4">Reason</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {historyLogs.map((log: any) => (
-                    <tr key={log.id} className="hover:bg-purple-50/20">
-                      <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
+            <div className="flex-1 overflow-y-auto">
+              <div className="hidden lg:block overflow-auto max-h-[calc(100vh-270px)] min-h-[360px]">
+                <table className="w-full text-left text-xs">
+                  <thead className="sticky top-0 z-10 bg-stone-100/95 backdrop-blur-xs border-b border-stone-200 text-stone-600 font-semibold uppercase tracking-wider text-[10px]">
+                    <tr>
+                      <th className="py-2.5 px-4">Timestamp</th>
+                      <th className="py-2.5 px-4">Saree Name / SKU</th>
+                      <th className="py-2.5 px-4">Change</th>
+                      <th className="py-2.5 px-4">Balance After</th>
+                      <th className="py-2.5 px-4">Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {historyLogs.map((log: any) => (
+                      <tr key={log.id} className="hover:bg-purple-50/20">
+                        <td className="py-2.5 px-4 font-mono text-[11px] text-stone-500">
+                          {new Date(log.createdAt).toLocaleString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </td>
+                        <td className="py-2.5 px-4">
+                          <span className="font-semibold text-stone-900 block">
+                            {log.product?.name || 'Saree item'}
+                          </span>
+                          <span className="text-[10px] text-stone-400 font-mono">
+                            {log.product?.sku}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-4">
+                          <span
+                            className={`font-mono font-bold text-xs ${
+                              log.quantityChange > 0 ? 'text-emerald-600' : 'text-rose-600'
+                            }`}
+                          >
+                            {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange} units
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-4 font-mono font-bold text-stone-800 text-xs">
+                          {log.newQuantity}
+                        </td>
+                        <td className="py-2.5 px-4 text-stone-600">{log.reason}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile/Tablet Card View */}
+              <div className="lg:hidden flex flex-col gap-3 px-1 py-3 bg-stone-50/50 max-h-[calc(100vh-270px)] min-h-[360px] overflow-auto">
+                {historyLogs.map((log: any) => (
+                  <div key={log.id} className="p-4 flex flex-col gap-2 bg-white border border-stone-300 rounded-xl shadow-sm">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-semibold text-stone-900 text-sm">
+                          {log.product?.name || 'Saree item'}
+                        </div>
+                        <div className="text-[10px] text-stone-400 font-mono mt-0.5">
+                          {log.product?.sku}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span
+                          className={`font-mono font-bold text-sm ${
+                            log.quantityChange > 0 ? 'text-emerald-600' : 'text-rose-600'
+                          }`}
+                        >
+                          {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-2 text-[11px]">
+                      <div className="text-stone-500 font-mono">
                         {new Date(log.createdAt).toLocaleString('en-IN', {
                           day: 'numeric',
                           month: 'short',
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
-                      </td>
-                      <td className="py-2.5 px-4">
-                        <span className="font-semibold text-stone-900 block">
-                          {log.product?.name || 'Saree item'}
-                        </span>
-                        <span className="text-[10px] text-stone-400 font-mono">
-                          {log.product?.sku}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4">
-                        <span
-                          className={`font-mono font-bold text-xs ${
-                            log.quantityChange > 0 ? 'text-emerald-600' : 'text-rose-600'
-                          }`}
-                        >
-                          {log.quantityChange > 0 ? `+${log.quantityChange}` : log.quantityChange} units
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 font-mono font-bold text-stone-800 text-xs">
-                        {log.newQuantity}
-                      </td>
-                      <td className="py-2.5 px-4 text-stone-600">{log.reason}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                      <div className="font-mono font-bold text-stone-800">
+                        Balance: {log.newQuantity}
+                      </div>
+                    </div>
+                    <div className="text-[11px] text-stone-600 mt-1">
+                      Reason: {log.reason}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
