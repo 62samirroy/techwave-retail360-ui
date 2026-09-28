@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Filter, X, ArrowUpDown, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/shop/ProductCard';
-import { AlponaDesign } from '@/components/ui/AlponaDesign';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { ProductGridSkeleton, EmptyState } from '@/components/ui/LoadingState';
@@ -348,9 +347,6 @@ function ShopContent() {
           )}
         </main>
       </div>
-
-      {/* Traditional Auspicious Alpona Design Accent */}
-      <AlponaDesign className="mt-8" />
     </div>
   );
 }

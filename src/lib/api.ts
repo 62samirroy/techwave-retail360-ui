@@ -269,6 +269,13 @@ export const api = {
   updateSettings: (data: any) =>
     fetcher<any>('/settings', { method: 'PUT', body: JSON.stringify(data) }),
 
+  // Homepage CMS
+  getHomepageConfig: () => fetcher<any>('/homepage'),
+  updateHomepageConfig: (data: any) =>
+    fetcher<any>('/homepage', { method: 'PUT', body: JSON.stringify(data) }),
+  resetHomepageConfig: () =>
+    fetcher<any>('/homepage/reset', { method: 'POST' }),
+
   // Media / File Upload
   uploadImage: (file: string, filename?: string, contentType?: string) =>
     fetcher<{ url: string; fallbackUrl?: string; filename: string; size: number; storage: string }>(

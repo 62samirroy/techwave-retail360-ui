@@ -38,12 +38,15 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { RoyalArchCard } from '@/components/shop/RoyalArchCard';
 import { api } from '@/lib/api';
 import { ProductData, CategoryData } from '@/types';
+import { HomePageConfig } from '@/types/homepage';
+import { DEFAULT_HOMEPAGE_CONFIG } from '@/lib/homepage-defaults';
 import { APP_CONFIG } from '@/lib/constants';
 import { buildWhatsAppLink, cn } from '@/lib/utils';
 
 export default function HomePage() {
   const [allProducts, setAllProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [homeConfig, setHomeConfig] = useState<HomePageConfig>(DEFAULT_HOMEPAGE_CONFIG);
   const [loading, setLoading] = useState(true);
 
   // Hero carousel state
@@ -98,9 +101,10 @@ export default function HomePage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [prodRes, catRes] = await Promise.all([
+        const [prodRes, catRes, homeRes] = await Promise.all([
           api.getProducts({ limit: 24 }),
           api.getCategories(),
+          api.getHomepageConfig(),
         ]);
 
         if (prodRes.success && prodRes.data?.products) {
@@ -109,6 +113,10 @@ export default function HomePage() {
 
         if (catRes.success && catRes.data) {
           setCategories(catRes.data);
+        }
+
+        if (homeRes.success && homeRes.data) {
+          setHomeConfig(homeRes.data);
         }
       } catch (err) {
         console.error('Error loading home data:', err);
@@ -119,33 +127,10 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // Hero Slides matching screenshot with generated photorealistic luxury banners
-  const heroSlides = [
-    {
-      id: 1,
-      title: 'The Grand Bridal & Heritage Showcase',
-      subtitle: 'The eternal charm of authentic handloom silk sarees curated by Retail 360°, woven with pure gold zari and generational artistry.',
-      image: '/hero-banner-1.jpg',
-      ctaText: 'SHOP NOW',
-      ctaLink: '/categories/kanjivaram-silk',
-    },
-    {
-      id: 2,
-      title: 'Kadwa Brocades & Varanasi Masterweaves',
-      subtitle: 'Hand-interlocked floral jaal and antique meenakari motifs handcrafted on generational pit looms.',
-      image: '/hero-banner-2.jpg',
-      ctaText: 'SHOP NOW',
-      ctaLink: '/categories/banarasi-brocade',
-    },
-    {
-      id: 3,
-      title: 'Ethereal Pastels & Organza Tissue Silks',
-      subtitle: 'Airy silhouettes adorned with delicate gota patti borders and botanical foil zari drapes.',
-      image: '/hero-banner-3.jpg',
-      ctaText: 'SHOP NOW',
-      ctaLink: '/categories/organza-floral',
-    },
-  ];
+  // Hero Slides dynamically controlled from Admin CMS
+  const heroSlides = homeConfig.heroSlides?.length
+    ? homeConfig.heroSlides
+    : DEFAULT_HOMEPAGE_CONFIG.heroSlides;
 
   // Auto-advance hero carousel
   useEffect(() => {
@@ -412,14 +397,15 @@ export default function HomePage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-stone-200 pb-3 mb-6 gap-4">
           <div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-              Today&apos;s New Arrivals
+              {homeConfig.newArrivals?.sectionTitle || "Today's New Arrivals"}
             </h2>
-            <div className="flex items-center gap-2 text-xs text-[#540924] font-medium mt-1">
-              <Link href="/shop" className="hover:underline">View All New Arrivals</Link>
-              <span>|</span>
-              <Link href="/categories/kanjivaram-silk" className="hover:underline">Pure Kanchipuram Silks</Link>
-              <span>|</span>
-              <Link href="/shop?search=soft+silk" className="hover:underline">Soft Silk Sarees</Link>
+            <div className="flex items-center gap-2 text-xs text-[#540924] font-medium mt-1 flex-wrap">
+              {homeConfig.newArrivals?.links?.map((link, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && <span>|</span>}
+                  <Link href={link.href} className="hover:underline">{link.label}</Link>
+                </React.Fragment>
+              ))}
             </div>
           </div>
 
@@ -459,8 +445,8 @@ export default function HomePage() {
           <div className="lg:col-span-3 h-full min-h-[440px]">
             <div className="group relative h-full w-full rounded-2xl overflow-hidden shadow-md border border-stone-200 bg-stone-900 flex flex-col justify-end p-6">
               <Image
-                src="https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=800"
-                alt="Curated Combos"
+                src={homeConfig.newArrivals?.curatedCard?.image || 'https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                alt={homeConfig.newArrivals?.curatedCard?.title || 'Curated Combos'}
                 fill
                 className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
               />
@@ -468,14 +454,14 @@ export default function HomePage() {
 
               <div className="relative z-10 space-y-2">
                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight">
-                  Curated Combos
+                  {homeConfig.newArrivals?.curatedCard?.title || 'Curated Combos'}
                 </h3>
                 <p className="text-[11px] text-stone-200 leading-relaxed font-normal">
-                  Heirloom handloom sarees matched with contrast designer blouse pieces.
+                  {homeConfig.newArrivals?.curatedCard?.subtitle || 'Heirloom handloom sarees matched with contrast designer blouse pieces.'}
                 </p>
-                <Link href="/shop" className="inline-block pt-1">
+                <Link href={homeConfig.newArrivals?.curatedCard?.ctaLink || '/shop'} className="inline-block pt-1">
                   <button className="rounded-full bg-white hover:bg-stone-100 text-stone-900 font-bold px-5 py-2 text-xs transition-all shadow-sm flex items-center gap-1.5 group-hover:translate-x-1">
-                    <span>SHOP NOW</span>
+                    <span>{homeConfig.newArrivals?.curatedCard?.ctaText || 'SHOP NOW'}</span>
                     <span>&gt;</span>
                   </button>
                 </Link>
@@ -582,13 +568,13 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
             <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#b48325]">
-              ✦ SACRED WEAVES OF SOUTH INDIA ✦
+              {homeConfig.kanchipuram?.badge || '✦ SACRED WEAVES OF SOUTH INDIA ✦'}
             </span>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#540924] tracking-tight">
-              Pure Kanchipuram Silks
+              {homeConfig.kanchipuram?.title || 'Pure Kanchipuram Silks'}
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-              Handpicked masterweaves from the historic temple town of Kanchipuram
+              {homeConfig.kanchipuram?.subtitle || 'Handpicked masterweaves from the historic temple town of Kanchipuram'}
             </p>
 
             {/* Sub-category pills */}
@@ -622,22 +608,22 @@ export default function HomePage() {
             {/* Story Lookbook Left matching screenshot bride's hand on red silk */}
             <div className="lg:col-span-4 rounded-2xl overflow-hidden relative min-h-[380px] shadow-sm border border-stone-200 group">
               <Image
-                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800"
-                alt="Bridal Kanchipuram Silks"
+                src={homeConfig.kanchipuram?.lookbookCard?.image || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800'}
+                alt={homeConfig.kanchipuram?.lookbookCard?.title || 'Bridal Silks'}
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
               <div className="absolute bottom-6 left-6 right-6 z-10 space-y-2">
-                <Link href="/categories/kanjivaram-silk" className="inline-block">
+                <Link href={homeConfig.kanchipuram?.lookbookCard?.link || '/categories/kanjivaram-silk'} className="inline-block">
                   <h3 className="text-2xl font-serif font-bold text-white hover:text-[#fde68a] transition-colors flex items-center gap-1.5">
-                    <span>Bridal Silks</span>
+                    <span>{homeConfig.kanchipuram?.lookbookCard?.title || 'Bridal Silks'}</span>
                     <span className="text-xl">&gt;</span>
                   </h3>
                 </Link>
                 <p className="text-xs text-rose-100/90 leading-relaxed font-normal">
-                  Authentic 3-ply mulberry silks with certified tested silver &amp; gold zari.
+                  {homeConfig.kanchipuram?.lookbookCard?.subtitle || 'Authentic 3-ply mulberry silks with certified tested silver & gold zari.'}
                 </p>
               </div>
             </div>
@@ -907,13 +893,13 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#b48325]">
-              CELEBRITY &amp; ROYAL LOOKBOOK
+              {homeConfig.bridalFestive?.badge || 'CELEBRITY & ROYAL LOOKBOOK'}
             </span>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
-              Bridal &amp; Festive Edit
+              {homeConfig.bridalFestive?.title || 'Bridal & Festive Edit'}
             </h2>
           </div>
-          <Link href="/shop?featured=true">
+          <Link href={homeConfig.bridalFestive?.viewAllLink || '/shop?featured=true'}>
             <button className="rounded-full bg-[#540924] hover:bg-[#3d0517] text-white px-4 py-1.5 text-xs font-bold transition-all shadow-xs flex items-center gap-1">
               <span>VIEW ALL</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -922,39 +908,10 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[
-            {
-              id: 'rsf-kanji-001',
-              title: 'Royal Saree Black Bridal Kanchipuram Silk Saree',
-              price: 32500,
-              originalPrice: 38000,
-              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=800',
-            },
-            {
-              id: 'rsf-banar-001',
-              title: 'Sindhoor Red Gold Zari Heavy Bridal Silk Saree',
-              price: 36000,
-              originalPrice: 42000,
-              image: 'https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=800',
-            },
-            {
-              id: 'rsf-kanji-002',
-              title: 'Lavanya Lilac Pastel Brocade Kanchipuram Saree',
-              price: 28500,
-              originalPrice: 33000,
-              image: 'https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=800',
-            },
-            {
-              id: 'rsf-organza-001',
-              title: 'Suvarna Beige Tissue Handloom Silk Saree',
-              price: 29900,
-              originalPrice: 35000,
-              image: 'https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=800',
-            },
-          ].map((look) => (
+          {(homeConfig.bridalFestive?.cards || []).map((look, idx) => (
             <Link
-              key={look.id}
-              href="/shop"
+              key={look.id || idx}
+              href={look.link || '/shop'}
               className="group flex flex-col rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-xs hover:border-[#540924] hover:shadow-xl transition-all duration-300"
             >
               <div className="relative aspect-[3/4.2] w-full overflow-hidden bg-stone-100">
@@ -1004,20 +961,12 @@ export default function HomePage() {
               loop
               muted
               playsInline
-              poster="/hero-banner-2.jpg"
+              poster={homeConfig.videoBanner?.poster || "/hero-banner-2.jpg"}
               className="w-full h-full object-cover object-center"
             >
               <source
-                src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm"
+                src={homeConfig.videoBanner?.videoUrl || "https://upload.wikimedia.org/wikipedia/commons/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm"}
                 type="video/webm"
-              />
-              <source
-                src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm.480p.vp9.webm"
-                type="video/webm"
-              />
-              <source
-                src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bd/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm/Weaving_Tant_Saree_by_Handloom_-_2_Natun_Phulia_-_Nadia_2016-11-12_1804.webm.360p.mpeg4.mov"
-                type="video/mp4"
               />
             </video>
           </div>
@@ -1037,25 +986,25 @@ export default function HomePage() {
               {/* Top Pill Badge */}
               <div className="inline-flex items-center gap-2 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/50 backdrop-blur-md px-3.5 py-1 text-[11px] font-bold tracking-widest uppercase text-amber-200 shadow-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>THE ROYAL WEAVE IN MOTION</span>
+                <span>{homeConfig.videoBanner?.badge || 'THE ROYAL WEAVE IN MOTION'}</span>
               </div>
 
               {/* Heading */}
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-white leading-tight">
-                Generations of Handloom Artistry Captured on Film
+                {homeConfig.videoBanner?.title || 'Generations of Handloom Artistry Captured on Film'}
               </h2>
 
               {/* Story */}
               <p className="text-xs sm:text-sm text-stone-200 font-normal leading-relaxed">
-                Witness authentic master artisans at the pit loom weaving pure mulberry silk and certified 24K electroplated gold zari. Each heritage saree represents over 200 hours of unhurried generational rhythm.
+                {homeConfig.videoBanner?.description || 'Witness authentic master artisans at the pit loom weaving pure mulberry silk and certified 24K electroplated gold zari. Each heritage saree represents over 200 hours of unhurried generational rhythm.'}
               </p>
 
               {/* CTA Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                <Link href="/shop?featured=true">
+                <Link href={homeConfig.videoBanner?.cta1Link || '/shop?featured=true'}>
                   <button className="rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-stone-950 font-bold px-6 py-2.5 text-xs transition-all shadow-lg hover:shadow-amber-500/30 flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
                     <ShoppingBag className="w-4 h-4" />
-                    <span>EXPLORE BRIDAL EDIT</span>
+                    <span>{homeConfig.videoBanner?.cta1Text || 'EXPLORE BRIDAL EDIT'}</span>
                   </button>
                 </Link>
 
@@ -1067,7 +1016,7 @@ export default function HomePage() {
                   className="rounded-full bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white font-semibold px-5 py-2.5 text-xs transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <Video className="w-4 h-4 text-amber-300" />
-                  <span>BOOK LIVE VIDEO DRAPE</span>
+                  <span>{homeConfig.videoBanner?.cta2Text || 'BOOK LIVE VIDEO DRAPE'}</span>
                 </button>
               </div>
 
@@ -1104,47 +1053,21 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-xl mx-auto mb-6 space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b48325]">
-            CELEBRATE TRADITIONS
+            {homeConfig.weddingStories?.badge || 'CELEBRATE TRADITIONS'}
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
-            Wedding &amp; Festive Stories
+            {homeConfig.weddingStories?.title || 'Wedding & Festive Stories'}
           </h2>
           <p className="text-xs text-stone-500">
-            Curating unforgettable memories for brides and families
+            {homeConfig.weddingStories?.subtitle || 'Curating unforgettable memories for brides and families'}
           </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-          {[
-            {
-              title: 'Muhurtham',
-              subtitle: 'Traditional Sacred Silks',
-              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              title: 'Haldi & Sangeet',
-              subtitle: 'Sunlit Auspicious Drapes',
-              image: 'https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              title: 'The Bridal Trousseau',
-              subtitle: 'Generational Heirlooms',
-              image: 'https://images.pexels.com/photos/3321793/pexels-photo-3321793.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              title: 'Grand Reception',
-              subtitle: 'Opulent Kadwa Brocades',
-              image: 'https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-            {
-              title: 'Pujas & Celebrations',
-              subtitle: 'Festive Auspicious Drapes',
-              image: 'https://images.pexels.com/photos/1589216/pexels-photo-1589216.jpeg?auto=compress&cs=tinysrgb&w=600',
-            },
-          ].map((story) => (
+          {(homeConfig.weddingStories?.stories || []).map((story, idx) => (
             <Link
-              key={story.title}
-              href="/shop"
+              key={story.title || idx}
+              href={story.link || '/shop'}
               className="group relative aspect-[3/4.6] rounded-2xl overflow-hidden shadow-sm border border-stone-200 flex flex-col justify-end p-4"
             >
               <Image
@@ -1172,51 +1095,20 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-xl mx-auto mb-6 space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b48325]">
-            AUTHENTIC CRAFTSMANSHIP
+            {homeConfig.loomStory?.badge || 'AUTHENTIC CRAFTSMANSHIP'}
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
-            Silk Swatches | The Weaving Loom Story
+            {homeConfig.loomStory?.title || 'Silk Swatches | The Weaving Loom Story'}
           </h2>
           <p className="text-xs text-stone-500">
-            Zoom into the intricate craft of our master weavers
+            {homeConfig.loomStory?.subtitle || 'Zoom into the intricate craft of our master weavers'}
           </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          {[
-            {
-              title: 'Pure Tested Zari',
-              desc: 'Certified gold & silver plate',
-              image: 'https://images.pexels.com/photos/1488312/pexels-photo-1488312.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-            {
-              title: 'Korvai Weaving',
-              desc: 'Hand-interlocked three-shuttle',
-              image: 'https://images.pexels.com/photos/1589216/pexels-photo-1589216.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-            {
-              title: 'Kadwa Technique',
-              desc: 'No loose floating threads',
-              image: 'https://images.pexels.com/photos/3321793/pexels-photo-3321793.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-            {
-              title: 'Meenakari Inlay',
-              desc: 'Colorful enamel silk threads',
-              image: 'https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-            {
-              title: 'Mulberry 3-Ply',
-              desc: 'Superior tensile strength & sheen',
-              image: 'https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-            {
-              title: 'Temple Border',
-              desc: 'Sacred gopuram architecture',
-              image: 'https://images.pexels.com/photos/3014856/pexels-photo-3014856.jpeg?auto=compress&cs=tinysrgb&w=400',
-            },
-          ].map((swatch) => (
+          {(homeConfig.loomStory?.swatches || []).map((swatch, idx) => (
             <div
-              key={swatch.title}
+              key={swatch.title || idx}
               className="rounded-2xl border border-stone-200 bg-white p-3 shadow-2xs hover:border-[#540924] transition-all"
             >
               <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-2 bg-stone-100">
@@ -1236,8 +1128,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* ========================================================================= */}
       {/* 9. READY TO SHIP SAREES (Express 24-hr Dispatch from Screenshot) */}
       {/* ========================================================================= */}
@@ -1246,13 +1136,13 @@ export default function HomePage() {
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 text-[#540924] px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider mb-1 border border-rose-200">
               <Clock className="w-3 h-3 text-[#540924]" />
-              <span>Dispatches in 24 Hours</span>
+              <span>{homeConfig.readyToShip?.badge || 'Dispatches in 24 Hours'}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#540924]">
-              Ready to Ship Sarees
+              {homeConfig.readyToShip?.title || 'Ready to Ship Sarees'}
             </h2>
           </div>
-          <Link href="/shop?inStock=true">
+          <Link href={homeConfig.readyToShip?.viewAllLink || '/shop?inStock=true'}>
             <button className="rounded-full bg-[#540924] hover:bg-[#3d0517] text-white px-4 py-1.5 text-xs font-bold transition-all shadow-xs flex items-center gap-1">
               <span>VIEW ALL</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -1316,87 +1206,20 @@ export default function HomePage() {
         <div className="rounded-3xl bg-[#fdf8f9] border border-rose-100 p-6 sm:p-10">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#b48325]">
-              ✦ OUR RETAIL DESTINATIONS ✦
+              {homeConfig.stores?.badge || '✦ OUR RETAIL DESTINATIONS ✦'}
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#540924]">
-              Visit Our Stores
+              {homeConfig.stores?.title || 'Visit Our Stores'}
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-              Experience the touch of authentic handlooms across our flagship showrooms
+              {homeConfig.stores?.subtitle || 'Experience the touch of authentic handlooms across our flagship showrooms'}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                id: 'chennai',
-                name: 'T. Nagar, Chennai',
-                rating: '4.9',
-                reviews: '180+ Reviews',
-                address: 'Pondy Bazaar, T. Nagar, Chennai, Tamil Nadu 600017',
-                phone: '+91 44 2434 5678',
-                hours: '10:00 AM - 9:00 PM',
-                image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'T. Nagar Chennai Saree Boutique',
-              },
-              {
-                id: 'bengaluru',
-                name: 'Jayanagar, Bengaluru',
-                rating: '4.9',
-                reviews: '240+ Reviews',
-                address: '11th Main, 4th Block, Jayanagar, Bengaluru 560011',
-                phone: '+91 80 2656 7890',
-                hours: '10:00 AM - 9:30 PM',
-                image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'Jayanagar Bengaluru Saree Boutique',
-              },
-              {
-                id: 'hyderabad',
-                name: 'Banjara Hills, Hyderabad',
-                rating: '4.8',
-                reviews: '195+ Reviews',
-                address: 'Road No. 10, Banjara Hills, Hyderabad, Telangana 500034',
-                phone: '+91 40 2335 1234',
-                hours: '10:30 AM - 9:00 PM',
-                image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'Banjara Hills Hyderabad Saree Boutique',
-              },
-              {
-                id: 'kolkata',
-                name: 'Salt Lake, Kolkata',
-                rating: '4.9',
-                reviews: '210+ Reviews',
-                address: 'TechWave Tower, Sector V, Salt Lake, Kolkata 700091',
-                phone: '+91 9641145871',
-                hours: '10:00 AM - 9:00 PM',
-                image: 'https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'Salt Lake Sector V Kolkata Saree Boutique',
-              },
-              {
-                id: 'delhi',
-                name: 'Connaught Place, New Delhi',
-                rating: '4.8',
-                reviews: '170+ Reviews',
-                address: 'Block E, Inner Circle, Connaught Place, New Delhi 110001',
-                phone: '+91 11 2341 5678',
-                hours: '10:30 AM - 8:30 PM',
-                image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'Connaught Place New Delhi Saree Boutique',
-              },
-              {
-                id: 'mumbai',
-                name: 'Kala Ghoda, Mumbai',
-                rating: '4.9',
-                reviews: '220+ Reviews',
-                address: 'Heritage Mile, Kala Ghoda, Fort, Mumbai 400001',
-                phone: '+91 22 2284 9012',
-                hours: '10:00 AM - 9:00 PM',
-                image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800',
-                mapQuery: 'Kala Ghoda Fort Mumbai Saree Boutique',
-              },
-            ].map((store) => (
+            {(homeConfig.stores?.stores || []).map((store, idx) => (
               <div
-                key={store.id}
+                key={store.id || idx}
                 className="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-xs hover:shadow-xl hover:border-[#540924]/40 transition-all duration-300 flex flex-col"
               >
                 {/* Store Photograph Frame */}

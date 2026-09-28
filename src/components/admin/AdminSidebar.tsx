@@ -27,6 +27,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
 
   const links = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+    { label: 'Homepage CMS', href: '/admin/homepage', icon: Sparkles, highlight: true },
     { label: 'Products', href: '/admin/products', icon: Package },
     { label: 'Categories', href: '/admin/categories', icon: Layers },
     { label: 'Inventory & Alerts', href: '/admin/inventory', icon: Warehouse },
@@ -35,7 +36,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
     { label: 'Reviews', href: '/admin/reviews', icon: Star },
     { label: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
     { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-    { label: 'AI Business Stylist', href: '/admin/ai-assistant', icon: Sparkles, highlight: true },
+    { label: 'AI Business Stylist', href: '/admin/ai-assistant', icon: Sparkles },
     { label: 'Store Settings', href: '/admin/settings', icon: Settings },
   ];
 

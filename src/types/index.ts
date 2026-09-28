@@ -241,3 +241,5 @@ export interface NotificationData {
   link?: string | null;
   createdAt: string | Date;
 }
+
+export * from './homepage';
