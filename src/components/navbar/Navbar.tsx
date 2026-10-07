@@ -36,6 +36,12 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+  
+  // Default static sub-navigation categories
+  const [navCategories, setNavCategories] = useState([
+    { label: 'All Sarees', href: '/shop' },
+    { label: 'Flagship Stores', href: '/#stores' },
+  ]);
 
   const refreshUserData = async () => {
     try {
@@ -81,6 +87,29 @@ export function Navbar() {
     refreshCartData();
     refreshWishlistData();
 
+    const fetchNavCategories = async () => {
+      try {
+        const res = await api.getCategories();
+        if (res.success && res.data) {
+          const dynamicCats = res.data
+            .filter((c: any) => c.showInNavbar)
+            .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
+            .slice(0, 9)
+            .map((c: any) => ({
+              label: c.name,
+              href: `/categories/${c.slug}`
+            }));
+            
+          setNavCategories([
+            { label: 'All Sarees', href: '/shop' },
+            ...dynamicCats,
+            { label: 'Flagship Stores', href: '/#stores' },
+          ]);
+        }
+      } catch (e) {}
+    };
+    fetchNavCategories();
+
     const handleCartUpdate = () => refreshCartData();
     const handleAuthUpdate = () => refreshUserData();
     const handleWishlistUpdate = () => refreshWishlistData();
@@ -109,19 +138,6 @@ export function Navbar() {
       router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
-
-  // Sub-Navigation Categories directly matching the authentic saree catalog
-  const subNavCategories = [
-    { label: 'All Sarees', href: '/shop' },
-    { label: 'Kanjivaram Silk', href: '/categories/kanjivaram-silk' },
-    { label: 'Banarasi Brocade', href: '/categories/banarasi-brocade' },
-    { label: 'Organza & Floral', href: '/categories/organza-floral' },
-    { label: 'Chanderi & Linen', href: '/categories/chanderi-linen' },
-    { label: 'Bandhani & Leheriya', href: '/categories/bandhani-leheriya' },
-    { label: 'Party & Cocktail', href: '/categories/party-cocktail-wear' },
-    { label: 'Bridal Heritage', href: '/shop?featured=true' },
-    { label: 'Flagship Stores', href: '/#stores' },
-  ];
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-md font-sans">
@@ -360,8 +376,8 @@ export function Navbar() {
       {/* 3. SUB-NAVIGATION CATEGORY BAR (Pure White Background with Distinct Deep Wine/Ruby Text) */}
       <nav className="hidden lg:block bg-white border-y border-stone-200/90 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <ul className="flex items-center justify-between gap-2 xl:gap-5 py-2.5 text-xs font-bold text-[#540924] w-full">
-            {subNavCategories.map((item) => (
+          <ul className="flex items-center justify-between gap-2 xl:gap-5 py-2.5 text-xs font-bold text-[#540924] w-full overflow-x-auto no-scrollbar">
+            {navCategories.map((item) => (
               <li key={item.label} className="shrink-0">
                 <Link
                   href={item.href}
@@ -387,7 +403,7 @@ export function Navbar() {
             Explore Collections
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {subNavCategories.map((item) => (
+            {navCategories.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}

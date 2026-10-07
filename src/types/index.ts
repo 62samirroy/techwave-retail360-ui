@@ -40,6 +40,7 @@ export interface CategoryData {
   image?: string | null;
   status: string;
   sortOrder: number;
+  showInNavbar?: boolean;
   _count?: {
     products: number;
   };

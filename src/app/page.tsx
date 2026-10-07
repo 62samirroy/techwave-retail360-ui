@@ -83,17 +83,33 @@ export default function HomePage() {
   // Quick Add To Bag state
   const [addedItemName, setAddedItemName] = useState<string | null>(null);
 
+  // Dedicated Today's New Arrivals products
+  const [todayArrivals, setTodayArrivals] = useState<ProductData[]>([]);
+
+  // Dedicated Kanjivaram products
+  const [kanjivaramProducts, setKanjivaramProducts] = useState<ProductData[]>([]);
+
   useEffect(() => {
     async function loadData() {
       try {
-        const [prodRes, catRes, homeRes] = await Promise.all([
+        const [prodRes, catRes, homeRes, arrivalsRes, kanjiRes] = await Promise.all([
           api.getProducts({ limit: 24 }),
           api.getCategories(),
           api.getHomepageConfig(),
+          api.getProducts({ category: 'todays-new-arrivals', limit: 12 }),
+          api.getProducts({ category: 'kanjivaram-silk', limit: 12 }),
         ]);
 
         if (prodRes.success && prodRes.data?.products) {
           setAllProducts(prodRes.data.products);
+        }
+
+        if (arrivalsRes.success && arrivalsRes.data?.products && arrivalsRes.data.products.length > 0) {
+          setTodayArrivals(arrivalsRes.data.products);
+        }
+
+        if (kanjiRes.success && kanjiRes.data?.products && kanjiRes.data.products.length > 0) {
+          setKanjivaramProducts(kanjiRes.data.products);
         }
 
         if (catRes.success && catRes.data) {
@@ -188,17 +204,12 @@ export default function HomePage() {
 
   // Bridal products filtered for showcase
   const bridalProducts = React.useMemo(() => {
+    if (kanjivaramProducts.length > 0) return kanjivaramProducts;
     const matched = allProducts.filter(
-      (p) =>
-        p.tags?.toLowerCase().includes('bridal') ||
-        p.category?.slug === 'kanjivaram-silk' ||
-        p.category?.slug === 'banarasi-brocade' ||
-        p.name.toLowerCase().includes('kanjivaram') ||
-        p.name.toLowerCase().includes('banarasi') ||
-        p.name.toLowerCase().includes('bridal')
+      (p) => p.category?.slug === 'kanjivaram-silk'
     );
     return matched.length ? matched : allProducts.slice(0, 8);
-  }, [allProducts]);
+  }, [allProducts, kanjivaramProducts]);
 
   // Dynamic signature crafts from Admin CMS or defaults
   const signatureCrafts = homeConfig.weaveCraft?.crafts?.length
@@ -379,7 +390,7 @@ export default function HomePage() {
           </div>
 
           <Link
-            href="/shop"
+            href="/categories/todays-new-arrivals"
             className="text-xs font-bold text-[#540924] hover:text-[#d4af37] flex items-center gap-1 transition-colors self-start sm:self-auto"
           >
             <span>View All New Arrivals</span>
@@ -406,7 +417,7 @@ export default function HomePage() {
                 <p className="text-[11px] text-stone-200 leading-relaxed font-normal">
                   {homeConfig.newArrivals?.curatedCard?.subtitle || 'Heirloom handloom sarees matched with contrast designer blouse pieces.'}
                 </p>
-                <Link href={homeConfig.newArrivals?.curatedCard?.ctaLink || '/shop'} className="inline-block pt-1">
+                <Link href={homeConfig.newArrivals?.curatedCard?.ctaLink || '/categories/todays-new-arrivals'} className="inline-block pt-1">
                   <button className="rounded-full bg-white hover:bg-stone-100 text-stone-900 font-bold px-5 py-2 text-xs transition-all shadow-sm flex items-center gap-1.5 group-hover:translate-x-1">
                     <span>{homeConfig.newArrivals?.curatedCard?.ctaText || 'SHOP NOW'}</span>
                     <span>&gt;</span>
@@ -432,11 +443,14 @@ export default function HomePage() {
                   </div>
                 ))
               ) : (
-                allProducts.slice(0, 10).map((product) => (
-                  <div key={product.id} data-card-item className="w-[85vw] sm:w-[260px] sm:max-w-[270px] shrink-0 snap-center sm:snap-start">
-                    <ProductCard product={product} />
-                  </div>
-                ))
+                (() => {
+                  const displayArrivals = todayArrivals.length > 0 ? todayArrivals : allProducts.slice(0, 10);
+                  return displayArrivals.map((product) => (
+                    <div key={product.id} data-card-item className="w-[85vw] sm:w-[260px] sm:max-w-[270px] shrink-0 snap-center sm:snap-start">
+                      <ProductCard product={product} />
+                    </div>
+                  ));
+                })()
               )}
             </div>
 

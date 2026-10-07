@@ -40,6 +40,7 @@ export default function AdminCategoriesPage() {
     image: '',
     status: 'ACTIVE',
     sortOrder: '1',
+    showInNavbar: false,
   });
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function AdminCategoriesPage() {
       image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
       status: 'ACTIVE',
       sortOrder: (categories.length + 1).toString(),
+      showInNavbar: false,
     });
     setFormError(null);
     setIsModalOpen(true);
@@ -85,6 +87,7 @@ export default function AdminCategoriesPage() {
       image: category.image || '',
       status: category.status,
       sortOrder: category.sortOrder?.toString() || '1',
+      showInNavbar: category.showInNavbar || false,
     });
     setFormError(null);
     setIsModalOpen(true);
@@ -108,6 +111,7 @@ export default function AdminCategoriesPage() {
         image: formData.image,
         status: formData.status,
         sortOrder: parseInt(formData.sortOrder, 10) || 1,
+        showInNavbar: formData.showInNavbar,
       };
 
       let res;
@@ -390,6 +394,19 @@ export default function AdminCategoriesPage() {
                 ]}
               />
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 mt-1 mb-3">
+            <input 
+              type="checkbox" 
+              id="showInNavbar" 
+              checked={formData.showInNavbar}
+              onChange={(e) => setFormData({ ...formData, showInNavbar: e.target.checked })}
+              className="w-4 h-4 text-brand-600 border-brand-300 rounded focus:ring-brand-500"
+            />
+            <label htmlFor="showInNavbar" className="text-xs font-medium text-brand-800 cursor-pointer select-none">
+              Show in Top Navigation Bar (Select top 9)
+            </label>
           </div>
 
           <div>
