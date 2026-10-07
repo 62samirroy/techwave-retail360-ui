@@ -90,10 +90,17 @@ export function Navbar() {
     const fetchNavCategories = async () => {
       try {
         const res = await api.getCategories();
-        if (res.success && res.data) {
-          const dynamicCats = res.data
-            .filter((c: any) => c.showInNavbar)
-            .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
+        if (res.success && Array.isArray(res.data)) {
+          const activeCats = res.data.filter((c: any) => c.status === 'ACTIVE');
+          const explicitlySelected = activeCats
+            .filter((c: any) => c.showInNavbar === true)
+            .sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+          const selectedList = explicitlySelected.length > 0 
+            ? explicitlySelected 
+            : activeCats.slice(0, 8);
+
+          const dynamicCats = selectedList
             .slice(0, 9)
             .map((c: any) => ({
               label: c.name,
@@ -113,15 +120,18 @@ export function Navbar() {
     const handleCartUpdate = () => refreshCartData();
     const handleAuthUpdate = () => refreshUserData();
     const handleWishlistUpdate = () => refreshWishlistData();
+    const handleCategoriesUpdate = () => fetchNavCategories();
 
     window.addEventListener('cart-updated', handleCartUpdate);
     window.addEventListener('auth-updated', handleAuthUpdate);
     window.addEventListener('wishlist-updated', handleWishlistUpdate);
+    window.addEventListener('categories-updated', handleCategoriesUpdate);
 
     return () => {
       window.removeEventListener('cart-updated', handleCartUpdate);
       window.removeEventListener('auth-updated', handleAuthUpdate);
       window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+      window.removeEventListener('categories-updated', handleCategoriesUpdate);
     };
   }, []);
 

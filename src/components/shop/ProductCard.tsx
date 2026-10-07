@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ShoppingBag, Heart, MessageCircle, Check, Star, Loader2 } from 'lucide-react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { Badge } from '@/components/ui/Badge';
-import { cn, buildWhatsAppLink } from '@/lib/utils';
+import { cn, buildWhatsAppLink, formatImageUrl } from '@/lib/utils';
 import { api } from '@/lib/api';
 
 export interface ProductCardProps {
@@ -40,9 +40,10 @@ export const ProductCard = React.memo(function ProductCard({
   const categoryName =
     typeof product.category === 'object' ? product.category?.name : product.category || 'Handloom Silk';
 
-  const primaryImage =
+  const primaryImage = formatImageUrl(
     product.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600';
+    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600'
+  );
 
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 4;

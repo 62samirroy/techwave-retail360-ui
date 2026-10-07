@@ -206,7 +206,11 @@ export default function HomePage() {
   const bridalProducts = React.useMemo(() => {
     if (kanjivaramProducts.length > 0) return kanjivaramProducts;
     const matched = allProducts.filter(
-      (p) => p.category?.slug === 'kanjivaram-silk'
+      (p) =>
+        p.category?.slug === 'kanjivaram-silk' ||
+        p.category?.slug === 'kanchipuram-silk' ||
+        (typeof p.category === 'object' && p.category?.name?.toLowerCase().includes('kanji')) ||
+        (typeof p.category === 'object' && p.category?.name?.toLowerCase().includes('kanchi'))
     );
     return matched.length ? matched : allProducts.slice(0, 8);
   }, [allProducts, kanjivaramProducts]);

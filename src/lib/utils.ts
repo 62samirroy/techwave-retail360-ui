@@ -60,3 +60,17 @@ export function buildWhatsAppLink(messageOrPhone: string, customPhoneOrMessage?:
   const encoded = encodeURIComponent(message || '');
   return `https://wa.me/${cleanPhone}?text=${encoded}`;
 }
+
+export function formatImageUrl(url?: string | null): string {
+  if (!url || typeof url !== 'string') {
+    return 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800';
+  }
+  // Convert any http://localhost:5000/uploads/... or http://127.0.0.1:5000/uploads/...
+  // to /uploads/... so Next.js serves it statically directly from public/uploads without server proxy lag
+  if (url.includes('/uploads/')) {
+    const match = url.match(/\/uploads\/[^?#\s]+/);
+    if (match) return match[0];
+  }
+  return url;
+}
+

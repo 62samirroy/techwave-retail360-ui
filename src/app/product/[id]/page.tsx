@@ -26,7 +26,7 @@ import { ProductCard } from '@/components/shop/ProductCard';
 import { ProductAiAsk } from '@/components/shop/ProductAiAsk';
 import { api } from '@/lib/api';
 import { ProductData, ReviewData } from '@/types';
-import { formatPrice, buildWhatsAppLink, formatDate, cn } from '@/lib/utils';
+import { formatPrice, buildWhatsAppLink, formatDate, cn, formatImageUrl } from '@/lib/utils';
 import { APP_CONFIG } from '@/lib/constants';
 
 export default function ProductDetailPage({ params }: { params?: { id?: string } }) {
@@ -78,7 +78,7 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
         const res = await api.getProductById(id);
         if (res.success && res.data) {
           setProduct(res.data);
-          const firstImg = res.data.images?.[0]?.url || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800';
+          const firstImg = formatImageUrl(res.data.images?.[0]?.url);
           setSelectedImage(firstImg);
           if (res.data.reviews) {
             setReviews(res.data.reviews);
@@ -288,27 +288,30 @@ export default function ProductDetailPage({ params }: { params?: { id?: string }
 
             return (
               <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto sm:max-h-[460px] w-full sm:w-20 shrink-0 pb-1 sm:pb-0 scrollbar-thin">
-                {allImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setSelectedImage(img.url)}
-                    onMouseEnter={() => setSelectedImage(img.url)}
-                    className={`relative h-18 sm:h-20 w-18 sm:w-20 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
-                      selectedImage === img.url
-                        ? 'border-[#540924] ring-2 ring-[#540924]/30 shadow-md scale-102'
-                        : 'border-stone-200/90 opacity-75 hover:opacity-100 hover:border-amber-400'
-                    }`}
-                  >
-                    <Image
-                      src={img.url}
-                      alt={`${product.name} thumbnail ${idx + 1}`}
-                      fill
-                      sizes="80px"
-                      className="object-cover object-top"
-                    />
-                  </button>
-                ))}
+                {allImages.map((img, idx) => {
+                  const resolvedUrl = formatImageUrl(img.url);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedImage(resolvedUrl)}
+                      onMouseEnter={() => setSelectedImage(resolvedUrl)}
+                      className={`relative h-18 sm:h-20 w-18 sm:w-20 rounded-xl border overflow-hidden shrink-0 transition-all cursor-pointer ${
+                        selectedImage === resolvedUrl
+                          ? 'border-[#540924] ring-2 ring-[#540924]/30 shadow-md scale-102'
+                          : 'border-stone-200/90 opacity-75 hover:opacity-100 hover:border-amber-400'
+                      }`}
+                    >
+                      <Image
+                        src={resolvedUrl}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
+                        fill
+                        sizes="80px"
+                        className="object-cover object-top"
+                      />
+                    </button>
+                  );
+                })}
               </div>
             );
           })()}

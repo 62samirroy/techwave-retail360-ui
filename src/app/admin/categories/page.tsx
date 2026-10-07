@@ -124,6 +124,7 @@ export default function AdminCategoriesPage() {
       if (res && res.success) {
         setIsModalOpen(false);
         await loadCategories();
+        window.dispatchEvent(new Event('categories-updated'));
       } else {
         setFormError(res?.message || 'Failed to save category.');
       }
@@ -131,6 +132,31 @@ export default function AdminCategoriesPage() {
       setFormError(err.message || 'An unexpected error occurred.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleToggleNavbar = async (category: CategoryData) => {
+    const nextVal = !category.showInNavbar;
+    // Optimistic UI update
+    setCategories((prev) =>
+      prev.map((c) => (c.id === category.id ? { ...c, showInNavbar: nextVal } : c))
+    );
+
+    try {
+      const res = await api.updateCategory(category.id, { showInNavbar: nextVal });
+      if (res && res.success) {
+        window.dispatchEvent(new Event('categories-updated'));
+      } else {
+        // Rollback on failure
+        setCategories((prev) =>
+          prev.map((c) => (c.id === category.id ? { ...c, showInNavbar: category.showInNavbar } : c))
+        );
+        alert(res?.message || 'Failed to update category');
+      }
+    } catch (err) {
+      setCategories((prev) =>
+        prev.map((c) => (c.id === category.id ? { ...c, showInNavbar: category.showInNavbar } : c))
+      );
     }
   };
 
@@ -143,6 +169,7 @@ export default function AdminCategoriesPage() {
       const res = await api.deleteCategory(id);
       if (res.success) {
         setCategories(categories.filter((c) => c.id !== id));
+        window.dispatchEvent(new Event('categories-updated'));
       } else {
         alert(res.message || 'Failed to delete category');
       }
@@ -151,21 +178,30 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const navbarCount = categories.filter((c) => c.showInNavbar).length;
+
   return (
     <div className="space-y-4">
       {/* Clean Unboxed Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-xl font-serif font-bold text-stone-900 tracking-tight">
               Saree Weave Categories &amp; Classifications
             </h1>
             <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
               {categories.length} categories
             </span>
+            <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
+              navbarCount > 0 
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold' 
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}>
+              ★ Header Navbar: {navbarCount} of 9 selected
+            </span>
           </div>
           <p className="text-xs text-stone-500 mt-0.5">
-            Structure your storefront catalog by regional handlooms, silks, and bridal collections.
+            Structure your catalog. Toggle any category directly to display it in the top customer navigation bar (up to 9 items).
           </p>
         </div>
         <button
@@ -208,11 +244,18 @@ export default function AdminCategoriesPage() {
                       <span className="text-[9px] text-stone-500 font-mono block mt-0.5 truncate">{c.slug}</span>
                     </div>
                     <div className="shrink-0 flex flex-col items-end gap-1">
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wide ${
-                        c.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-stone-100 text-stone-600 border border-stone-200'
-                      }`}>
-                        {c.status}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleNavbar(c)}
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase transition-all ${
+                          c.showInNavbar
+                            ? 'bg-[#540924] text-[#fef3c7] shadow-xs'
+                            : 'bg-stone-100 text-stone-500 border border-stone-200'
+                        }`}
+                      >
+                        <span className={`inline-block h-1.5 w-1.5 rounded-full ${c.showInNavbar ? 'bg-amber-300' : 'bg-stone-400'}`} />
+                        <span>{c.showInNavbar ? 'In Nav' : '+ Add Nav'}</span>
+                      </button>
                     </div>
                   </div>
                   
@@ -248,6 +291,7 @@ export default function AdminCategoriesPage() {
                   <th className="py-2.5 px-3">Slug</th>
                   <th className="py-2.5 px-3">Products</th>
                   <th className="py-2.5 px-3">Sort Order</th>
+                  <th className="py-2.5 px-3">Top Navbar</th>
                   <th className="py-2.5 px-3">Status</th>
                   <th className="py-2.5 px-3 text-right">Actions</th>
                 </tr>
@@ -298,6 +342,23 @@ export default function AdminCategoriesPage() {
                     {/* Sort Order */}
                     <td className="py-2.5 px-3 font-mono text-brand-600">
                       {c.sortOrder}
+                    </td>
+
+                    {/* Top Navbar Toggle Switch */}
+                    <td className="py-2.5 px-3">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleNavbar(c)}
+                        title={c.showInNavbar ? 'Click to hide from Navbar' : 'Click to show in Navbar'}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold transition-all cursor-pointer ${
+                          c.showInNavbar
+                            ? 'bg-[#540924] text-[#fef3c7] hover:bg-[#3d0517] shadow-xs ring-1 ring-[#d4af37]/40'
+                            : 'bg-stone-100 text-stone-500 hover:bg-stone-200 border border-stone-200'
+                        }`}
+                      >
+                        <span className={`inline-block h-2 w-2 rounded-full ${c.showInNavbar ? 'bg-amber-400 animate-pulse' : 'bg-stone-400'}`} />
+                        <span>{c.showInNavbar ? 'Visible' : 'Hidden'}</span>
+                      </button>
                     </td>
 
                     {/* Status */}
