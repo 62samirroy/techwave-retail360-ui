@@ -103,6 +103,21 @@ export interface StoreLocationItem {
   mapQuery: string;
 }
 
+export interface CraftCardItem {
+  id?: string | number;
+  title: string;
+  badge?: string;
+  href: string;
+  image: string;
+}
+
+export interface WeaveCraftConfig {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  crafts: CraftCardItem[];
+}
+
 export interface StoresConfig {
   badge: string;
   title: string;
@@ -112,6 +127,7 @@ export interface StoresConfig {
 
 export interface HomePageConfig {
   heroSlides: HeroSlide[];
+  weaveCraft?: WeaveCraftConfig;
   newArrivals: NewArrivalsConfig;
   kanchipuram: KanchipuramConfig;
   bridalFestive: BridalFestiveConfig;

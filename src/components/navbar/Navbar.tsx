@@ -110,16 +110,17 @@ export function Navbar() {
     }
   };
 
-  // Sub-Navigation Categories directly matching the reference layout
+  // Sub-Navigation Categories directly matching the authentic saree catalog
   const subNavCategories = [
-    { label: 'Pure Silk Sarees', href: '/shop?category=kanjivaram-silk' },
-    { label: 'Kanchipuram Silks', href: '/categories/kanjivaram-silk' },
+    { label: 'All Sarees', href: '/shop' },
+    { label: 'Kanjivaram Silk', href: '/categories/kanjivaram-silk' },
     { label: 'Banarasi Brocade', href: '/categories/banarasi-brocade' },
-    { label: 'Soft Silk & Chanderi', href: '/categories/chanderi-linen' },
     { label: 'Organza & Floral', href: '/categories/organza-floral' },
+    { label: 'Chanderi & Linen', href: '/categories/chanderi-linen' },
     { label: 'Bandhani & Leheriya', href: '/categories/bandhani-leheriya' },
+    { label: 'Party & Cocktail', href: '/categories/party-cocktail-wear' },
     { label: 'Bridal Heritage', href: '/shop?featured=true' },
-    { label: 'Visit Our Stores', href: '/#stores' },
+    { label: 'Flagship Stores', href: '/#stores' },
   ];
 
   return (
